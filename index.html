@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     :root {
-      --bg: #050912;
+      --bg: #000;
       --panel: rgba(20, 27, 42, 0.76);
       --panel-strong: rgba(25, 33, 50, 0.9);
       --line: rgba(255, 255, 255, 0.11);
@@ -35,8 +35,7 @@
 
     html {
       min-height: 100%;
-      background:
-        linear-gradient(135deg, #030610 0%, #070d19 46%, #06101c 100%);
+      background: #000;
       touch-action: manipulation;
     }
 
@@ -44,9 +43,7 @@
       min-height: 100vh;
       margin: 0;
       color: var(--text);
-      background:
-        radial-gradient(120% 70% at 50% -10%, rgba(67, 98, 155, 0.26), transparent 58%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%);
+      background: #000;
       display: grid;
       place-items: center;
       padding: 22px;
@@ -71,7 +68,7 @@
       border-radius: 34px;
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 28%),
-        linear-gradient(180deg, #080d18 0%, #050812 42%, #060a13 100%);
+        linear-gradient(180deg, #04060c 0%, #000 42%, #000 100%);
       box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
@@ -124,34 +121,6 @@
       margin-left: 3px;
       filter: drop-shadow(0 10px 18px rgba(255, 187, 64, 0.28));
       transform: rotate(-8deg);
-    }
-
-    .manage-button {
-      position: relative;
-      flex: 0 0 48px;
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.04);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
-      margin-top: 1px;
-    }
-
-    .manage-button svg {
-      width: 29px;
-      height: 29px;
-      stroke: rgba(255, 255, 255, 0.88);
-      stroke-width: 2.2;
-    }
-
-    .manage-button.active {
-      color: var(--blue);
-      background: color-mix(in srgb, var(--blue) 18%, rgba(255, 255, 255, 0.04));
-      box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, var(--blue) 48%, rgba(255, 255, 255, 0.09)),
-        0 0 24px color-mix(in srgb, var(--blue) 22%, transparent);
     }
 
     .habit-grid {
@@ -392,6 +361,39 @@
       z-index: 1;
     }
 
+    .task-edit-toggle {
+      position: absolute;
+      z-index: 2;
+      top: 12px;
+      right: 12px;
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    .task-edit-toggle svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.3;
+    }
+
+    .task-edit-toggle .minus-icon {
+      display: none;
+    }
+
+    .task-card.editing .task-edit-toggle .pencil-icon {
+      display: none;
+    }
+
+    .task-card.editing .task-edit-toggle .minus-icon {
+      display: block;
+    }
+
     .check {
       width: 28px;
       height: 28px;
@@ -513,15 +515,11 @@
       margin-top: 12px;
     }
 
-    .manage-mode .task-actions {
-      display: flex;
-    }
-
     body:not(.all-tasks-mode) .task-card:not(.active-today) {
       display: none;
     }
 
-    .all-tasks-mode .task-actions {
+    .task-card.editing .task-actions {
       display: flex;
     }
 
@@ -549,10 +547,6 @@
     .task-action.delete {
       color: #ff7b7d;
       margin-left: auto;
-    }
-
-    .manage-mode .task-card {
-      cursor: grab;
     }
 
     .modal-backdrop {
@@ -706,13 +700,61 @@
 
     .icon-picker {
       display: grid;
-      grid-template-columns: repeat(6, 42px);
+      gap: 8px;
+    }
+
+    .categorized-icon-picker {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .icon-category-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding: 1px;
+      align-items: stretch;
+    }
+
+    .icon-category {
+      min-width: 0;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 7px;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 11.5px;
+      font-weight: 850;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      white-space: nowrap;
+    }
+
+    .icon-category.active {
+      color: var(--text);
+      background: color-mix(in srgb, var(--blue) 24%, rgba(255, 255, 255, 0.055));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1));
+    }
+
+    .icon-category i {
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 40px);
       justify-content: space-between;
       gap: 7px 5px;
+      padding: 1px;
     }
 
     .icon-choice {
-      width: 42px;
+      width: 40px;
       aspect-ratio: 1;
       display: grid;
       place-items: center;
@@ -736,6 +778,68 @@
       place-items: center;
       font-size: 20px;
       line-height: 1;
+    }
+
+    .icon-empty {
+      grid-column: 1 / -1;
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.52);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .icon-pager {
+      display: grid;
+      grid-template-columns: 34px 1fr 34px;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+    }
+
+    .icon-page-button {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.78);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
+    .icon-page-button:disabled {
+      opacity: 0.34;
+    }
+
+    .icon-page-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.52);
+      font-size: 11.5px;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .icon-page-number {
+      min-width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.62);
+      background: rgba(255, 255, 255, 0.045);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+    }
+
+    .icon-page-number.active {
+      color: var(--text);
+      background: color-mix(in srgb, var(--blue) 22%, rgba(255, 255, 255, 0.055));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 46%, rgba(255, 255, 255, 0.1));
     }
 
     .icon-choice.active {
@@ -897,12 +1001,6 @@
           <h1>Dashboard</h1>
           <p class="kicker">Let's make today count.</p>
         </div>
-        <button class="manage-button" type="button" aria-label="Manage tasks">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M13.5 6.5 17.5 10.5" stroke="currentColor" stroke-linecap="round" />
-          </svg>
-        </button>
       </header>
 
       <section class="habit-grid" aria-label="Habit shortcuts"></section>
@@ -1211,7 +1309,6 @@
     const HOLD_FILL_MS = 520;
     const STORAGE_KEY = "routineDashboard.tasks.v1";
     const taskList = document.querySelector(".task-list");
-    const manageButton = document.querySelector(".manage-button");
     const viewAllButton = document.querySelector(".view-all");
     const modal = document.querySelector("#taskModal");
     const taskForm = modal.querySelector(".task-form");
@@ -1224,33 +1321,77 @@
     const scheduleAheadField = field("scheduleAhead");
     const allowedColors = ["#ff74ba", "#ffd33d", "#46d29c", "#46d7c5", "#5a8cff", "#9d70ff"];
     const HABIT_STORAGE_KEY = "routineDashboard.habits.v1";
-
-    const iconPaths = {
-      calendar: '<path d="M8 2v4M16 2v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      briefcase: '<path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M9 13h6" stroke="currentColor" stroke-linecap="round" />',
-      health: '<path d="M5 19h14M5 19l3-4 3 2 2-5 4 3 2 4M9 8l2-3 3 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      star: '<path d="m12 3 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.3-4.1 5.9-.8L12 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H7a3 3 0 0 0-3 3V5.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-linecap="round" />',
-      home: '<path d="M3 10.8 12 3l9 7.8V21h-6v-6H9v6H3V10.8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      flag: '<path d="M5 21V4M5 5h12l-2 4 2 4H5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      heart: '<path d="M20.5 5.8c-1.9-2.2-5.1-2.1-6.9.1L12 7.7l-1.6-1.8c-1.8-2.2-5-2.3-6.9-.1-2 2.4-1.5 6 1 8L12 21l7.5-7.2c2.5-2 3-5.6 1-8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      dumbbell: '<path d="M4 10v4M8 8v8M16 8v8M20 10v4M8 12h8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      running: '<circle cx="16.8" cy="4.2" r="2.2" fill="currentColor" /><path d="M14.2 7.5h2.7l-2.2 5.1 2.6 2.6v5M13.8 12.6l-3 2.9H6.9M14.6 8.2l-3.2 2.2M16.4 8.8l3.2 1.9" stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round" /><path d="M3.2 9h5M2.4 12h4.8M3.3 15h3.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />',
-      apple: '<path d="M12 7c2.7-2.2 6.5-.4 6.5 3.3 0 4.2-2.8 8.2-5.1 8.2-.8 0-1.1-.4-2.4-.4s-1.6.4-2.4.4c-2.3 0-5.1-4-5.1-8.2C3.5 6.6 7.3 4.8 10 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M12 6c0-2 1.4-3.1 3-3.4" stroke="currentColor" stroke-linecap="round" />',
-      utensils: '<path d="M6 3v8M4 3v5a2 2 0 0 0 4 0V3M6 11v10M15 3v18M15 3c3 1.3 4 3.9 4 7h-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      chart: '<path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      trophy: '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M8 6H4v2a3 3 0 0 0 4 2M16 6h4v2a3 3 0 0 1-4 2M12 12v4M9 20h6M10 16h4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      flame: '<path d="M12 21c-3.5 0-6-2.5-6-5.8 0-2.9 1.9-4.5 3.3-6.2.9-1.1 1.4-2.2 1.2-4 2.7 1.2 5.5 4.2 4.6 7.4.9-.6 1.5-1.7 1.7-2.6 1.3 1.2 2.2 3 2.2 5.1 0 3.5-2.6 6.1-7 6.1Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      water: '<path d="M12 21a6 6 0 0 0 6-6c0-4.2-6-11-6-11S6 10.8 6 15a6 6 0 0 0 6 6Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />'
+    const DELETED_HABITS_KEY = "routineDashboard.deletedHabits.v1";
+    const ICON_RECENTS_KEY = "routineDashboard.iconRecents.v1";
+    const ICON_PAGE_SIZE = 18;
+    const MAX_ICON_PAGES = 5;
+    const legacyIconMap = {
+      calendar: "solid:calendar-days",
+      briefcase: "solid:briefcase",
+      health: "solid:heart-pulse",
+      star: "solid:star",
+      book: "solid:book",
+      home: "solid:house",
+      flag: "solid:flag",
+      heart: "solid:heart",
+      dumbbell: "solid:dumbbell",
+      running: "solid:person-running",
+      apple: "solid:apple-whole",
+      utensils: "solid:utensils",
+      chart: "solid:chart-line",
+      trophy: "solid:trophy",
+      flame: "solid:fire",
+      water: "solid:droplet"
     };
+    const iconCategories = [
+      { id: "recents", label: "Recents", icon: "clock-rotate-left" },
+      { id: "tasks", label: "Tasks", icon: "list-check" },
+      { id: "fitness", label: "Fitness", icon: "person-running" },
+      { id: "other", label: "Other", icon: "shapes" }
+    ];
+    const fixedIconGroups = {
+      tasks: [
+        "calendar-days", "calendar-check", "clock", "hourglass-half", "list", "list-check",
+        "check", "circle-check", "square-check", "clipboard", "clipboard-check", "file-lines",
+        "folder", "inbox", "briefcase", "envelope", "bell", "bookmark",
+        "tag", "flag", "pen", "pencil", "paperclip", "link",
+        "lock", "key", "gear", "wrench", "screwdriver-wrench", "hammer",
+        "trash", "box-archive", "download", "upload", "print", "table",
+        "bars", "ellipsis", "filter", "sort", "magnifying-glass", "plus",
+        "minus", "xmark", "rotate-right", "calculator", "receipt", "wallet",
+        "credit-card", "chart-line", "chart-simple", "bullseye", "star", "circle-plus"
+      ],
+      fitness: [
+        "person-running", "person-walking", "person-hiking", "shoe-prints", "dumbbell", "bicycle",
+        "stopwatch", "heart-pulse", "medal", "trophy", "fire", "route",
+        "location-dot", "droplet", "bottle-water", "moon", "sun", "heart",
+        "leaf", "seedling", "stethoscope", "kit-medical", "pills", "bandage",
+        "bone", "tooth", "wheelchair", "hospital", "syringe", "brain",
+        "lungs", "scale-balanced", "user-doctor", "notes-medical", "hand-holding-medical", "person"
+      ],
+      other: [
+        "utensils", "bowl-food", "apple-whole", "carrot", "pizza-slice", "burger",
+        "hotdog", "ice-cream", "cookie", "mug-hot", "martini-glass", "wine-glass",
+        "beer-mug-empty", "bread-slice", "cheese", "egg", "bacon", "lemon",
+        "house", "bed", "broom", "shirt", "bath", "couch",
+        "tv", "car", "plane", "map-location-dot", "camera", "music",
+        "video", "gamepad", "palette", "book", "graduation-cap", "user",
+        "users", "child", "face-smile", "gift", "lightbulb", "cloud",
+        "umbrella", "tree", "paw", "globe", "wifi", "phone",
+        "message", "shield-halved", "bolt", "gem", "crown", "rocket"
+      ]
+    };
+    let fontAwesomeIcons = buildFixedIconLibrary();
+    let activeIconCategory = "recents";
+    let activeIconPage = 0;
 
     const defaultHabits = {
-      breakfast: { label: "Breakfast", color: "#ffd33d", icon: "calendar", order: 0, completions: {} },
-      lunch: { label: "Lunch", color: "#46d29c", icon: "briefcase", order: 1, completions: {} },
-      dinner: { label: "Dinner", color: "#9d70ff", icon: "home", order: 2, completions: {} },
-      cleaning: { label: "Cleaning", color: "#5a8cff", icon: "star", order: 3, completions: {} },
-      weight: { label: "Weight", color: "#ff74ba", icon: "health", order: 4, completions: {} },
-      running: { label: "Running", color: "#46d7c5", icon: "running", order: 5, completions: {} }
+      breakfast: { label: "Breakfast", color: "#ffd33d", icon: "calendar", mode: "single", order: 0, completions: {} },
+      lunch: { label: "Lunch", color: "#46d29c", icon: "briefcase", mode: "single", order: 1, completions: {} },
+      dinner: { label: "Dinner", color: "#9d70ff", icon: "home", mode: "single", order: 2, completions: {} },
+      cleaning: { label: "Cleaning", color: "#5a8cff", icon: "star", mode: "single", order: 3, completions: {} },
+      weight: { label: "Weight", color: "#ff74ba", icon: "solid:dumbbell", mode: "single", order: 4, completions: {} },
+      running: { label: "Running", color: "#46d7c5", icon: "solid:person-running", mode: "single", order: 5, completions: {} }
     };
 
     function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector, instant = false }) {
@@ -1306,19 +1447,188 @@
       }, true);
     }
 
-    function iconSvg(icon) {
-      if (icon === "running") {
-        return '<i class="fa-solid fa-person-running" aria-hidden="true"></i>';
+    function iconLabel(name) {
+      return name.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+    }
+
+    function normalizeIconValue(icon) {
+      const value = String(icon || "").trim();
+      if (!value || value.includes("mountain")) return "solid:star";
+      if (legacyIconMap[value]) return legacyIconMap[value];
+      if (value.includes(":")) return value;
+      return `solid:${value}`;
+    }
+
+    function parseIconValue(icon) {
+      const normalized = normalizeIconValue(icon);
+      const [style, ...nameParts] = normalized.split(":");
+      return {
+        name: nameParts.join(":") || "star",
+        style: ["solid", "regular", "brands"].includes(style) ? style : "solid"
+      };
+    }
+
+    function faClass(icon) {
+      const { name, style } = parseIconValue(icon);
+      return `fa-${style} fa-${name}`;
+    }
+
+    function categoryMarkup(category) {
+      return `<i class="fa-solid fa-${category.icon}" aria-hidden="true"></i>`;
+    }
+
+    function iconMatchesCategory(item, categoryId) {
+      return item.category === categoryId;
+    }
+
+    function categoryForIcon(name) {
+      return Object.entries(fixedIconGroups).find(([, names]) => names.includes(name))?.[0] || "other";
+    }
+
+    function buildFixedIconLibrary() {
+      const seen = new Set();
+      return Object.entries(fixedIconGroups).flatMap(([category, names]) => names.map((name) => {
+        const value = `solid:${name}`;
+        if (seen.has(value) || name.includes("mountain")) return null;
+        seen.add(value);
+        return {
+          category,
+          label: iconLabel(name),
+          name,
+          style: "solid",
+          terms: name
+        };
+      }).filter(Boolean)).slice(0, MAX_ICON_PAGES * ICON_PAGE_SIZE * 3);
+    }
+
+    function iconValue(item) {
+      return `${item.style}:${item.name}`;
+    }
+
+    function loadRecentIcons() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(ICON_RECENTS_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed.map(normalizeIconValue).filter((icon) => !icon.includes("mountain")).slice(0, 12) : [];
+      } catch {
+        return [];
       }
-      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">${iconPaths[icon] || iconPaths.star}</svg>`;
+    }
+
+    function saveRecentIcons(icons) {
+      localStorage.setItem(ICON_RECENTS_KEY, JSON.stringify(icons.slice(0, 12)));
+    }
+
+    function rememberIcon(icon) {
+      const selected = normalizeIconValue(icon);
+      saveRecentIcons([selected, ...loadRecentIcons().filter((item) => item !== selected)]);
+    }
+
+    function iconFromValue(value) {
+      const { name, style } = parseIconValue(value);
+      return fontAwesomeIcons.find((item) => item.name === name && item.style === style) || {
+        category: categoryForIcon(name),
+        label: iconLabel(name),
+        name,
+        style,
+        terms: name
+      };
+    }
+
+    function randomColor() {
+      return allowedColors[Math.floor(Math.random() * allowedColors.length)];
+    }
+
+    function randomIconValue() {
+      const pool = fontAwesomeIcons.length ? fontAwesomeIcons : buildFixedIconLibrary();
+      return iconValue(pool[Math.floor(Math.random() * pool.length)] || { style: "solid", name: "star" });
+    }
+
+    function renderIconPicker(categoryId = activeIconCategory) {
+      activeIconCategory = categoryId;
+      if (activeIconCategory === "recents") activeIconPage = 0;
+      const selected = normalizeIconValue(field("icon").value);
+      const recentIcons = loadRecentIcons();
+      const recentFill = fontAwesomeIcons.filter((item) => !recentIcons.includes(iconValue(item)));
+      const categoryIcons = activeIconCategory === "recents"
+        ? [...recentIcons.map(iconFromValue), ...recentFill].slice(0, 12)
+        : fontAwesomeIcons.filter((item) => iconMatchesCategory(item, activeIconCategory));
+      const limitedIcons = categoryIcons.slice(0, MAX_ICON_PAGES * ICON_PAGE_SIZE);
+      const pageCount = Math.max(1, Math.ceil(limitedIcons.length / (activeIconCategory === "recents" ? 12 : ICON_PAGE_SIZE)));
+      activeIconPage = Math.min(activeIconPage, pageCount - 1);
+      const pageSize = activeIconCategory === "recents" ? 12 : ICON_PAGE_SIZE;
+      const visibleIcons = limitedIcons.slice(activeIconPage * pageSize, activeIconPage * pageSize + pageSize);
+      taskForm.querySelector(".icon-picker").innerHTML = `
+        <div class="icon-category-row" role="tablist" aria-label="Icon categories">
+          ${iconCategories.map((category) => `
+            <button class="icon-category ${category.id === activeIconCategory ? "active" : ""}" type="button" data-icon-category="${category.id}">
+              ${categoryMarkup(category)}
+              <span>${category.label}</span>
+            </button>
+          `).join("")}
+        </div>
+        <div class="icon-grid" role="group" aria-label="Task icon choices">
+          ${visibleIcons.length ? visibleIcons.map((item) => `
+            <button class="icon-choice ${iconValue(item) === selected ? "active" : ""}" type="button" aria-label="${item.label} icon" data-icon="${iconValue(item)}">
+              ${iconSvg(iconValue(item))}
+            </button>
+          `).join("") : '<span class="icon-empty">No icons here yet</span>'}
+        </div>
+        ${activeIconCategory !== "recents" && pageCount > 1 ? `
+          <div class="icon-pager" aria-label="Icon pages">
+            <button class="icon-page-button" type="button" data-icon-page="prev" ${activeIconPage === 0 ? "disabled" : ""} aria-label="Previous icons">
+              <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <span class="icon-page-label">
+              ${Array.from({ length: pageCount }, (_, index) => `
+                <button class="icon-page-number ${index === activeIconPage ? "active" : ""}" type="button" data-icon-page-number="${index}" aria-label="Icon page ${index + 1}">${index + 1}</button>
+              `).join("")}
+            </span>
+            <button class="icon-page-button" type="button" data-icon-page="next" ${activeIconPage === pageCount - 1 ? "disabled" : ""} aria-label="Next icons">
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        ` : ""}
+      `;
+      bindIconPickerControls();
+    }
+
+    function bindIconPickerControls() {
+      taskForm.querySelectorAll(".icon-category").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeIconPage = 0;
+          renderIconPicker(button.dataset.iconCategory);
+        });
+      });
+      taskForm.querySelectorAll(".icon-choice").forEach((button) => {
+        button.addEventListener("click", () => selectIcon(button.dataset.icon, true));
+      });
+      taskForm.querySelectorAll(".icon-page-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeIconPage += button.dataset.iconPage === "next" ? 1 : -1;
+          renderIconPicker(activeIconCategory);
+        });
+      });
+      taskForm.querySelectorAll(".icon-page-number").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeIconPage = Number(button.dataset.iconPageNumber) || 0;
+          renderIconPicker(activeIconCategory);
+        });
+      });
+    }
+
+    async function loadFontAwesomeIcons() {
+      fontAwesomeIcons = buildFixedIconLibrary();
+      renderIconPicker(activeIconCategory);
+    }
+
+    function iconSvg(icon) {
+      return `<i class="${faClass(icon)}" aria-hidden="true"></i>`;
     }
 
     function buildTaskIconPicker() {
-      taskForm.querySelector(".icon-picker").innerHTML = Object.keys(iconPaths).map((icon) => `
-        <button class="icon-choice" type="button" aria-label="${icon} icon" data-icon="${icon}">
-          ${iconSvg(icon)}
-        </button>
-      `).join("");
+      const picker = taskForm.querySelector(".icon-picker");
+      picker.classList.add("categorized-icon-picker");
+      renderIconPicker();
     }
 
     function habitKey(label) {
@@ -1328,16 +1638,19 @@
     function loadHabitStore() {
       try {
         const parsed = JSON.parse(localStorage.getItem(HABIT_STORAGE_KEY) || "{}");
+        const deleted = loadDeletedHabits();
         const merged = { ...defaultHabits, ...(parsed && typeof parsed === "object" ? parsed : {}) };
+        deleted.forEach((id) => delete merged[id]);
         Object.entries(merged).forEach(([id, habit], index) => {
-        const savedIcon = id === "running" && habit.icon === "flag" ? "running" : habit.icon;
+        const savedIcon = id === "running" && habit.icon === "flag" ? "solid:person-running" : normalizeIconValue(habit.icon);
         merged[id] = {
           ...defaultHabits[id],
           ...habit,
           label: habit.label || defaultHabits[id]?.label || "Habit",
             color: allowedColors.includes((habit.color || "").toLowerCase()) ? habit.color : (defaultHabits[id]?.color || "#5a8cff"),
-            icon: iconPaths[savedIcon] ? savedIcon : (defaultHabits[id]?.icon || "star"),
+            icon: savedIcon,
             order: Number.isFinite(Number(habit.order)) ? Number(habit.order) : index,
+            mode: habit.mode === "split" ? "split" : "single",
             completions: normalizeCompletions(habit.completions || {})
           };
         });
@@ -1349,6 +1662,15 @@
 
     function saveHabitStore(store) {
       localStorage.setItem(HABIT_STORAGE_KEY, JSON.stringify(store));
+    }
+
+    function loadDeletedHabits() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(DELETED_HABITS_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
     }
 
     function normalizeCompletions(completions) {
@@ -1398,8 +1720,9 @@
       store[id].label = label;
       store[id].color = store[id].color || "#5a8cff";
       store[id].icon = store[id].icon || "star";
+      store[id].mode = store[id].mode === "split" ? "split" : "single";
       const currentLevel = Number(store[id].completions[todayValue()]) || 0;
-      const nextLevel = (currentLevel + 1) % 3;
+      const nextLevel = store[id].mode === "split" ? (currentLevel + 1) % 3 : (currentLevel > 0 ? 0 : 2);
       if (nextLevel > 0) {
         store[id].completions[todayValue()] = nextLevel;
       } else {
@@ -1513,8 +1836,9 @@
 
     function setTaskData(task, data) {
       const color = normalizeColor(data.color);
+      const icon = normalizeIconValue(data.icon);
       task.dataset.id = data.id || task.dataset.id || crypto.randomUUID();
-      task.dataset.icon = data.icon;
+      task.dataset.icon = icon;
       task.dataset.color = color;
       task.dataset.notes = (data.description || "").trim();
       task.dataset.repeat = data.repeat || "one-time";
@@ -1530,7 +1854,7 @@
       task.style.setProperty("--accent", color);
       task.querySelector(".check").setAttribute("aria-label", `Complete ${data.title}`);
       task.querySelector(".task-title").textContent = data.title;
-      task.querySelector(".tag").innerHTML = `${iconSvg(data.icon)}${data.category}`;
+      task.querySelector(".tag").innerHTML = `${iconSvg(icon)}${data.category}`;
       if (!task.querySelector(".task-repeat")) {
         task.querySelector(".tag").insertAdjacentHTML("afterend", '<span class="task-repeat"></span>');
       }
@@ -1542,6 +1866,14 @@
       const task = document.createElement("article");
       task.className = "task-card";
       task.innerHTML = `
+        <button class="task-edit-toggle" type="button" aria-label="Edit task controls">
+          <svg class="pencil-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <svg class="minus-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14" stroke="currentColor" stroke-linecap="round" />
+          </svg>
+        </button>
         <button class="check" aria-label="Complete ${data.title}" type="button"></button>
         <div>
           <p class="task-title"></p>
@@ -1606,8 +1938,13 @@
       bindHold(task, {
         activeClass: "is-holding",
         completeClass: "completed",
-        ignoreSelector: ".check, .task-action",
+        ignoreSelector: ".check, .task-action, .task-edit-toggle",
         onComplete: completeTask
+      });
+
+      task.querySelector(".task-edit-toggle")?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        task.classList.toggle("editing");
       });
 
       task.querySelector(".check")?.addEventListener("click", (event) => {
@@ -1625,7 +1962,6 @@
         const previous = task.previousElementSibling;
         if (previous) taskList.insertBefore(task, previous);
         saveTasks();
-        renderSavedTasks(Array.from(taskList.querySelectorAll(".task-card")).map(taskData));
       });
 
       task.querySelector(".move-down").addEventListener("click", (event) => {
@@ -1633,7 +1969,6 @@
         const next = task.nextElementSibling;
         if (next) taskList.insertBefore(next, task);
         saveTasks();
-        renderSavedTasks(Array.from(taskList.querySelectorAll(".task-card")).map(taskData));
       });
 
       task.querySelector(".edit").addEventListener("click", (event) => {
@@ -1786,12 +2121,14 @@
       };
     }
 
-    function selectIcon(icon) {
-      const selected = iconPaths[icon] ? icon : "star";
+    function selectIcon(icon, shouldRemember = false) {
+      const selected = normalizeIconValue(icon);
       field("icon").value = selected;
+      if (shouldRemember) rememberIcon(selected);
       taskForm.querySelectorAll(".icon-choice").forEach((button) => {
         button.classList.toggle("active", button.dataset.icon === selected);
       });
+      if (shouldRemember && activeIconCategory === "recents") renderIconPicker("recents");
     }
 
     function selectCategory(category) {
@@ -1837,8 +2174,6 @@
 
     function setAllTasksMode(enabled) {
       document.body.classList.toggle("all-tasks-mode", enabled);
-      document.body.classList.toggle("manage-mode", enabled);
-      manageButton.classList.toggle("active", enabled);
       viewAllButton.querySelector(".view-all-label").textContent = enabled ? "Today" : "View all";
     }
 
@@ -1848,8 +2183,8 @@
       const data = task ? taskData(task) : {
         title: "",
         category: "Personal",
-        icon: "calendar",
-        color: "#ff74ba",
+        icon: randomIconValue(),
+        color: randomColor(),
         repeat: "one-time",
         weeklyDay: "Monday",
         monthlyDay: String(new Date().getDate()),
@@ -1872,6 +2207,9 @@
       field("scheduleDate").value = data.scheduleDate || "";
       field("description").value = data.description;
       updateFormConditionals();
+      activeIconCategory = "recents";
+      activeIconPage = 0;
+      renderIconPicker("recents");
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
       field("title").focus();
@@ -1884,6 +2222,7 @@
     }
 
     buildTaskIconPicker();
+    loadFontAwesomeIcons();
     renderIndexHabits();
     restoreHabitCompletions();
 
@@ -1896,10 +2235,6 @@
     });
 
     loadTasks();
-
-    manageButton.addEventListener("click", () => {
-      setAllTasksMode(!document.body.classList.contains("all-tasks-mode"));
-    });
 
     viewAllButton.addEventListener("click", () => {
       setAllTasksMode(!document.body.classList.contains("all-tasks-mode"));
