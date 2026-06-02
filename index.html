@@ -1,3 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Routine Dashboard</title>
+  <style>
+    :root {
+      --bg: #050912;
+      --panel: rgba(20, 27, 42, 0.76);
+      --panel-strong: rgba(25, 33, 50, 0.9);
+      --line: rgba(255, 255, 255, 0.11);
+      --text: #f7f8ff;
+      --muted: #a5adbd;
+      --blue: #5a8cff;
+      --green: #46d29c;
+      --orange: #ff9a52;
+      --yellow: #ffd33d;
+      --pink: #ff74ba;
+      --teal: #46d7c5;
+      --purple: #9d70ff;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+      --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background:
+        linear-gradient(135deg, #030610 0%, #070d19 46%, #06101c 100%);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(120% 70% at 50% -10%, rgba(67, 98, 155, 0.26), transparent 58%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%);
+      display: grid;
+      place-items: center;
+      padding: 22px;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      border: 0;
+      background: transparent;
+      cursor: default;
+    }
+
+    .phone {
+      position: relative;
+      width: min(100%, 430px);
+      min-height: 932px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 34px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 28%),
+        linear-gradient(180deg, #080d18 0%, #050812 42%, #060a13 100%);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%);
+      opacity: 0.22;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      min-height: 932px;
+      padding: 54px 24px 116px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 34px;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(33px, 9vw, 43px);
+      line-height: 1.04;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .wave {
+      display: inline-block;
+      margin-left: 3px;
+      filter: drop-shadow(0 10px 18px rgba(255, 187, 64, 0.28));
+      transform: rotate(-8deg);
+    }
+
+    .bell {
+      position: relative;
+      flex: 0 0 48px;
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      margin-top: 1px;
+    }
+
+    .bell svg {
+      width: 29px;
+      height: 29px;
+      stroke: rgba(255, 255, 255, 0.88);
+      stroke-width: 2.2;
+    }
+
+    .bell::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      right: 9px;
+      width: 11px;
+      height: 11px;
+      border: 3px solid #202639;
+      border-radius: 50%;
+      background: #ff6d6f;
+      box-shadow: 0 0 18px rgba(255, 109, 111, 0.72);
+    }
+
+    .habit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px 18px;
+      margin-bottom: 42px;
+    }
+
+    .habit {
+      min-width: 0;
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .bubble {
+      position: relative;
+      width: min(30vw, 114px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 54%),
+        rgba(17, 23, 35, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      box-shadow:
+        inset 0 16px 28px rgba(255, 255, 255, 0.04),
+        inset 0 -18px 32px rgba(0, 0, 0, 0.28),
+        var(--soft-shadow);
+    }
+
+    .bubble::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.34), transparent 24%),
+        linear-gradient(180deg, color-mix(in srgb, var(--glow) 94%, white 10%), var(--glow));
+      opacity: 0.9;
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 180ms ease-out;
+    }
+
+    .habit.is-holding .bubble::before {
+      transform: scaleY(1);
+      transition: transform 900ms cubic-bezier(0.22, 0.7, 0.16, 1);
+    }
+
+    .habit.is-filled .bubble::before {
+      transform: scaleY(1);
+      transition: transform 260ms ease-out;
+    }
+
+    .bubble::after {
+      content: "";
+      position: absolute;
+      inset: 11%;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 52%);
+      opacity: 0.72;
+      pointer-events: none;
+    }
+
+    .icon-bubble {
+      --glow: var(--blue);
+      border-color: rgba(255, 255, 255, 0.08);
+      background:
+        radial-gradient(circle at 38% 30%, color-mix(in srgb, var(--glow) 14%, transparent), transparent 42%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 54%),
+        rgba(17, 23, 35, 0.88);
+      box-shadow:
+        inset 0 18px 30px rgba(255, 255, 255, 0.045),
+        inset 0 -20px 34px rgba(0, 0, 0, 0.31),
+        var(--soft-shadow);
+    }
+
+    .habit svg {
+      position: relative;
+      z-index: 1;
+      width: 82px;
+      height: 82px;
+      overflow: visible;
+      filter:
+        drop-shadow(0 13px 16px rgba(0, 0, 0, 0.4))
+        drop-shadow(0 0 12px color-mix(in srgb, currentColor 28%, transparent));
+    }
+
+    .habit.is-filled svg {
+      filter:
+        drop-shadow(0 13px 16px rgba(0, 0, 0, 0.48))
+        drop-shadow(0 0 16px rgba(255, 255, 255, 0.18));
+    }
+
+    .glyph-outline {
+      fill: none;
+      stroke: #07101e;
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.96;
+    }
+
+    .glyph-line {
+      fill: none;
+      stroke: #07101e;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.92;
+    }
+
+    .habit-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1.1;
+    }
+
+    .yellow { color: var(--yellow); }
+    .green { color: #59df63; }
+    .purple { color: #c177ff; }
+    .blue { color: var(--blue); }
+    .pink { color: var(--pink); }
+    .teal { color: var(--teal); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 17px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .view-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--blue);
+      font-size: 17px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .view-all svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.8;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .task-card {
+      --accent: var(--blue);
+      position: relative;
+      min-height: 82px;
+      display: grid;
+      grid-template-columns: 54px 1fr 24px;
+      align-items: center;
+      column-gap: 10px;
+      row-gap: 0;
+      padding: 17px 19px 17px 20px;
+      border-radius: 17px;
+      background:
+        linear-gradient(95deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent 46%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+        var(--panel);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 180ms ease;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .task-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--accent) 34%, transparent), color-mix(in srgb, var(--accent) 15%, transparent)),
+        rgba(255, 255, 255, 0.03);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 180ms ease-out;
+    }
+
+    .task-card.is-holding::before {
+      transform: scaleX(1);
+      transition: transform 900ms cubic-bezier(0.22, 0.7, 0.16, 1);
+    }
+
+    .task-card.completed::before {
+      transform: scaleX(1);
+      transition: transform 320ms ease-out;
+    }
+
+    .task-card.completed {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow:
+        0 14px 36px color-mix(in srgb, var(--accent) 18%, transparent),
+        var(--soft-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .task-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .check {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 28%, transparent);
+      justify-self: center;
+      display: grid;
+      place-items: center;
+      transition: background 200ms ease, transform 160ms ease, box-shadow 200ms ease;
+    }
+
+    .check::after {
+      content: "";
+      width: 12px;
+      height: 7px;
+      border-left: 2px solid #06101d;
+      border-bottom: 2px solid #06101d;
+      transform: rotate(-45deg) scale(0);
+      transform-origin: center;
+      transition: transform 180ms ease;
+    }
+
+    .task-card.completed .check {
+      background: var(--accent);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 42%, transparent);
+    }
+
+    .task-card.completed .check::after {
+      transform: rotate(-45deg) scale(1);
+    }
+
+    .task-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .tag svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.1;
+    }
+
+    .chevron {
+      width: 24px;
+      height: 24px;
+      stroke: rgba(255, 255, 255, 0.72);
+      stroke-width: 2.8;
+      justify-self: end;
+      transition: transform 220ms ease;
+    }
+
+    .task-card.open .chevron {
+      transform: rotate(90deg);
+    }
+
+    .task-card.no-notes .chevron {
+      display: none;
+    }
+
+    .task-notes {
+      grid-column: 2 / 4;
+      margin: 0;
+      max-height: 0;
+      overflow: hidden;
+      color: rgba(232, 238, 252, 0.72);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: max-height 240ms ease, opacity 180ms ease, transform 220ms ease, margin-top 220ms ease;
+    }
+
+    .task-card.open .task-notes {
+      max-height: 90px;
+      opacity: 1;
+      transform: translateY(0);
+      margin-top: 12px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 460px) {
+      body {
+        padding: 0;
+        display: block;
+      }
+
+      .phone {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        border: 0;
+      }
+
+      .app {
+        min-height: 100vh;
+        padding: 54px 21px 112px;
+      }
+
+      .bubble {
+        width: 29vw;
+        max-width: 112px;
+      }
+
+      .habit-grid {
+        gap: 29px 12px;
+      }
+    }
+
+    @media (max-width: 350px) {
+      .app {
+        padding-inline: 16px;
+      }
+
+      .habit-title {
+        font-size: 16px;
+      }
+
+      .habit svg {
+        width: 90px;
+        height: 90px;
+      }
+
+      .task-card {
+        grid-template-columns: 44px 1fr 20px;
+        padding-inline: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="Daily routine dashboard mockup">
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <h1>Good Evening, Alex <span class="wave" aria-hidden="true">👋</span></h1>
+          <p class="kicker">Let's make today count.</p>
+        </div>
+        <button class="bell" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+        </button>
+      </header>
+
+      <section class="habit-grid" aria-label="Habit shortcuts">
+        <button class="habit">
+          <span class="bubble icon-bubble" style="--glow: var(--yellow)">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="breakfastGlyph" x1="18" y1="18" x2="82" y2="82" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#ffe86a" />
+                  <stop offset="0.52" stop-color="#ffc935" />
+                  <stop offset="1" stop-color="#ff9f19" />
+                </linearGradient>
+              </defs>
+              <path class="glyph-outline" d="M42 22h34c9 0 15 6 15 15 0 8-5 13-13 14v28H42V51c-9-2-14-7-14-14 0-9 6-15 14-15Z" />
+              <path class="glyph-outline" d="M48 66c-3 13-17 22-32 15C2 75 1 57 15 49c4-12 17-20 30-16 12 4 20 18 15 32-4 15-23 22-36 13" />
+              <path d="M42 22h34c9 0 15 6 15 15 0 8-5 13-13 14v28H42V51c-9-2-14-7-14-14 0-9 6-15 14-15Z" fill="url(#breakfastGlyph)" />
+              <path d="M48 66c-3 13-17 22-32 15C2 75 1 57 15 49c4-12 17-20 30-16 12 4 20 18 15 32-4 15-23 22-36 13" fill="url(#breakfastGlyph)" />
+              <circle cx="34" cy="62" r="13.5" fill="#07101e" />
+              <path d="M25 58c2-4 5-7 10-8" fill="none" stroke="#ffe86a" stroke-width="4.5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="habit-title yellow">Breakfast</span>
+        </button>
+        <button class="habit">
+          <span class="bubble icon-bubble" style="--glow: #59df63">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="lunchGlyph" x1="18" y1="16" x2="80" y2="86" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#a6ff7d" />
+                  <stop offset="0.52" stop-color="#65e84f" />
+                  <stop offset="1" stop-color="#35ca44" />
+                </linearGradient>
+              </defs>
+              <path class="glyph-outline" d="M18 51h64c-3 21-17 35-32 35S21 72 18 51Z" />
+              <path class="glyph-outline" d="M17 49h66" />
+              <path class="glyph-outline" d="M36 44c-16-9-18-26-6-31 13 0 23 11 21 29" />
+              <path class="glyph-outline" d="M51 45c-4-14 6-27 14-31 11 8 12 22 1 33" />
+              <path class="glyph-outline" d="M64 44c0-20 13-31 28-28 6 16-6 30-22 33" />
+              <path class="glyph-outline" d="M25 43c-9-3-15-11-12-20 11-5 22 3 27 14" />
+              <path class="glyph-outline" d="M75 45c6-13 16-19 26-14 0 14-11 23-24 22" />
+              <path d="M36 44c-16-9-18-26-6-31 13 0 23 11 21 29" fill="url(#lunchGlyph)" />
+              <path d="M51 45c-4-14 6-27 14-31 11 8 12 22 1 33" fill="url(#lunchGlyph)" />
+              <path d="M64 44c0-20 13-31 28-28 6 16-6 30-22 33" fill="url(#lunchGlyph)" />
+              <path d="M25 43c-9-3-15-11-12-20 11-5 22 3 27 14" fill="url(#lunchGlyph)" />
+              <path d="M75 45c6-13 16-19 26-14 0 14-11 23-24 22" fill="url(#lunchGlyph)" />
+              <path d="M18 51h64c-3 21-17 35-32 35S21 72 18 51Z" fill="url(#lunchGlyph)" />
+              <path d="M17 49h66" stroke="url(#lunchGlyph)" stroke-width="9" stroke-linecap="round" />
+              <path class="glyph-line" d="M38 34c7 4 12 9 14 15M65 27c-5 8-8 16-9 24M74 42c7-5 14-8 23-9" stroke-width="4.5" />
+            </svg>
+          </span>
+          <span class="habit-title green">Lunch</span>
+        </button>
+        <button class="habit">
+          <span class="bubble icon-bubble" style="--glow: #9d70ff">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="dinnerGlyph" x1="22" y1="17" x2="78" y2="84" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#c291ff" />
+                  <stop offset="0.52" stop-color="#8f60ff" />
+                  <stop offset="1" stop-color="#7041ef" />
+                </linearGradient>
+              </defs>
+              <path class="glyph-outline" d="M26 38c3-12 18-17 28-10 5-7 18-6 23 3 8 1 13 8 12 16-2 9-10 14-21 14H29c-11-1-18-10-15-20 2-5 6-8 12-9Z" />
+              <path class="glyph-outline" d="M66 49c-3-11 8-20 18-15 5-8 18-6 20 4 8 1 12 10 7 17-6 8-18 7-22 0-7 7-21 4-23-6Z" />
+              <path class="glyph-outline" d="M22 58c15-15 47-14 59 2 8 12-2 26-23 29-22 2-43-6-43-20 0-5 3-9 7-11Z" />
+              <path d="M26 38c3-12 18-17 28-10 5-7 18-6 23 3 8 1 13 8 12 16-2 9-10 14-21 14H29c-11-1-18-10-15-20 2-5 6-8 12-9Z" fill="url(#dinnerGlyph)" />
+              <path d="M66 49c-3-11 8-20 18-15 5-8 18-6 20 4 8 1 12 10 7 17-6 8-18 7-22 0-7 7-21 4-23-6Z" fill="url(#dinnerGlyph)" />
+              <path d="M22 58c15-15 47-14 59 2 8 12-2 26-23 29-22 2-43-6-43-20 0-5 3-9 7-11Z" fill="url(#dinnerGlyph)" />
+              <path class="glyph-line" d="M33 45c9-5 21-4 30 1M44 37c7-3 17-2 24 2M28 69c14 0 27 5 39 13M35 59c15-5 30-2 42 7M43 55 29 66M58 54 40 72M72 58 55 75" stroke-width="4.6" />
+              <path class="glyph-line" d="M80 51c2-8 1-13-4-18M91 54c-1-8 2-13 9-17" stroke-width="4" />
+            </svg>
+          </span>
+          <span class="habit-title purple">Dinner</span>
+        </button>
+        <button class="habit">
+          <span class="bubble icon-bubble" style="--glow: var(--blue)">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="cleanGlyph" x1="17" y1="18" x2="80" y2="84" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#56c6ff" />
+                  <stop offset="0.52" stop-color="#238dff" />
+                  <stop offset="1" stop-color="#1170f3" />
+                </linearGradient>
+              </defs>
+              <path class="glyph-outline" d="M21 26h45c6 0 10 4 10 9v4H24c-6 0-10-3-10-7 0-3 2-6 7-6Z" />
+              <path class="glyph-outline" d="M34 40h28v13H34z" />
+              <path class="glyph-outline" d="M31 52h34l8 13v25c0 5-4 8-9 8H30c-5 0-9-3-9-8V65l10-13Z" />
+              <path class="glyph-outline" d="M72 39h13c7 0 11 4 11 10 0 7-5 10-12 10h-7c-8 0-12-5-12-13" />
+              <path d="M21 26h45c6 0 10 4 10 9v4H24c-6 0-10-3-10-7 0-3 2-6 7-6Z" fill="url(#cleanGlyph)" />
+              <path d="M34 40h28v13H34z" fill="url(#cleanGlyph)" />
+              <path d="M31 52h34l8 13v25c0 5-4 8-9 8H30c-5 0-9-3-9-8V65l10-13Z" fill="url(#cleanGlyph)" />
+              <path d="M72 39h13c7 0 11 4 11 10 0 7-5 10-12 10h-7c-8 0-12-5-12-13" fill="url(#cleanGlyph)" />
+              <path class="glyph-line" d="M31 64v24M41 60h20" stroke-width="4" opacity="0.38" />
+            </svg>
+          </span>
+          <span class="habit-title blue">Cleaning</span>
+        </button>
+        <button class="habit">
+          <span class="bubble icon-bubble" style="--glow: var(--pink)">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="weightGlyph" x1="20" y1="18" x2="80" y2="82" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#ff8ebc" />
+                  <stop offset="0.52" stop-color="#ff669b" />
+                  <stop offset="1" stop-color="#ff4f86" />
+                </linearGradient>
+              </defs>
+              <g transform="rotate(-28 50 50)">
+                <rect class="glyph-outline" x="8" y="39" width="14" height="32" rx="7" />
+                <rect class="glyph-outline" x="22" y="31" width="18" height="48" rx="8" />
+                <rect class="glyph-outline" x="39" y="45" width="32" height="12" rx="4" />
+                <rect class="glyph-outline" x="68" y="31" width="18" height="48" rx="8" />
+                <rect class="glyph-outline" x="85" y="39" width="14" height="32" rx="7" />
+                <rect x="8" y="39" width="14" height="32" rx="7" fill="url(#weightGlyph)" />
+                <rect x="22" y="31" width="18" height="48" rx="8" fill="url(#weightGlyph)" />
+                <rect x="39" y="45" width="32" height="12" rx="4" fill="url(#weightGlyph)" />
+                <rect x="68" y="31" width="18" height="48" rx="8" fill="url(#weightGlyph)" />
+                <rect x="85" y="39" width="14" height="32" rx="7" fill="url(#weightGlyph)" />
+                <path class="glyph-line" d="M31 37c5 9 5 26 0 38M75 37c5 9 5 26 0 38" stroke-width="4" opacity="0.32" />
+              </g>
+            </svg>
+          </span>
+          <span class="habit-title pink">Weight</span>
+        </button>
+        <button class="habit">
+          <span class="bubble icon-bubble" style="--glow: var(--teal)">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="runGlyph" x1="19" y1="17" x2="81" y2="84" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#8affef" />
+                  <stop offset="0.5" stop-color="#55e0d0" />
+                  <stop offset="1" stop-color="#35c6b7" />
+                </linearGradient>
+              </defs>
+              <circle class="glyph-outline" cx="77" cy="22" r="12" />
+              <path class="glyph-outline" d="M42 46h19l14-13" />
+              <path class="glyph-outline" d="M60 50 51 70 31 83M61 56l12 20 1 17M43 48 32 62" />
+              <circle cx="77" cy="22" r="12" fill="url(#runGlyph)" />
+              <path d="M42 46h19l14-13" fill="none" stroke="url(#runGlyph)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M60 50 51 70 31 83M61 56l12 20 1 17M43 48 32 62" fill="none" stroke="url(#runGlyph)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M31 40H16M28 54H10M24 69H7" stroke="url(#runGlyph)" stroke-width="4" stroke-linecap="round" opacity="0.8" />
+              <path class="glyph-line" d="M53 69l16 8M39 78l-11 5M73 78l1 14" stroke-width="4" opacity="0.3" />
+            </svg>
+          </span>
+          <span class="habit-title teal">Running</span>
+        </button>
+      </section>
+
+      <section aria-label="Today's tasks">
+        <div class="section-head">
+          <h2>Today's Tasks</h2>
+          <button class="view-all">
             View all
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
