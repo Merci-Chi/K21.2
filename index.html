@@ -343,11 +343,13 @@
       inset: 0;
       z-index: 0;
       background:
-        linear-gradient(90deg, color-mix(in srgb, var(--accent) 58%, #101827), color-mix(in srgb, var(--accent) 36%, #101827)),
+        radial-gradient(circle at 18% 50%, rgba(255, 255, 255, 0.18), transparent 26%),
+        linear-gradient(90deg, color-mix(in srgb, var(--accent) 66%, #101827), color-mix(in srgb, var(--accent) 42%, #101827)),
         rgba(8, 12, 20, 0.92);
       transform: scaleX(0);
       transform-origin: left;
-      transition: transform 180ms ease-out;
+      opacity: 0.94;
+      transition: transform 220ms ease-out, opacity 220ms ease;
     }
 
     .task-card.is-holding::before {
@@ -357,7 +359,8 @@
 
     .task-card.completed::before {
       transform: scaleX(1);
-      transition: transform 420ms ease-out;
+      opacity: 1;
+      transition: transform 520ms ease-out, opacity 220ms ease;
     }
 
     .task-card.completed {
@@ -423,11 +426,15 @@
     }
 
     .task-repeat {
-      display: block;
+      display: none;
       margin-top: 5px;
       color: rgba(255, 255, 255, 0.48);
       font-size: 12px;
       font-weight: 750;
+    }
+
+    .all-tasks-mode .task-repeat {
+      display: block;
     }
 
     .tag svg {
@@ -641,6 +648,39 @@
       box-shadow:
         inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1)),
         0 0 20px color-mix(in srgb, var(--blue) 18%, transparent);
+    }
+
+    .icon-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 42px);
+      gap: 8px;
+    }
+
+    .icon-choice {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.68);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 160ms ease;
+    }
+
+    .icon-choice svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.25;
+    }
+
+    .icon-choice.active {
+      color: var(--text);
+      background: color-mix(in srgb, var(--blue) 24%, rgba(255, 255, 255, 0.055));
+      box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1)),
+        0 0 20px color-mix(in srgb, var(--blue) 18%, transparent);
+      transform: translateY(-1px);
     }
 
     .other-category-field {
@@ -1062,12 +1102,30 @@
           <div class="form-row">
             <label class="field">
               Icon
-              <select name="icon">
-                <option value="calendar">Calendar</option>
-                <option value="briefcase">Briefcase</option>
-                <option value="health">Health</option>
-                <option value="star">Star</option>
-              </select>
+              <div class="icon-picker" role="group" aria-label="Task icon">
+                <button class="icon-choice active" type="button" aria-label="Calendar icon" data-icon="calendar">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M8 2v4M16 2v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button class="icon-choice" type="button" aria-label="Briefcase icon" data-icon="briefcase">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M9 13h6" stroke="currentColor" stroke-linecap="round" />
+                  </svg>
+                </button>
+                <button class="icon-choice" type="button" aria-label="Health icon" data-icon="health">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 19h14M5 19l3-4 3 2 2-5 4 3 2 4M9 8l2-3 3 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button class="icon-choice" type="button" aria-label="Star icon" data-icon="star">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m12 3 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.3-4.1 5.9-.8L12 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+              <input name="icon" type="hidden" value="calendar" />
             </label>
             <div class="field">
               Category
@@ -1097,24 +1155,26 @@
             <input name="color" type="hidden" value="#ff74ba" />
           </div>
           <div class="form-row">
-            <label class="field">
+            <div class="field">
               Repeat
-              <select name="repeat">
-                <option value="one-time">One Time</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-                <option value="custom">Custom Cycle</option>
-              </select>
-            </label>
-            <label class="field">
+              <div class="choice-row repeat-picker" role="group" aria-label="Task repeat">
+                <button class="choice-pill active" type="button" data-repeat="one-time">One Time</button>
+                <button class="choice-pill" type="button" data-repeat="daily">Daily</button>
+                <button class="choice-pill" type="button" data-repeat="weekly">Weekly</button>
+                <button class="choice-pill" type="button" data-repeat="monthly">Monthly</button>
+                <button class="choice-pill" type="button" data-repeat="yearly">Yearly</button>
+                <button class="choice-pill" type="button" data-repeat="custom">Custom</button>
+              </div>
+              <input name="repeat" type="hidden" value="one-time" />
+            </div>
+            <div class="field">
               <span>Schedule ahead</span>
-              <select name="scheduleAhead">
-                <option value="no">No</option>
-                <option value="yes">Yes</option>
-              </select>
-            </label>
+              <div class="choice-row schedule-picker" role="group" aria-label="Schedule ahead">
+                <button class="choice-pill active" type="button" data-schedule="no">No</button>
+                <button class="choice-pill" type="button" data-schedule="yes">Yes</button>
+              </div>
+              <input name="scheduleAhead" type="hidden" value="no" />
+            </div>
           </div>
           <label class="field conditional-field" data-condition="weekly">
             Day of week
@@ -1193,7 +1253,8 @@
     </div>
   </main>
   <script>
-    const HOLD_MS = 500;
+    const HOLD_DELAY_MS = 500;
+    const HOLD_FILL_MS = 1500;
     const STORAGE_KEY = "routineDashboard.tasks.v1";
     const taskList = document.querySelector(".task-list");
     const manageButton = document.querySelector(".manage-button");
@@ -1219,28 +1280,33 @@
     function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector }) {
       if (element.dataset.holdBound === "true") return;
       element.dataset.holdBound = "true";
-      let timer = null;
+      let startTimer = null;
+      let completeTimer = null;
       let completedByHold = false;
 
       const cancel = () => {
-      clearTimeout(timer);
-      timer = null;
-      element.classList.remove(activeClass);
+        clearTimeout(startTimer);
+        clearTimeout(completeTimer);
+        startTimer = null;
+        completeTimer = null;
+        element.classList.remove(activeClass);
       };
 
       element.addEventListener("pointerdown", (event) => {
         if (ignoreSelector && event.target.closest(ignoreSelector)) return;
         completedByHold = false;
         element.setPointerCapture?.(event.pointerId);
-        if (!element.classList.contains(completeClass)) {
-          element.classList.add(activeClass);
-        }
-        timer = window.setTimeout(() => {
-          completedByHold = true;
-          element.classList.remove(activeClass);
-          element.classList.toggle(completeClass);
-          onComplete?.(element);
-        }, HOLD_MS);
+        startTimer = window.setTimeout(() => {
+          if (!element.classList.contains(completeClass)) {
+            element.classList.add(activeClass);
+          }
+          completeTimer = window.setTimeout(() => {
+            completedByHold = true;
+            element.classList.remove(activeClass);
+            element.classList.toggle(completeClass);
+            onComplete?.(element);
+          }, HOLD_FILL_MS);
+        }, HOLD_DELAY_MS);
       });
 
       element.addEventListener("pointerup", cancel);
@@ -1358,6 +1424,7 @@
         scheduleAhead: task.dataset.scheduleAhead || "no",
         scheduleDate: task.dataset.scheduleDate || "",
         createdDate: task.dataset.createdDate || todayValue(),
+        completedAt: task.dataset.completedAt || "",
         completed: task.classList.contains("completed")
       };
     }
@@ -1376,6 +1443,7 @@
       task.dataset.scheduleAhead = data.scheduleAhead || "no";
       task.dataset.scheduleDate = data.scheduleDate || "";
       task.dataset.createdDate = data.createdDate || task.dataset.createdDate || todayValue();
+      task.dataset.completedAt = data.completedAt || task.dataset.completedAt || "";
       task.dataset.repeatText = recurrenceText(data);
       task.style.setProperty("--accent", color);
       task.querySelector(".check").setAttribute("aria-label", `Complete ${data.title}`);
@@ -1385,7 +1453,7 @@
         task.querySelector(".tag").insertAdjacentHTML("afterend", '<span class="task-repeat"></span>');
       }
       refreshTaskMeta(task);
-      task.classList.toggle("active-today", isActiveToday(taskData(task)));
+      refreshTaskStatus(task);
     }
 
     function createTask(data) {
@@ -1404,8 +1472,11 @@
         <p class="task-notes"></p>
         <div class="task-actions" aria-label="Task controls"></div>
       `;
-      setTaskData(task, data);
-      task.classList.toggle("completed", Boolean(data.completed));
+      const normalized = normalizeTaskState(data);
+      setTaskData(task, normalized);
+      task.classList.toggle("completed", Boolean(normalized.completed));
+      task.dataset.completedAt = normalized.completedAt || "";
+      refreshTaskStatus(task);
       setupTask(task);
       return task;
     }
@@ -1417,7 +1488,7 @@
 
     function renderSavedTasks(tasks) {
       taskList.innerHTML = "";
-      tasks.sort(taskSort).forEach((data) => taskList.appendChild(createTask(data)));
+      tasks.map(normalizeTaskState).sort(taskSort).forEach((data) => taskList.appendChild(createTask(data)));
     }
 
     function loadTasks() {
@@ -1454,13 +1525,12 @@
         activeClass: "is-holding",
         completeClass: "completed",
         ignoreSelector: ".check, .task-action",
-        onComplete: saveTasks
+        onComplete: completeTask
       });
 
       task.querySelector(".check")?.addEventListener("click", (event) => {
         event.stopPropagation();
-        task.classList.toggle("completed");
-        saveTasks();
+        completeTask(task, true);
       });
 
       task.addEventListener("click", (event) => {
@@ -1518,7 +1588,45 @@
       return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
     }
 
+    function completionExpiresAt(completedAt) {
+      const completed = completedAt ? new Date(completedAt) : null;
+      if (!completed || Number.isNaN(completed.getTime())) return null;
+      return new Date(completed.getFullYear(), completed.getMonth(), completed.getDate() + 1, 10, 0, 0, 0);
+    }
+
+    function isCompletedRetained(data) {
+      if (!data.completed) return false;
+      const expires = completionExpiresAt(data.completedAt);
+      return !expires || new Date() < expires;
+    }
+
+    function normalizeTaskState(data) {
+      const normalized = { ...data };
+      if (normalized.completed && !isCompletedRetained(normalized)) {
+        normalized.completed = false;
+        normalized.completedAt = "";
+      }
+      return normalized;
+    }
+
+    function refreshTaskStatus(task) {
+      task.classList.toggle("active-today", isActiveToday(taskData(task)));
+    }
+
+    function completeTask(task, shouldToggle = false) {
+      if (shouldToggle) task.classList.toggle("completed");
+      if (task.classList.contains("completed")) {
+        task.dataset.completedAt = task.dataset.completedAt || new Date().toISOString();
+      } else {
+        task.dataset.completedAt = "";
+      }
+      refreshTaskStatus(task);
+      saveTasks();
+    }
+
     function isActiveToday(data) {
+      if (data.completed) return isCompletedRetained(data);
+
       const today = parseDate(todayValue());
       const start = parseDate(data.scheduleDate) || parseDate(data.createdDate) || today;
       if (start > today) return false;
@@ -1591,8 +1699,17 @@
         scheduleAhead: field("scheduleAhead").value,
         scheduleDate: field("scheduleAhead").value === "yes" ? field("scheduleDate").value : "",
         createdDate: editingTask?.dataset.createdDate || todayValue(),
+        completedAt: editingTask?.dataset.completedAt || "",
         description: field("description").value.trim()
       };
+    }
+
+    function selectIcon(icon) {
+      const selected = iconPaths[icon] ? icon : "star";
+      field("icon").value = selected;
+      taskForm.querySelectorAll(".icon-choice").forEach((button) => {
+        button.classList.toggle("active", button.dataset.icon === selected);
+      });
     }
 
     function selectCategory(category) {
@@ -1611,6 +1728,24 @@
       taskForm.querySelectorAll(".color-swatch").forEach((button) => {
         button.classList.toggle("active", button.dataset.color.toLowerCase() === selected.toLowerCase());
       });
+    }
+
+    function selectRepeat(repeat) {
+      const selected = ["one-time", "daily", "weekly", "monthly", "yearly", "custom"].includes(repeat) ? repeat : "one-time";
+      field("repeat").value = selected;
+      taskForm.querySelectorAll(".repeat-picker .choice-pill").forEach((button) => {
+        button.classList.toggle("active", button.dataset.repeat === selected);
+      });
+      updateFormConditionals();
+    }
+
+    function selectSchedule(scheduleAhead) {
+      const selected = scheduleAhead === "yes" ? "yes" : "no";
+      field("scheduleAhead").value = selected;
+      taskForm.querySelectorAll(".schedule-picker .choice-pill").forEach((button) => {
+        button.classList.toggle("active", button.dataset.schedule === selected);
+      });
+      updateFormConditionals();
     }
 
     function normalizeColor(color) {
@@ -1643,15 +1778,15 @@
         description: ""
       };
       field("title").value = data.title;
-      field("icon").value = data.icon;
+      selectIcon(data.icon);
       selectCategory(data.category || "Personal");
       selectColor(data.color && data.color.startsWith("#") ? data.color : "#ff74ba");
-      field("repeat").value = data.repeat || "one-time";
+      selectRepeat(data.repeat || "one-time");
       field("weeklyDay").value = data.weeklyDay || "Monday";
       field("monthlyDay").value = data.monthlyDay || String(new Date().getDate());
       field("customEvery").value = data.customEvery || "1";
       field("customUnit").value = data.customUnit || "days";
-      field("scheduleAhead").value = data.scheduleAhead || "no";
+      selectSchedule(data.scheduleAhead || "no");
       field("scheduleDate").value = data.scheduleDate || "";
       field("description").value = data.description;
       updateFormConditionals();
@@ -1685,12 +1820,21 @@
 
     repeatField.addEventListener("change", updateFormConditionals);
     scheduleAheadField.addEventListener("change", updateFormConditionals);
+    taskForm.querySelectorAll(".icon-choice").forEach((button) => {
+      button.addEventListener("click", () => selectIcon(button.dataset.icon));
+    });
     taskForm.querySelectorAll(".category-picker .choice-pill").forEach((button) => {
       button.addEventListener("click", () => selectCategory(button.dataset.category));
     });
     field("otherCategory").addEventListener("input", updateFormConditionals);
     taskForm.querySelectorAll(".color-swatch").forEach((button) => {
       button.addEventListener("click", () => selectColor(button.dataset.color));
+    });
+    taskForm.querySelectorAll(".repeat-picker .choice-pill").forEach((button) => {
+      button.addEventListener("click", () => selectRepeat(button.dataset.repeat));
+    });
+    taskForm.querySelectorAll(".schedule-picker .choice-pill").forEach((button) => {
+      button.addEventListener("click", () => selectSchedule(button.dataset.schedule));
     });
 
     modal.querySelector(".modal-close").addEventListener("click", closeTaskModal);
@@ -1705,6 +1849,7 @@
       if (editingTask) {
         data.id = editingTask.dataset.id;
         data.completed = editingTask.classList.contains("completed");
+        data.completedAt = editingTask.dataset.completedAt || "";
         setTaskData(editingTask, data);
       } else {
         taskList.appendChild(createTask(data));
