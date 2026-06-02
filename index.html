@@ -118,7 +118,7 @@
       transform: rotate(-8deg);
     }
 
-    .bell {
+    .manage-button {
       position: relative;
       flex: 0 0 48px;
       width: 48px;
@@ -131,24 +131,19 @@
       margin-top: 1px;
     }
 
-    .bell svg {
+    .manage-button svg {
       width: 29px;
       height: 29px;
       stroke: rgba(255, 255, 255, 0.88);
       stroke-width: 2.2;
     }
 
-    .bell::after {
-      content: "";
-      position: absolute;
-      top: 8px;
-      right: 9px;
-      width: 11px;
-      height: 11px;
-      border: 3px solid #202639;
-      border-radius: 50%;
-      background: #ff6d6f;
-      box-shadow: 0 0 18px rgba(255, 109, 111, 0.72);
+    .manage-button.active {
+      color: var(--blue);
+      background: color-mix(in srgb, var(--blue) 18%, rgba(255, 255, 255, 0.04));
+      box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--blue) 48%, rgba(255, 255, 255, 0.09)),
+        0 0 24px color-mix(in srgb, var(--blue) 22%, transparent);
     }
 
     .habit-grid {
@@ -195,19 +190,19 @@
         radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.34), transparent 24%),
         linear-gradient(180deg, color-mix(in srgb, var(--glow) 94%, white 10%), var(--glow));
       opacity: 0.9;
-      transform: scaleY(0);
-      transform-origin: bottom;
-      transition: transform 180ms ease-out;
+      transform: scale(0);
+      transform-origin: center;
+      transition: transform 120ms ease-out;
     }
 
     .habit.is-holding .bubble::before {
-      transform: scaleY(1);
-      transition: transform 900ms cubic-bezier(0.22, 0.7, 0.16, 1);
+      transform: scale(1);
+      transition: transform 300ms cubic-bezier(0.18, 0.8, 0.2, 1);
     }
 
     .habit.is-filled .bubble::before {
-      transform: scaleY(1);
-      transition: transform 260ms ease-out;
+      transform: scale(1);
+      transition: transform 220ms ease-out;
     }
 
     .bubble::after {
@@ -329,9 +324,9 @@
       padding: 17px 19px 17px 20px;
       border-radius: 17px;
       background:
-        linear-gradient(95deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent 46%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
-        var(--panel);
+        linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 46%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
+        rgba(12, 17, 28, 0.94);
       border: 1px solid var(--line);
       border-left: 3px solid var(--accent);
       box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -348,8 +343,8 @@
       inset: 0;
       z-index: 0;
       background:
-        linear-gradient(90deg, color-mix(in srgb, var(--accent) 34%, transparent), color-mix(in srgb, var(--accent) 15%, transparent)),
-        rgba(255, 255, 255, 0.03);
+        linear-gradient(90deg, color-mix(in srgb, var(--accent) 58%, #101827), color-mix(in srgb, var(--accent) 36%, #101827)),
+        rgba(8, 12, 20, 0.92);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform 180ms ease-out;
@@ -357,12 +352,12 @@
 
     .task-card.is-holding::before {
       transform: scaleX(1);
-      transition: transform 900ms cubic-bezier(0.22, 0.7, 0.16, 1);
+      transition: transform 1500ms cubic-bezier(0.18, 0.8, 0.2, 1);
     }
 
     .task-card.completed::before {
       transform: scaleX(1);
-      transition: transform 320ms ease-out;
+      transition: transform 420ms ease-out;
     }
 
     .task-card.completed {
@@ -427,6 +422,14 @@
       font-weight: 700;
     }
 
+    .task-repeat {
+      display: block;
+      margin-top: 5px;
+      color: rgba(255, 255, 255, 0.48);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
     .tag svg {
       width: 18px;
       height: 18px;
@@ -469,6 +472,251 @@
       opacity: 1;
       transform: translateY(0);
       margin-top: 12px;
+    }
+
+    .task-actions {
+      grid-column: 1 / 4;
+      display: none;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .manage-mode .task-actions {
+      display: flex;
+    }
+
+    body:not(.all-tasks-mode) .task-card:not(.active-today) {
+      display: none;
+    }
+
+    .all-tasks-mode .task-actions {
+      display: flex;
+    }
+
+    .task-action {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .task-action svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+    }
+
+    .task-action.edit {
+      color: var(--yellow);
+    }
+
+    .task-action.delete {
+      color: #ff7b7d;
+      margin-left: auto;
+    }
+
+    .manage-mode .task-card {
+      cursor: grab;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: none;
+      align-items: flex-end;
+      padding: 18px;
+      background: rgba(2, 6, 14, 0.58);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .task-modal {
+      width: 100%;
+      border-radius: 24px;
+      padding: 18px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+        rgba(17, 23, 35, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 21px;
+      font-weight: 850;
+    }
+
+    .modal-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.76);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .task-form {
+      display: grid;
+      gap: 11px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 13px;
+      padding: 11px 12px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .field input[type="color"] {
+      height: 44px;
+      padding: 5px;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .choice-pill {
+      min-height: 38px;
+      padding: 0 13px;
+      border-radius: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      font-weight: 850;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .choice-pill.active {
+      color: var(--text);
+      background: color-mix(in srgb, var(--blue) 24%, rgba(255, 255, 255, 0.055));
+      box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1)),
+        0 0 20px color-mix(in srgb, var(--blue) 18%, transparent);
+    }
+
+    .other-category-field {
+      display: none;
+    }
+
+    .other-category-field.active {
+      display: grid;
+    }
+
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 4px 0 2px;
+    }
+
+    .color-swatch {
+      --swatch: var(--blue);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.42), transparent 34%),
+        var(--swatch);
+      box-shadow:
+        0 10px 22px color-mix(in srgb, var(--swatch) 24%, transparent),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+      position: relative;
+    }
+
+    .color-swatch.active::after {
+      content: "";
+      position: absolute;
+      inset: -5px;
+      border-radius: inherit;
+      border: 2px solid rgba(255, 255, 255, 0.76);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--swatch) 36%, transparent);
+    }
+
+    .conditional-field {
+      display: none;
+    }
+
+    .conditional-field.active {
+      display: grid;
+    }
+
+    .form-row.conditional-field {
+      display: none;
+    }
+
+    .form-row.conditional-field.active {
+      display: grid;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-submit {
+      min-height: 46px;
+      border-radius: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      color: white;
+      font-weight: 850;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.42), transparent 32%),
+        linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+      box-shadow: 0 14px 32px rgba(98, 119, 255, 0.34);
     }
 
     .sr-only {
@@ -537,13 +785,13 @@
     <div class="app">
       <header class="topbar">
         <div>
-          <h1>Good Evening, Alex <span class="wave" aria-hidden="true">👋</span></h1>
+          <h1>Dashboard</h1>
           <p class="kicker">Let's make today count.</p>
         </div>
-        <button class="bell" aria-label="Notifications">
+        <button class="manage-button" type="button" aria-label="Manage tasks">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            <path d="M4 7h16M7 12h10M10 17h4" stroke="currentColor" stroke-linecap="round" />
+            <path d="M8 4 5 7l3 3M16 14l3 3-3 3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </button>
       </header>
@@ -698,7 +946,7 @@
         <div class="section-head">
           <h2>Today's Tasks</h2>
           <button class="view-all">
-            View all
+            <span class="view-all-label">View all</span>
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -706,7 +954,7 @@
         </div>
 
         <div class="task-list">
-          <article class="task-card" style="--accent: var(--blue)" data-notes="Review calendar, choose top three priorities, and block one focused work session.">
+          <article class="task-card" style="--accent: var(--blue)" data-icon="calendar" data-color="#5a8cff" data-notes="Review calendar, choose top three priorities, and block one focused work session.">
             <button class="check" aria-label="Complete Plan my day" type="button"></button>
             <div>
               <p class="task-title">Plan my day</p>
@@ -721,9 +969,10 @@
               <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <p class="task-notes">Review calendar, choose top three priorities, and block one focused work session.</p>
+            <div class="task-actions" aria-label="Task controls"></div>
           </article>
 
-          <article class="task-card" style="--accent: var(--green)" data-notes="Add budget section, tighten the timeline, and send the final draft before 4 PM.">
+          <article class="task-card" style="--accent: var(--green)" data-icon="briefcase" data-color="#46d29c" data-notes="Add budget section, tighten the timeline, and send the final draft before 4 PM.">
             <button class="check" aria-label="Complete Finish project proposal" type="button"></button>
             <div>
               <p class="task-title">Finish project proposal</p>
@@ -732,16 +981,17 @@
                   <path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
                   <path d="M9 13h6" stroke="currentColor" stroke-linecap="round" />
                 </svg>
-                Work
+                Business
               </span>
             </div>
             <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <p class="task-notes">Add budget section, tighten the timeline, and send the final draft before 4 PM.</p>
+            <div class="task-actions" aria-label="Task controls"></div>
           </article>
 
-          <article class="task-card no-notes" style="--accent: var(--orange)">
+          <article class="task-card no-notes" style="--accent: var(--teal)" data-icon="health" data-color="#46d7c5">
             <button class="check" aria-label="Complete Go for a walk" type="button"></button>
             <div>
               <p class="task-title">Go for a walk</p>
@@ -749,12 +999,13 @@
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M5 19h14M5 19l3-4 3 2 2-5 4 3 2 4M9 8l2-3 3 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                Health
+                Personal
               </span>
             </div>
             <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
+            <div class="task-actions" aria-label="Task controls"></div>
           </article>
         </div>
       </section>
@@ -793,18 +1044,188 @@
         Profile
       </button>
     </nav>
+    <div class="modal-backdrop" id="taskModal" aria-hidden="true">
+      <section class="task-modal" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+        <div class="modal-head">
+          <h2 class="modal-title" id="taskModalTitle">Add task</h2>
+          <button class="modal-close" type="button" aria-label="Close task form">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <form class="task-form">
+          <label class="field">
+            Title
+            <input name="title" type="text" placeholder="Task title" required />
+          </label>
+          <div class="form-row">
+            <label class="field">
+              Icon
+              <select name="icon">
+                <option value="calendar">Calendar</option>
+                <option value="briefcase">Briefcase</option>
+                <option value="health">Health</option>
+                <option value="star">Star</option>
+              </select>
+            </label>
+            <div class="field">
+              Category
+              <div class="choice-row category-picker" role="group" aria-label="Task category">
+                <button class="choice-pill active" type="button" data-category="Personal">Personal</button>
+                <button class="choice-pill" type="button" data-category="Business">Business</button>
+                <button class="choice-pill" type="button" data-category="Important">Important</button>
+                <button class="choice-pill" type="button" data-category="Other">Other</button>
+              </div>
+              <input name="category" type="hidden" value="Personal" />
+            </div>
+          </div>
+          <label class="field other-category-field">
+            Other category
+            <input name="otherCategory" type="text" placeholder="Write category" />
+          </label>
+          <div class="field">
+            Color
+            <div class="color-picker" role="group" aria-label="Task color">
+              <button class="color-swatch active" type="button" aria-label="Pink" data-color="#ff74ba" style="--swatch: #ff74ba"></button>
+              <button class="color-swatch" type="button" aria-label="Yellow" data-color="#ffd33d" style="--swatch: #ffd33d"></button>
+              <button class="color-swatch" type="button" aria-label="Green" data-color="#46d29c" style="--swatch: #46d29c"></button>
+              <button class="color-swatch" type="button" aria-label="Teal" data-color="#46d7c5" style="--swatch: #46d7c5"></button>
+              <button class="color-swatch" type="button" aria-label="Blue" data-color="#5a8cff" style="--swatch: #5a8cff"></button>
+              <button class="color-swatch" type="button" aria-label="Purple" data-color="#9d70ff" style="--swatch: #9d70ff"></button>
+            </div>
+            <input name="color" type="hidden" value="#ff74ba" />
+          </div>
+          <div class="form-row">
+            <label class="field">
+              Repeat
+              <select name="repeat">
+                <option value="one-time">One Time</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="custom">Custom Cycle</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Schedule ahead</span>
+              <select name="scheduleAhead">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </label>
+          </div>
+          <label class="field conditional-field" data-condition="weekly">
+            Day of week
+            <select name="weeklyDay">
+              <option value="Sunday">Sunday</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+          </label>
+          <label class="field conditional-field" data-condition="monthly">
+            Monthly day
+            <select name="monthlyDay">
+              <option value="1">1st</option>
+              <option value="2">2nd</option>
+              <option value="3">3rd</option>
+              <option value="4">4th</option>
+              <option value="5">5th</option>
+              <option value="6">6th</option>
+              <option value="7">7th</option>
+              <option value="8">8th</option>
+              <option value="9">9th</option>
+              <option value="10">10th</option>
+              <option value="11">11th</option>
+              <option value="12">12th</option>
+              <option value="13">13th</option>
+              <option value="14">14th</option>
+              <option value="15">15th</option>
+              <option value="16">16th</option>
+              <option value="17">17th</option>
+              <option value="18">18th</option>
+              <option value="19">19th</option>
+              <option value="20">20th</option>
+              <option value="21">21st</option>
+              <option value="22">22nd</option>
+              <option value="23">23rd</option>
+              <option value="24">24th</option>
+              <option value="25">25th</option>
+              <option value="26">26th</option>
+              <option value="27">27th</option>
+              <option value="28">28th</option>
+              <option value="29">29th</option>
+              <option value="30">30th</option>
+              <option value="31">31st</option>
+            </select>
+          </label>
+          <div class="form-row conditional-field" data-condition="custom">
+            <label class="field">
+              Every
+              <input name="customEvery" type="number" min="1" max="999" value="1" />
+            </label>
+            <label class="field">
+              Unit
+              <select name="customUnit">
+                <option value="days">Days</option>
+                <option value="weeks">Weeks</option>
+                <option value="months">Months</option>
+                <option value="years">Years</option>
+              </select>
+            </label>
+          </div>
+          <label class="field conditional-field" data-condition="schedule">
+            Start date
+            <input name="scheduleDate" type="date" />
+          </label>
+          <label class="field">
+            Description
+            <textarea name="description" placeholder="Optional notes"></textarea>
+          </label>
+          <button class="form-submit" type="submit">Save task</button>
+        </form>
+      </section>
+    </div>
   </main>
   <script>
-    const HOLD_MS = 900;
+    const HOLD_MS = 500;
+    const STORAGE_KEY = "routineDashboard.tasks.v1";
+    const taskList = document.querySelector(".task-list");
+    const manageButton = document.querySelector(".manage-button");
+    const viewAllButton = document.querySelector(".view-all");
+    const modal = document.querySelector("#taskModal");
+    const taskForm = modal.querySelector(".task-form");
+    const modalTitle = modal.querySelector(".modal-title");
+    const otherCategoryField = taskForm.querySelector(".other-category-field");
+    let editingTask = null;
+
+    const field = (name) => taskForm.querySelector(`[name="${name}"]`);
+    const repeatField = field("repeat");
+    const scheduleAheadField = field("scheduleAhead");
+    const allowedColors = ["#ff74ba", "#ffd33d", "#46d29c", "#46d7c5", "#5a8cff", "#9d70ff"];
+
+    const iconPaths = {
+      calendar: '<path d="M8 2v4M16 2v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      briefcase: '<path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M9 13h6" stroke="currentColor" stroke-linecap="round" />',
+      health: '<path d="M5 19h14M5 19l3-4 3 2 2-5 4 3 2 4M9 8l2-3 3 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      star: '<path d="m12 3 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.3-4.1 5.9-.8L12 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />'
+    };
 
     function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector }) {
+      if (element.dataset.holdBound === "true") return;
+      element.dataset.holdBound = "true";
       let timer = null;
       let completedByHold = false;
 
       const cancel = () => {
-        clearTimeout(timer);
-        timer = null;
-        element.classList.remove(activeClass);
+      clearTimeout(timer);
+      timer = null;
+      element.classList.remove(activeClass);
       };
 
       element.addEventListener("pointerdown", (event) => {
@@ -836,6 +1257,415 @@
       }, true);
     }
 
+    function iconSvg(icon) {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">${iconPaths[icon] || iconPaths.star}</svg>`;
+    }
+
+    function refreshTaskMeta(task) {
+      const hasNotes = Boolean(task.dataset.notes);
+      task.classList.toggle("no-notes", !hasNotes);
+      const notes = task.querySelector(".task-notes");
+      if (notes) notes.textContent = task.dataset.notes || "";
+      const repeat = task.querySelector(".task-repeat");
+      if (repeat) repeat.textContent = task.dataset.repeatText || "";
+    }
+
+    function ordinal(value) {
+      const number = Number(value);
+      const mod10 = number % 10;
+      const mod100 = number % 100;
+      if (mod10 === 1 && mod100 !== 11) return `${number}st`;
+      if (mod10 === 2 && mod100 !== 12) return `${number}nd`;
+      if (mod10 === 3 && mod100 !== 13) return `${number}rd`;
+      return `${number}th`;
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const [year, month, day] = value.split("-").map(Number);
+      if (!year || !month || !day) return "";
+      return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
+
+    function monthDayText(value) {
+      if (!value) return "";
+      const [year, month, day] = value.split("-").map(Number);
+      if (!year || !month || !day) return "";
+      return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric"
+      });
+    }
+
+    function recurrenceText(data) {
+      const repeat = data.repeat || "one-time";
+      const pieces = [];
+      if (data.scheduleAhead === "yes" && data.scheduleDate) {
+        pieces.push(`Starts ${formatDate(data.scheduleDate)}`);
+      }
+
+      if (repeat === "daily") {
+        pieces.push("Daily");
+      } else if (repeat === "weekly") {
+        pieces.push(`Weekly on ${data.weeklyDay || "Monday"}`);
+      } else if (repeat === "monthly") {
+        const day = Number(data.monthlyDay) || (data.scheduleDate ? Number(data.scheduleDate.split("-")[2]) : new Date().getDate());
+        pieces.push(`Monthly on the ${ordinal(Math.min(day, 31))}`);
+      } else if (repeat === "yearly") {
+        pieces.push(`Yearly${data.scheduleDate ? ` on ${monthDayText(data.scheduleDate)}` : ""}`);
+      } else if (repeat === "custom") {
+        const every = Math.max(1, Number(data.customEvery) || 1);
+        const unit = data.customUnit || "days";
+        pieces.push(`Every ${every} ${every === 1 ? unit.slice(0, -1) : unit}`);
+      } else {
+        pieces.push("One time");
+      }
+
+      return pieces.join(" - ");
+    }
+
+    function actionButton(label, icon, className) {
+      return `<button class="task-action ${className}" type="button" aria-label="${label}">${icon}</button>`;
+    }
+
+    function renderActions(task) {
+      const actions = task.querySelector(".task-actions");
+      actions.innerHTML = [
+        actionButton("Move task up", '<svg viewBox="0 0 24 24" fill="none"><path d="m12 5-6 6M12 5l6 6M12 5v14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /></svg>', "move-up"),
+        actionButton("Move task down", '<svg viewBox="0 0 24 24" fill="none"><path d="m12 19-6-6M12 19l6-6M12 19V5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /></svg>', "move-down"),
+        actionButton("Edit task", '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /></svg>', "edit"),
+        actionButton("Delete task", '<svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /></svg>', "delete")
+      ].join("");
+    }
+
+    function taskData(task) {
+      return {
+        id: task.dataset.id || crypto.randomUUID(),
+        title: task.querySelector(".task-title").textContent.trim(),
+        category: task.querySelector(".tag").textContent.trim(),
+        icon: task.dataset.icon || "star",
+        color: normalizeColor(task.dataset.color || getComputedStyle(task).getPropertyValue("--accent").trim()),
+        description: task.dataset.notes || "",
+        repeat: task.dataset.repeat || "one-time",
+        weeklyDay: task.dataset.weeklyDay || "Monday",
+        monthlyDay: task.dataset.monthlyDay || String(new Date().getDate()),
+        customEvery: task.dataset.customEvery || "1",
+        customUnit: task.dataset.customUnit || "days",
+        scheduleAhead: task.dataset.scheduleAhead || "no",
+        scheduleDate: task.dataset.scheduleDate || "",
+        createdDate: task.dataset.createdDate || todayValue(),
+        completed: task.classList.contains("completed")
+      };
+    }
+
+    function setTaskData(task, data) {
+      const color = normalizeColor(data.color);
+      task.dataset.id = data.id || task.dataset.id || crypto.randomUUID();
+      task.dataset.icon = data.icon;
+      task.dataset.color = color;
+      task.dataset.notes = (data.description || "").trim();
+      task.dataset.repeat = data.repeat || "one-time";
+      task.dataset.weeklyDay = data.weeklyDay || "Monday";
+      task.dataset.monthlyDay = data.monthlyDay || String(new Date().getDate());
+      task.dataset.customEvery = data.customEvery || "1";
+      task.dataset.customUnit = data.customUnit || "days";
+      task.dataset.scheduleAhead = data.scheduleAhead || "no";
+      task.dataset.scheduleDate = data.scheduleDate || "";
+      task.dataset.createdDate = data.createdDate || task.dataset.createdDate || todayValue();
+      task.dataset.repeatText = recurrenceText(data);
+      task.style.setProperty("--accent", color);
+      task.querySelector(".check").setAttribute("aria-label", `Complete ${data.title}`);
+      task.querySelector(".task-title").textContent = data.title;
+      task.querySelector(".tag").innerHTML = `${iconSvg(data.icon)}${data.category}`;
+      if (!task.querySelector(".task-repeat")) {
+        task.querySelector(".tag").insertAdjacentHTML("afterend", '<span class="task-repeat"></span>');
+      }
+      refreshTaskMeta(task);
+      task.classList.toggle("active-today", isActiveToday(taskData(task)));
+    }
+
+    function createTask(data) {
+      const task = document.createElement("article");
+      task.className = "task-card";
+      task.innerHTML = `
+        <button class="check" aria-label="Complete ${data.title}" type="button"></button>
+        <div>
+          <p class="task-title"></p>
+          <span class="tag"></span>
+          <span class="task-repeat"></span>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <p class="task-notes"></p>
+        <div class="task-actions" aria-label="Task controls"></div>
+      `;
+      setTaskData(task, data);
+      task.classList.toggle("completed", Boolean(data.completed));
+      setupTask(task);
+      return task;
+    }
+
+    function saveTasks() {
+      const tasks = Array.from(taskList.querySelectorAll(".task-card")).map(taskData).sort(taskSort);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function renderSavedTasks(tasks) {
+      taskList.innerHTML = "";
+      tasks.sort(taskSort).forEach((data) => taskList.appendChild(createTask(data)));
+    }
+
+    function loadTasks() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        const starterTasks = Array.from(document.querySelectorAll(".task-card")).map((task) => {
+          const data = taskData(task);
+          data.createdDate = todayValue();
+          return data;
+        });
+        renderSavedTasks(starterTasks);
+        saveTasks();
+        return;
+      }
+
+      try {
+        const tasks = JSON.parse(saved);
+        if (!Array.isArray(tasks)) throw new Error("Invalid task data");
+        renderSavedTasks(tasks);
+      } catch (error) {
+        console.warn("Could not load saved tasks.", error);
+        localStorage.removeItem(STORAGE_KEY);
+        loadTasks();
+      }
+    }
+
+    function setupTask(task) {
+      if (task.dataset.taskBound === "true") return;
+      task.dataset.taskBound = "true";
+      renderActions(task);
+      refreshTaskMeta(task);
+
+      bindHold(task, {
+        activeClass: "is-holding",
+        completeClass: "completed",
+        ignoreSelector: ".check, .task-action",
+        onComplete: saveTasks
+      });
+
+      task.querySelector(".check")?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        task.classList.toggle("completed");
+        saveTasks();
+      });
+
+      task.addEventListener("click", (event) => {
+        if (event.target.closest(".check, .task-action") || !task.dataset.notes) return;
+        task.classList.toggle("open");
+      });
+
+      task.querySelector(".move-up").addEventListener("click", (event) => {
+        event.stopPropagation();
+        const previous = task.previousElementSibling;
+        if (previous) taskList.insertBefore(task, previous);
+        saveTasks();
+        renderSavedTasks(Array.from(taskList.querySelectorAll(".task-card")).map(taskData));
+      });
+
+      task.querySelector(".move-down").addEventListener("click", (event) => {
+        event.stopPropagation();
+        const next = task.nextElementSibling;
+        if (next) taskList.insertBefore(next, task);
+        saveTasks();
+        renderSavedTasks(Array.from(taskList.querySelectorAll(".task-card")).map(taskData));
+      });
+
+      task.querySelector(".edit").addEventListener("click", (event) => {
+        event.stopPropagation();
+        openTaskModal("edit", task);
+      });
+
+      task.querySelector(".delete").addEventListener("click", (event) => {
+        event.stopPropagation();
+        task.remove();
+        saveTasks();
+      });
+    }
+
+    function todayValue() {
+      const date = new Date();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${date.getFullYear()}-${month}-${day}`;
+    }
+
+    function parseDate(value) {
+      const [year, month, day] = (value || "").split("-").map(Number);
+      if (!year || !month || !day) return null;
+      return new Date(year, month - 1, day);
+    }
+
+    function daysBetween(start, end) {
+      const dayMs = 24 * 60 * 60 * 1000;
+      return Math.floor((end.setHours(0, 0, 0, 0) - start.setHours(0, 0, 0, 0)) / dayMs);
+    }
+
+    function lastDayOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    }
+
+    function isActiveToday(data) {
+      const today = parseDate(todayValue());
+      const start = parseDate(data.scheduleDate) || parseDate(data.createdDate) || today;
+      if (start > today) return false;
+
+      const repeat = data.repeat || "one-time";
+      if (repeat === "daily") return true;
+      if (repeat === "weekly") {
+        return today.toLocaleDateString(undefined, { weekday: "long" }) === (data.weeklyDay || "Monday");
+      }
+      if (repeat === "monthly") {
+        const monthlyDay = Math.min(Number(data.monthlyDay) || start.getDate(), lastDayOfMonth(today));
+        return today.getDate() === monthlyDay;
+      }
+      if (repeat === "yearly") {
+        return today.getMonth() === start.getMonth() && today.getDate() === start.getDate();
+      }
+      if (repeat === "custom") {
+        const every = Math.max(1, Number(data.customEvery) || 1);
+        const elapsedDays = Math.max(0, daysBetween(new Date(start), new Date(today)));
+        if (data.customUnit === "weeks") return elapsedDays % (every * 7) === 0;
+        if (data.customUnit === "months") {
+          const elapsedMonths = (today.getFullYear() - start.getFullYear()) * 12 + today.getMonth() - start.getMonth();
+          const targetDay = Math.min(start.getDate(), lastDayOfMonth(today));
+          return elapsedMonths >= 0 && elapsedMonths % every === 0 && today.getDate() === targetDay;
+        }
+        if (data.customUnit === "years") {
+          const elapsedYears = today.getFullYear() - start.getFullYear();
+          return elapsedYears >= 0 && elapsedYears % every === 0 && today.getMonth() === start.getMonth() && today.getDate() === start.getDate();
+        }
+        return elapsedDays % every === 0;
+      }
+      return (data.scheduleDate || data.createdDate || todayValue()) === todayValue();
+    }
+
+    function taskSort(a, b) {
+      const importantA = a.category === "Important" ? 0 : 1;
+      const importantB = b.category === "Important" ? 0 : 1;
+      if (importantA !== importantB) return importantA - importantB;
+      return 0;
+    }
+
+    function updateFormConditionals() {
+      const repeat = repeatField.value;
+      const scheduleEnabled = scheduleAheadField.value === "yes";
+      taskForm.querySelectorAll(".conditional-field").forEach((element) => {
+        const condition = element.dataset.condition;
+        element.classList.toggle("active",
+          condition === repeat || (condition === "schedule" && scheduleEnabled)
+        );
+      });
+      if (scheduleEnabled && !field("scheduleDate").value) {
+        field("scheduleDate").value = todayValue();
+      }
+      otherCategoryField.classList.toggle("active", field("category").value === "Other");
+    }
+
+    function readFormData() {
+      const selectedCategory = field("category").value;
+      const customCategory = field("otherCategory").value.trim();
+      return {
+        title: field("title").value.trim(),
+        icon: field("icon").value,
+        category: selectedCategory === "Other" ? (customCategory || "Other") : selectedCategory,
+        color: normalizeColor(field("color").value),
+        repeat: field("repeat").value,
+        weeklyDay: field("weeklyDay").value,
+        monthlyDay: field("monthlyDay").value,
+        customEvery: field("customEvery").value,
+        customUnit: field("customUnit").value,
+        scheduleAhead: field("scheduleAhead").value,
+        scheduleDate: field("scheduleAhead").value === "yes" ? field("scheduleDate").value : "",
+        createdDate: editingTask?.dataset.createdDate || todayValue(),
+        description: field("description").value.trim()
+      };
+    }
+
+    function selectCategory(category) {
+      const preset = ["Personal", "Business", "Important", "Other"].includes(category) ? category : "Other";
+      field("category").value = preset;
+      field("otherCategory").value = preset === "Other" && category !== "Other" ? category : "";
+      taskForm.querySelectorAll(".category-picker .choice-pill").forEach((button) => {
+        button.classList.toggle("active", button.dataset.category === preset);
+      });
+      updateFormConditionals();
+    }
+
+    function selectColor(color) {
+      const selected = normalizeColor(color);
+      field("color").value = selected;
+      taskForm.querySelectorAll(".color-swatch").forEach((button) => {
+        button.classList.toggle("active", button.dataset.color.toLowerCase() === selected.toLowerCase());
+      });
+    }
+
+    function normalizeColor(color) {
+      const value = (color || "").trim().toLowerCase();
+      return allowedColors.includes(value) ? value : "#ff74ba";
+    }
+
+    function setAllTasksMode(enabled) {
+      document.body.classList.toggle("all-tasks-mode", enabled);
+      document.body.classList.toggle("manage-mode", enabled);
+      manageButton.classList.toggle("active", enabled);
+      viewAllButton.querySelector(".view-all-label").textContent = enabled ? "Today" : "View all";
+    }
+
+    function openTaskModal(mode = "add", task = null) {
+      editingTask = task;
+      modalTitle.textContent = mode === "edit" ? "Edit task" : "Add task";
+      const data = task ? taskData(task) : {
+        title: "",
+        category: "Personal",
+        icon: "calendar",
+        color: "#ff74ba",
+        repeat: "one-time",
+        weeklyDay: "Monday",
+        monthlyDay: String(new Date().getDate()),
+        customEvery: "1",
+        customUnit: "days",
+        scheduleAhead: "no",
+        scheduleDate: "",
+        description: ""
+      };
+      field("title").value = data.title;
+      field("icon").value = data.icon;
+      selectCategory(data.category || "Personal");
+      selectColor(data.color && data.color.startsWith("#") ? data.color : "#ff74ba");
+      field("repeat").value = data.repeat || "one-time";
+      field("weeklyDay").value = data.weeklyDay || "Monday";
+      field("monthlyDay").value = data.monthlyDay || String(new Date().getDate());
+      field("customEvery").value = data.customEvery || "1";
+      field("customUnit").value = data.customUnit || "days";
+      field("scheduleAhead").value = data.scheduleAhead || "no";
+      field("scheduleDate").value = data.scheduleDate || "";
+      field("description").value = data.description;
+      updateFormConditionals();
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      field("title").focus();
+    }
+
+    function closeTaskModal() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      editingTask = null;
+    }
+
     document.querySelectorAll(".habit").forEach((habit) => {
       bindHold(habit, {
         activeClass: "is-holding",
@@ -843,26 +1673,48 @@
       });
     });
 
-    document.querySelectorAll(".task-card").forEach((task) => {
-      const check = task.querySelector(".check");
-      const hasNotes = Boolean(task.dataset.notes);
+    loadTasks();
 
-      bindHold(task, {
-        activeClass: "is-holding",
-        completeClass: "completed",
-        ignoreSelector: ".check"
-      });
-
-      check?.addEventListener("click", (event) => {
-        event.stopPropagation();
-        task.classList.toggle("completed");
-      });
-
-      task.addEventListener("click", (event) => {
-        if (event.target.closest(".check") || !hasNotes) return;
-        task.classList.toggle("open");
-      });
+    manageButton.addEventListener("click", () => {
+      setAllTasksMode(!document.body.classList.contains("all-tasks-mode"));
     });
+
+    viewAllButton.addEventListener("click", () => {
+      setAllTasksMode(!document.body.classList.contains("all-tasks-mode"));
+    });
+
+    repeatField.addEventListener("change", updateFormConditionals);
+    scheduleAheadField.addEventListener("change", updateFormConditionals);
+    taskForm.querySelectorAll(".category-picker .choice-pill").forEach((button) => {
+      button.addEventListener("click", () => selectCategory(button.dataset.category));
+    });
+    field("otherCategory").addEventListener("input", updateFormConditionals);
+    taskForm.querySelectorAll(".color-swatch").forEach((button) => {
+      button.addEventListener("click", () => selectColor(button.dataset.color));
+    });
+
+    modal.querySelector(".modal-close").addEventListener("click", closeTaskModal);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeTaskModal();
+    });
+
+    taskForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = readFormData();
+      if (!data.title || !data.category) return;
+      if (editingTask) {
+        data.id = editingTask.dataset.id;
+        data.completed = editingTask.classList.contains("completed");
+        setTaskData(editingTask, data);
+      } else {
+        taskList.appendChild(createTask(data));
+      }
+      saveTasks();
+      renderSavedTasks(Array.from(taskList.querySelectorAll(".task-card")).map(taskData));
+      closeTaskModal();
+    });
+
+    window.addEventListener("openTaskComposer", () => openTaskModal("add"));
   </script>
   <script src="bottom-bar.js"></script>
 </body>
