@@ -1,100 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Routine Dashboard</title>
-  <style>
-    :root {
-      --bg: #050912;
-      --panel: rgba(20, 27, 42, 0.76);
-      --panel-strong: rgba(25, 33, 50, 0.9);
-      --line: rgba(255, 255, 255, 0.11);
-      --text: #f7f8ff;
-      --muted: #a5adbd;
-      --blue: #5a8cff;
-      --green: #46d29c;
-      --orange: #ff9a52;
-      --yellow: #ffd33d;
-      --pink: #ff74ba;
-      --teal: #46d7c5;
-      --purple: #9d70ff;
-      --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
-      --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            View all
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="task-list">
+          <article class="task-card" style="--accent: var(--blue)" data-notes="Review calendar, choose top three priorities, and block one focused work session.">
+            <button class="check" aria-label="Complete Plan my day" type="button"></button>
+            <div>
+              <p class="task-title">Plan my day</p>
+              <span class="tag">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8 2v4M16 2v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Personal
+              </span>
+            </div>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="task-notes">Review calendar, choose top three priorities, and block one focused work session.</p>
+          </article>
+
+          <article class="task-card" style="--accent: var(--green)" data-notes="Add budget section, tighten the timeline, and send the final draft before 4 PM.">
+            <button class="check" aria-label="Complete Finish project proposal" type="button"></button>
+            <div>
+              <p class="task-title">Finish project proposal</p>
+              <span class="tag">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M9 13h6" stroke="currentColor" stroke-linecap="round" />
+                </svg>
+                Work
+              </span>
+            </div>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="task-notes">Add budget section, tighten the timeline, and send the final draft before 4 PM.</p>
+          </article>
+
+          <article class="task-card no-notes" style="--accent: var(--orange)">
+            <button class="check" aria-label="Complete Go for a walk" type="button"></button>
+            <div>
+              <p class="task-title">Go for a walk</p>
+              <span class="tag">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 19h14M5 19l3-4 3 2 2-5 4 3 2 4M9 8l2-3 3 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Health
+              </span>
+            </div>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 10.7 12 3l9 7.7V20a1 1 0 0 1-1 1h-5.2v-6.6H9.2V21H4a1 1 0 0 1-1-1v-9.3Z" />
+        </svg>
+        Home
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="8" stroke="currentColor" />
+          <circle cx="12" cy="12" r="3" stroke="currentColor" />
+        </svg>
+        Habits
+      </button>
+      <button class="add" aria-label="Add task">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-linecap="round" />
+        </svg>
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 20V11M12 20V4M19 20v-7" stroke="currentColor" stroke-linecap="round" />
+        </svg>
+        Progress
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" />
+          <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-linecap="round" />
+        </svg>
+        Profile
+      </button>
+    </nav>
+  </main>
+  <script>
+    const HOLD_MS = 900;
+
+    function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector }) {
+      let timer = null;
+      let completedByHold = false;
+
+      const cancel = () => {
+        clearTimeout(timer);
+        timer = null;
+        element.classList.remove(activeClass);
+      };
+
+      element.addEventListener("pointerdown", (event) => {
+        if (ignoreSelector && event.target.closest(ignoreSelector)) return;
+        completedByHold = false;
+        element.setPointerCapture?.(event.pointerId);
+        if (!element.classList.contains(completeClass)) {
+          element.classList.add(activeClass);
+        }
+        timer = window.setTimeout(() => {
+          completedByHold = true;
+          element.classList.remove(activeClass);
+          element.classList.toggle(completeClass);
+          onComplete?.(element);
+        }, HOLD_MS);
+      });
+
+      element.addEventListener("pointerup", cancel);
+      element.addEventListener("pointercancel", cancel);
+      element.addEventListener("pointerleave", cancel);
+      element.addEventListener("contextmenu", (event) => event.preventDefault());
+
+      element.addEventListener("click", (event) => {
+        if (completedByHold) {
+          event.preventDefault();
+          event.stopPropagation();
+          completedByHold = false;
+        }
+      }, true);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    document.querySelectorAll(".habit").forEach((habit) => {
+      bindHold(habit, {
+        activeClass: "is-holding",
+        completeClass: "is-filled"
+      });
+    });
 
-    html {
-      min-height: 100%;
-      background:
-        linear-gradient(135deg, #030610 0%, #070d19 46%, #06101c 100%);
-    }
+    document.querySelectorAll(".task-card").forEach((task) => {
+      const check = task.querySelector(".check");
+      const hasNotes = Boolean(task.dataset.notes);
 
-    body {
-      min-height: 100vh;
-      margin: 0;
-      color: var(--text);
-      background:
-        radial-gradient(120% 70% at 50% -10%, rgba(67, 98, 155, 0.26), transparent 58%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%);
-      display: grid;
-      place-items: center;
-      padding: 22px;
-    }
+      bindHold(task, {
+        activeClass: "is-holding",
+        completeClass: "completed",
+        ignoreSelector: ".check"
+      });
 
-    button {
-      font: inherit;
-      color: inherit;
-      border: 0;
-      background: transparent;
-      cursor: default;
-    }
+      check?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        task.classList.toggle("completed");
+      });
 
-    .phone {
-      position: relative;
-      width: min(100%, 430px);
-      min-height: 932px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 34px;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 28%),
-        linear-gradient(180deg, #080d18 0%, #050812 42%, #060a13 100%);
-      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-
-    .phone::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-      background-size: 46px 46px;
-      mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%);
-      opacity: 0.22;
-    }
-
-    .app {
-      position: relative;
-      z-index: 1;
-      min-height: 932px;
-      padding: 54px 24px 116px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 34px;
-    }
-
-    .kicker {
-      margin: 0 0 8px;
-      color: var(--muted);
+      task.addEventListener("click", (event) => {
+        if (event.target.closest(".check") || !hasNotes) return;
+        task.classList.toggle("open");
+      });
+    });
+  </script>
+  <script src="bottom-bar.js"></script>
+</body>
+</html>
