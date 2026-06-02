@@ -169,6 +169,7 @@
       border-radius: 50%;
       display: grid;
       place-items: center;
+      color: var(--glow);
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 54%),
         rgba(17, 23, 35, 0.86);
@@ -187,17 +188,27 @@
       z-index: 0;
       border-radius: inherit;
       background:
-        radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.34), transparent 24%),
-        linear-gradient(180deg, color-mix(in srgb, var(--glow) 94%, white 10%), var(--glow));
-      opacity: 0.9;
+        radial-gradient(circle at 35% 24%, color-mix(in srgb, var(--glow) 42%, white), transparent 25%),
+        linear-gradient(180deg, color-mix(in srgb, var(--glow) 88%, white), var(--glow));
+      opacity: 0.2;
       transform: scale(0);
       transform-origin: center;
-      transition: transform 120ms ease-out;
+      transition: transform 140ms ease-out;
     }
 
     .habit.is-holding .bubble::before {
+      transform: scale(0.5);
+      transition: transform 520ms cubic-bezier(0.18, 0.8, 0.2, 1);
+    }
+
+    .habit.is-half .bubble::before {
+      transform: scale(0.56);
+      transition: transform 260ms ease-out;
+    }
+
+    .habit.is-half.is-holding .bubble::before {
       transform: scale(1);
-      transition: transform 300ms cubic-bezier(0.18, 0.8, 0.2, 1);
+      transition: transform 520ms cubic-bezier(0.18, 0.8, 0.2, 1);
     }
 
     .habit.is-filled .bubble::before {
@@ -205,18 +216,28 @@
       transition: transform 220ms ease-out;
     }
 
+    .habit.is-filled.is-holding .bubble::before {
+      transform: scale(0);
+      transition: transform 520ms cubic-bezier(0.18, 0.8, 0.2, 1);
+    }
+
     .bubble::after {
       content: "";
       position: absolute;
-      inset: 11%;
-      border-radius: inherit;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 52%);
-      opacity: 0.72;
+      top: 13%;
+      left: 24%;
+      width: 42%;
+      height: 15%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.08));
+      opacity: 0.86;
+      transform: rotate(-13deg);
+      filter: blur(0.2px);
       pointer-events: none;
+      z-index: 2;
     }
 
     .icon-bubble {
-      --glow: var(--blue);
       border-color: rgba(255, 255, 255, 0.08);
       background:
         radial-gradient(circle at 38% 30%, color-mix(in srgb, var(--glow) 14%, transparent), transparent 42%),
@@ -231,35 +252,28 @@
     .habit svg {
       position: relative;
       z-index: 1;
-      width: 82px;
-      height: 82px;
+      width: 58px;
+      height: 58px;
       overflow: visible;
       filter:
         drop-shadow(0 13px 16px rgba(0, 0, 0, 0.4))
         drop-shadow(0 0 12px color-mix(in srgb, currentColor 28%, transparent));
     }
 
+    .habit .bubble svg {
+      color: #fff;
+      stroke-width: 2.25;
+    }
+
+    .habit.is-half .bubble svg,
+    .habit.is-filled .bubble svg {
+      color: var(--glow);
+    }
+
     .habit.is-filled svg {
       filter:
         drop-shadow(0 13px 16px rgba(0, 0, 0, 0.48))
         drop-shadow(0 0 16px rgba(255, 255, 255, 0.18));
-    }
-
-    .glyph-outline {
-      fill: none;
-      stroke: #07101e;
-      stroke-width: 9;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: 0.96;
-    }
-
-    .glyph-line {
-      fill: none;
-      stroke: #07101e;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: 0.92;
     }
 
     .habit-title {
@@ -548,8 +562,10 @@
 
     .task-modal {
       width: 100%;
+      max-height: calc(100vh - 38px);
+      overflow: auto;
       border-radius: 24px;
-      padding: 18px;
+      padding: 16px;
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
         rgba(17, 23, 35, 0.96);
@@ -562,7 +578,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .modal-title {
@@ -584,12 +600,12 @@
 
     .task-form {
       display: grid;
-      gap: 11px;
+      gap: 9px;
     }
 
     .field {
       display: grid;
-      gap: 6px;
+      gap: 5px;
       color: rgba(255, 255, 255, 0.7);
       font-size: 12px;
       font-weight: 800;
@@ -600,8 +616,8 @@
     .field textarea {
       width: 100%;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 13px;
-      padding: 11px 12px;
+      border-radius: 12px;
+      padding: 10px 11px;
       color: var(--text);
       background: rgba(255, 255, 255, 0.06);
       font: inherit;
@@ -610,8 +626,17 @@
     }
 
     .field textarea {
-      min-height: 72px;
+      min-height: 58px;
       resize: vertical;
+    }
+
+    .form-panel {
+      display: grid;
+      gap: 9px;
+      padding: 10px;
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.035);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075);
     }
 
     .field input[type="color"] {
@@ -627,13 +652,13 @@
     .choice-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
 
     .choice-pill {
-      min-height: 38px;
-      padding: 0 13px;
-      border-radius: 13px;
+      min-height: 34px;
+      padding: 0 11px;
+      border-radius: 12px;
       color: rgba(255, 255, 255, 0.7);
       font-size: 13px;
       font-weight: 850;
@@ -652,13 +677,13 @@
 
     .icon-picker {
       display: grid;
-      grid-template-columns: repeat(4, 42px);
-      gap: 8px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
     }
 
     .icon-choice {
-      width: 42px;
-      height: 42px;
+      width: 100%;
+      aspect-ratio: 1;
       display: grid;
       place-items: center;
       border-radius: 14px;
@@ -694,15 +719,15 @@
     .color-picker {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
       padding: 4px 0 2px;
     }
 
     .color-swatch {
       --swatch: var(--blue);
-      width: 34px;
-      height: 34px;
+      width: 31px;
+      height: 31px;
       border-radius: 50%;
       background:
         radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.42), transparent 34%),
@@ -741,7 +766,11 @@
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 8px;
+    }
+
+    .form-row.compact-left {
+      grid-template-columns: 0.82fr 1.18fr;
     }
 
     .form-submit {
@@ -830,157 +859,13 @@
         </div>
         <button class="manage-button" type="button" aria-label="Manage tasks">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4 7h16M7 12h10M10 17h4" stroke="currentColor" stroke-linecap="round" />
-            <path d="M8 4 5 7l3 3M16 14l3 3-3 3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M13.5 6.5 17.5 10.5" stroke="currentColor" stroke-linecap="round" />
           </svg>
         </button>
       </header>
 
-      <section class="habit-grid" aria-label="Habit shortcuts">
-        <button class="habit">
-          <span class="bubble icon-bubble" style="--glow: var(--yellow)">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <defs>
-                <linearGradient id="breakfastGlyph" x1="18" y1="18" x2="82" y2="82" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#ffe86a" />
-                  <stop offset="0.52" stop-color="#ffc935" />
-                  <stop offset="1" stop-color="#ff9f19" />
-                </linearGradient>
-              </defs>
-              <path class="glyph-outline" d="M42 22h34c9 0 15 6 15 15 0 8-5 13-13 14v28H42V51c-9-2-14-7-14-14 0-9 6-15 14-15Z" />
-              <path class="glyph-outline" d="M48 66c-3 13-17 22-32 15C2 75 1 57 15 49c4-12 17-20 30-16 12 4 20 18 15 32-4 15-23 22-36 13" />
-              <path d="M42 22h34c9 0 15 6 15 15 0 8-5 13-13 14v28H42V51c-9-2-14-7-14-14 0-9 6-15 14-15Z" fill="url(#breakfastGlyph)" />
-              <path d="M48 66c-3 13-17 22-32 15C2 75 1 57 15 49c4-12 17-20 30-16 12 4 20 18 15 32-4 15-23 22-36 13" fill="url(#breakfastGlyph)" />
-              <circle cx="34" cy="62" r="13.5" fill="#07101e" />
-              <path d="M25 58c2-4 5-7 10-8" fill="none" stroke="#ffe86a" stroke-width="4.5" stroke-linecap="round" />
-            </svg>
-          </span>
-          <span class="habit-title yellow">Breakfast</span>
-        </button>
-        <button class="habit">
-          <span class="bubble icon-bubble" style="--glow: #59df63">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <defs>
-                <linearGradient id="lunchGlyph" x1="18" y1="16" x2="80" y2="86" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#a6ff7d" />
-                  <stop offset="0.52" stop-color="#65e84f" />
-                  <stop offset="1" stop-color="#35ca44" />
-                </linearGradient>
-              </defs>
-              <path class="glyph-outline" d="M18 51h64c-3 21-17 35-32 35S21 72 18 51Z" />
-              <path class="glyph-outline" d="M17 49h66" />
-              <path class="glyph-outline" d="M36 44c-16-9-18-26-6-31 13 0 23 11 21 29" />
-              <path class="glyph-outline" d="M51 45c-4-14 6-27 14-31 11 8 12 22 1 33" />
-              <path class="glyph-outline" d="M64 44c0-20 13-31 28-28 6 16-6 30-22 33" />
-              <path class="glyph-outline" d="M25 43c-9-3-15-11-12-20 11-5 22 3 27 14" />
-              <path class="glyph-outline" d="M75 45c6-13 16-19 26-14 0 14-11 23-24 22" />
-              <path d="M36 44c-16-9-18-26-6-31 13 0 23 11 21 29" fill="url(#lunchGlyph)" />
-              <path d="M51 45c-4-14 6-27 14-31 11 8 12 22 1 33" fill="url(#lunchGlyph)" />
-              <path d="M64 44c0-20 13-31 28-28 6 16-6 30-22 33" fill="url(#lunchGlyph)" />
-              <path d="M25 43c-9-3-15-11-12-20 11-5 22 3 27 14" fill="url(#lunchGlyph)" />
-              <path d="M75 45c6-13 16-19 26-14 0 14-11 23-24 22" fill="url(#lunchGlyph)" />
-              <path d="M18 51h64c-3 21-17 35-32 35S21 72 18 51Z" fill="url(#lunchGlyph)" />
-              <path d="M17 49h66" stroke="url(#lunchGlyph)" stroke-width="9" stroke-linecap="round" />
-              <path class="glyph-line" d="M38 34c7 4 12 9 14 15M65 27c-5 8-8 16-9 24M74 42c7-5 14-8 23-9" stroke-width="4.5" />
-            </svg>
-          </span>
-          <span class="habit-title green">Lunch</span>
-        </button>
-        <button class="habit">
-          <span class="bubble icon-bubble" style="--glow: #9d70ff">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <defs>
-                <linearGradient id="dinnerGlyph" x1="22" y1="17" x2="78" y2="84" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#c291ff" />
-                  <stop offset="0.52" stop-color="#8f60ff" />
-                  <stop offset="1" stop-color="#7041ef" />
-                </linearGradient>
-              </defs>
-              <path class="glyph-outline" d="M26 38c3-12 18-17 28-10 5-7 18-6 23 3 8 1 13 8 12 16-2 9-10 14-21 14H29c-11-1-18-10-15-20 2-5 6-8 12-9Z" />
-              <path class="glyph-outline" d="M66 49c-3-11 8-20 18-15 5-8 18-6 20 4 8 1 12 10 7 17-6 8-18 7-22 0-7 7-21 4-23-6Z" />
-              <path class="glyph-outline" d="M22 58c15-15 47-14 59 2 8 12-2 26-23 29-22 2-43-6-43-20 0-5 3-9 7-11Z" />
-              <path d="M26 38c3-12 18-17 28-10 5-7 18-6 23 3 8 1 13 8 12 16-2 9-10 14-21 14H29c-11-1-18-10-15-20 2-5 6-8 12-9Z" fill="url(#dinnerGlyph)" />
-              <path d="M66 49c-3-11 8-20 18-15 5-8 18-6 20 4 8 1 12 10 7 17-6 8-18 7-22 0-7 7-21 4-23-6Z" fill="url(#dinnerGlyph)" />
-              <path d="M22 58c15-15 47-14 59 2 8 12-2 26-23 29-22 2-43-6-43-20 0-5 3-9 7-11Z" fill="url(#dinnerGlyph)" />
-              <path class="glyph-line" d="M33 45c9-5 21-4 30 1M44 37c7-3 17-2 24 2M28 69c14 0 27 5 39 13M35 59c15-5 30-2 42 7M43 55 29 66M58 54 40 72M72 58 55 75" stroke-width="4.6" />
-              <path class="glyph-line" d="M80 51c2-8 1-13-4-18M91 54c-1-8 2-13 9-17" stroke-width="4" />
-            </svg>
-          </span>
-          <span class="habit-title purple">Dinner</span>
-        </button>
-        <button class="habit">
-          <span class="bubble icon-bubble" style="--glow: var(--blue)">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <defs>
-                <linearGradient id="cleanGlyph" x1="17" y1="18" x2="80" y2="84" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#56c6ff" />
-                  <stop offset="0.52" stop-color="#238dff" />
-                  <stop offset="1" stop-color="#1170f3" />
-                </linearGradient>
-              </defs>
-              <path class="glyph-outline" d="M21 26h45c6 0 10 4 10 9v4H24c-6 0-10-3-10-7 0-3 2-6 7-6Z" />
-              <path class="glyph-outline" d="M34 40h28v13H34z" />
-              <path class="glyph-outline" d="M31 52h34l8 13v25c0 5-4 8-9 8H30c-5 0-9-3-9-8V65l10-13Z" />
-              <path class="glyph-outline" d="M72 39h13c7 0 11 4 11 10 0 7-5 10-12 10h-7c-8 0-12-5-12-13" />
-              <path d="M21 26h45c6 0 10 4 10 9v4H24c-6 0-10-3-10-7 0-3 2-6 7-6Z" fill="url(#cleanGlyph)" />
-              <path d="M34 40h28v13H34z" fill="url(#cleanGlyph)" />
-              <path d="M31 52h34l8 13v25c0 5-4 8-9 8H30c-5 0-9-3-9-8V65l10-13Z" fill="url(#cleanGlyph)" />
-              <path d="M72 39h13c7 0 11 4 11 10 0 7-5 10-12 10h-7c-8 0-12-5-12-13" fill="url(#cleanGlyph)" />
-              <path class="glyph-line" d="M31 64v24M41 60h20" stroke-width="4" opacity="0.38" />
-            </svg>
-          </span>
-          <span class="habit-title blue">Cleaning</span>
-        </button>
-        <button class="habit">
-          <span class="bubble icon-bubble" style="--glow: var(--pink)">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <defs>
-                <linearGradient id="weightGlyph" x1="20" y1="18" x2="80" y2="82" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#ff8ebc" />
-                  <stop offset="0.52" stop-color="#ff669b" />
-                  <stop offset="1" stop-color="#ff4f86" />
-                </linearGradient>
-              </defs>
-              <g transform="rotate(-28 50 50)">
-                <rect class="glyph-outline" x="8" y="39" width="14" height="32" rx="7" />
-                <rect class="glyph-outline" x="22" y="31" width="18" height="48" rx="8" />
-                <rect class="glyph-outline" x="39" y="45" width="32" height="12" rx="4" />
-                <rect class="glyph-outline" x="68" y="31" width="18" height="48" rx="8" />
-                <rect class="glyph-outline" x="85" y="39" width="14" height="32" rx="7" />
-                <rect x="8" y="39" width="14" height="32" rx="7" fill="url(#weightGlyph)" />
-                <rect x="22" y="31" width="18" height="48" rx="8" fill="url(#weightGlyph)" />
-                <rect x="39" y="45" width="32" height="12" rx="4" fill="url(#weightGlyph)" />
-                <rect x="68" y="31" width="18" height="48" rx="8" fill="url(#weightGlyph)" />
-                <rect x="85" y="39" width="14" height="32" rx="7" fill="url(#weightGlyph)" />
-                <path class="glyph-line" d="M31 37c5 9 5 26 0 38M75 37c5 9 5 26 0 38" stroke-width="4" opacity="0.32" />
-              </g>
-            </svg>
-          </span>
-          <span class="habit-title pink">Weight</span>
-        </button>
-        <button class="habit">
-          <span class="bubble icon-bubble" style="--glow: var(--teal)">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <defs>
-                <linearGradient id="runGlyph" x1="19" y1="17" x2="81" y2="84" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#8affef" />
-                  <stop offset="0.5" stop-color="#55e0d0" />
-                  <stop offset="1" stop-color="#35c6b7" />
-                </linearGradient>
-              </defs>
-              <circle class="glyph-outline" cx="77" cy="22" r="12" />
-              <path class="glyph-outline" d="M42 46h19l14-13" />
-              <path class="glyph-outline" d="M60 50 51 70 31 83M61 56l12 20 1 17M43 48 32 62" />
-              <circle cx="77" cy="22" r="12" fill="url(#runGlyph)" />
-              <path d="M42 46h19l14-13" fill="none" stroke="url(#runGlyph)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M60 50 51 70 31 83M61 56l12 20 1 17M43 48 32 62" fill="none" stroke="url(#runGlyph)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M31 40H16M28 54H10M24 69H7" stroke="url(#runGlyph)" stroke-width="4" stroke-linecap="round" opacity="0.8" />
-              <path class="glyph-line" d="M53 69l16 8M39 78l-11 5M73 78l1 14" stroke-width="4" opacity="0.3" />
-            </svg>
-          </span>
-          <span class="habit-title teal">Running</span>
-        </button>
-      </section>
+      <section class="habit-grid" aria-label="Habit shortcuts"></section>
 
       <section aria-label="Today's tasks">
         <div class="section-head">
@@ -1095,11 +980,12 @@
           </button>
         </div>
         <form class="task-form">
-          <label class="field">
-            Title
-            <input name="title" type="text" placeholder="Task title" required />
-          </label>
-          <div class="form-row">
+          <div class="form-panel">
+            <label class="field">
+              Title
+              <input name="title" type="text" placeholder="Task title" required />
+            </label>
+            <div class="form-row compact-left">
             <label class="field">
               Icon
               <div class="icon-picker" role="group" aria-label="Task icon">
@@ -1124,6 +1010,27 @@
                     <path d="m12 3 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.3-4.1 5.9-.8L12 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </button>
+                <button class="icon-choice" type="button" aria-label="Book icon" data-icon="book">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H7a3 3 0 0 0-3 3V5.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-linecap="round" />
+                  </svg>
+                </button>
+                <button class="icon-choice" type="button" aria-label="Home icon" data-icon="home">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 10.8 12 3l9 7.8V21h-6v-6H9v6H3V10.8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button class="icon-choice" type="button" aria-label="Flag icon" data-icon="flag">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 21V4M5 5h12l-2 4 2 4H5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button class="icon-choice" type="button" aria-label="Heart icon" data-icon="heart">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M20.5 5.8c-1.9-2.2-5.1-2.1-6.9.1L12 7.7l-1.6-1.8c-1.8-2.2-5-2.3-6.9-.1-2 2.4-1.5 6 1 8L12 21l7.5-7.2c2.5-2 3-5.6 1-8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
               </div>
               <input name="icon" type="hidden" value="calendar" />
             </label>
@@ -1137,25 +1044,27 @@
               </div>
               <input name="category" type="hidden" value="Personal" />
             </div>
-          </div>
-          <label class="field other-category-field">
-            Other category
-            <input name="otherCategory" type="text" placeholder="Write category" />
-          </label>
-          <div class="field">
-            Color
-            <div class="color-picker" role="group" aria-label="Task color">
-              <button class="color-swatch active" type="button" aria-label="Pink" data-color="#ff74ba" style="--swatch: #ff74ba"></button>
-              <button class="color-swatch" type="button" aria-label="Yellow" data-color="#ffd33d" style="--swatch: #ffd33d"></button>
-              <button class="color-swatch" type="button" aria-label="Green" data-color="#46d29c" style="--swatch: #46d29c"></button>
-              <button class="color-swatch" type="button" aria-label="Teal" data-color="#46d7c5" style="--swatch: #46d7c5"></button>
-              <button class="color-swatch" type="button" aria-label="Blue" data-color="#5a8cff" style="--swatch: #5a8cff"></button>
-              <button class="color-swatch" type="button" aria-label="Purple" data-color="#9d70ff" style="--swatch: #9d70ff"></button>
             </div>
-            <input name="color" type="hidden" value="#ff74ba" />
+            <label class="field other-category-field">
+              Other category
+              <input name="otherCategory" type="text" placeholder="Write category" />
+            </label>
           </div>
-          <div class="form-row">
-            <div class="field">
+          <div class="form-panel">
+            <div class="form-row">
+              <div class="field">
+                Color
+                <div class="color-picker" role="group" aria-label="Task color">
+                  <button class="color-swatch active" type="button" aria-label="Pink" data-color="#ff74ba" style="--swatch: #ff74ba"></button>
+                  <button class="color-swatch" type="button" aria-label="Yellow" data-color="#ffd33d" style="--swatch: #ffd33d"></button>
+                  <button class="color-swatch" type="button" aria-label="Green" data-color="#46d29c" style="--swatch: #46d29c"></button>
+                  <button class="color-swatch" type="button" aria-label="Teal" data-color="#46d7c5" style="--swatch: #46d7c5"></button>
+                  <button class="color-swatch" type="button" aria-label="Blue" data-color="#5a8cff" style="--swatch: #5a8cff"></button>
+                  <button class="color-swatch" type="button" aria-label="Purple" data-color="#9d70ff" style="--swatch: #9d70ff"></button>
+                </div>
+                <input name="color" type="hidden" value="#ff74ba" />
+              </div>
+              <div class="field">
               Repeat
               <div class="choice-row repeat-picker" role="group" aria-label="Task repeat">
                 <button class="choice-pill active" type="button" data-repeat="one-time">One Time</button>
@@ -1167,6 +1076,8 @@
               </div>
               <input name="repeat" type="hidden" value="one-time" />
             </div>
+            </div>
+            <div class="form-row">
             <div class="field">
               <span>Schedule ahead</span>
               <div class="choice-row schedule-picker" role="group" aria-label="Schedule ahead">
@@ -1175,56 +1086,62 @@
               </div>
               <input name="scheduleAhead" type="hidden" value="no" />
             </div>
-          </div>
-          <label class="field conditional-field" data-condition="weekly">
-            Day of week
-            <select name="weeklyDay">
-              <option value="Sunday">Sunday</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-              <option value="Saturday">Saturday</option>
-            </select>
-          </label>
-          <label class="field conditional-field" data-condition="monthly">
-            Monthly day
-            <select name="monthlyDay">
-              <option value="1">1st</option>
-              <option value="2">2nd</option>
-              <option value="3">3rd</option>
-              <option value="4">4th</option>
-              <option value="5">5th</option>
-              <option value="6">6th</option>
-              <option value="7">7th</option>
-              <option value="8">8th</option>
-              <option value="9">9th</option>
-              <option value="10">10th</option>
-              <option value="11">11th</option>
-              <option value="12">12th</option>
-              <option value="13">13th</option>
-              <option value="14">14th</option>
-              <option value="15">15th</option>
-              <option value="16">16th</option>
-              <option value="17">17th</option>
-              <option value="18">18th</option>
-              <option value="19">19th</option>
-              <option value="20">20th</option>
-              <option value="21">21st</option>
-              <option value="22">22nd</option>
-              <option value="23">23rd</option>
-              <option value="24">24th</option>
-              <option value="25">25th</option>
-              <option value="26">26th</option>
-              <option value="27">27th</option>
-              <option value="28">28th</option>
-              <option value="29">29th</option>
-              <option value="30">30th</option>
-              <option value="31">31st</option>
-            </select>
-          </label>
-          <div class="form-row conditional-field" data-condition="custom">
+            <label class="field conditional-field" data-condition="weekly">
+              Day of week
+              <select name="weeklyDay">
+                <option value="Sunday">Sunday</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+              </select>
+            </label>
+            </div>
+            <div class="form-row">
+            <label class="field conditional-field" data-condition="monthly">
+              Monthly day
+              <select name="monthlyDay">
+                <option value="1">1st</option>
+                <option value="2">2nd</option>
+                <option value="3">3rd</option>
+                <option value="4">4th</option>
+                <option value="5">5th</option>
+                <option value="6">6th</option>
+                <option value="7">7th</option>
+                <option value="8">8th</option>
+                <option value="9">9th</option>
+                <option value="10">10th</option>
+                <option value="11">11th</option>
+                <option value="12">12th</option>
+                <option value="13">13th</option>
+                <option value="14">14th</option>
+                <option value="15">15th</option>
+                <option value="16">16th</option>
+                <option value="17">17th</option>
+                <option value="18">18th</option>
+                <option value="19">19th</option>
+                <option value="20">20th</option>
+                <option value="21">21st</option>
+                <option value="22">22nd</option>
+                <option value="23">23rd</option>
+                <option value="24">24th</option>
+                <option value="25">25th</option>
+                <option value="26">26th</option>
+                <option value="27">27th</option>
+                <option value="28">28th</option>
+                <option value="29">29th</option>
+                <option value="30">30th</option>
+                <option value="31">31st</option>
+              </select>
+            </label>
+            <label class="field conditional-field" data-condition="schedule">
+              Start date
+              <input name="scheduleDate" type="date" />
+            </label>
+            </div>
+            <div class="form-row conditional-field" data-condition="custom">
             <label class="field">
               Every
               <input name="customEvery" type="number" min="1" max="999" value="1" />
@@ -1238,11 +1155,8 @@
                 <option value="years">Years</option>
               </select>
             </label>
+            </div>
           </div>
-          <label class="field conditional-field" data-condition="schedule">
-            Start date
-            <input name="scheduleDate" type="date" />
-          </label>
           <label class="field">
             Description
             <textarea name="description" placeholder="Optional notes"></textarea>
@@ -1253,8 +1167,8 @@
     </div>
   </main>
   <script>
-    const HOLD_DELAY_MS = 500;
-    const HOLD_FILL_MS = 1500;
+    const HOLD_DELAY_MS = 180;
+    const HOLD_FILL_MS = 520;
     const STORAGE_KEY = "routineDashboard.tasks.v1";
     const taskList = document.querySelector(".task-list");
     const manageButton = document.querySelector(".manage-button");
@@ -1269,15 +1183,37 @@
     const repeatField = field("repeat");
     const scheduleAheadField = field("scheduleAhead");
     const allowedColors = ["#ff74ba", "#ffd33d", "#46d29c", "#46d7c5", "#5a8cff", "#9d70ff"];
+    const HABIT_STORAGE_KEY = "routineDashboard.habits.v1";
 
     const iconPaths = {
       calendar: '<path d="M8 2v4M16 2v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
       briefcase: '<path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M9 13h6" stroke="currentColor" stroke-linecap="round" />',
       health: '<path d="M5 19h14M5 19l3-4 3 2 2-5 4 3 2 4M9 8l2-3 3 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
-      star: '<path d="m12 3 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.3-4.1 5.9-.8L12 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />'
+      star: '<path d="m12 3 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.3-4.1 5.9-.8L12 3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H7a3 3 0 0 0-3 3V5.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-linecap="round" />',
+      home: '<path d="M3 10.8 12 3l9 7.8V21h-6v-6H9v6H3V10.8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      flag: '<path d="M5 21V4M5 5h12l-2 4 2 4H5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      heart: '<path d="M20.5 5.8c-1.9-2.2-5.1-2.1-6.9.1L12 7.7l-1.6-1.8c-1.8-2.2-5-2.3-6.9-.1-2 2.4-1.5 6 1 8L12 21l7.5-7.2c2.5-2 3-5.6 1-8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      dumbbell: '<path d="M4 10v4M8 8v8M16 8v8M20 10v4M8 12h8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      running: '<circle cx="17" cy="4.5" r="2.2" stroke="currentColor" /><path d="m15 8-4 4 3 3-2 6M11 12 8 10M14 15l4 2M6 21l6-6M4 14h4M3 17h3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      apple: '<path d="M12 7c2.7-2.2 6.5-.4 6.5 3.3 0 4.2-2.8 8.2-5.1 8.2-.8 0-1.1-.4-2.4-.4s-1.6.4-2.4.4c-2.3 0-5.1-4-5.1-8.2C3.5 6.6 7.3 4.8 10 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M12 6c0-2 1.4-3.1 3-3.4" stroke="currentColor" stroke-linecap="round" />',
+      utensils: '<path d="M6 3v8M4 3v5a2 2 0 0 0 4 0V3M6 11v10M15 3v18M15 3c3 1.3 4 3.9 4 7h-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      chart: '<path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      trophy: '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /><path d="M8 6H4v2a3 3 0 0 0 4 2M16 6h4v2a3 3 0 0 1-4 2M12 12v4M9 20h6M10 16h4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      flame: '<path d="M12 21c-3.5 0-6-2.5-6-5.8 0-2.9 1.9-4.5 3.3-6.2.9-1.1 1.4-2.2 1.2-4 2.7 1.2 5.5 4.2 4.6 7.4.9-.6 1.5-1.7 1.7-2.6 1.3 1.2 2.2 3 2.2 5.1 0 3.5-2.6 6.1-7 6.1Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />',
+      water: '<path d="M12 21a6 6 0 0 0 6-6c0-4.2-6-11-6-11S6 10.8 6 15a6 6 0 0 0 6 6Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />'
     };
 
-    function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector }) {
+    const defaultHabits = {
+      breakfast: { label: "Breakfast", color: "#ffd33d", icon: "calendar", order: 0, completions: {} },
+      lunch: { label: "Lunch", color: "#46d29c", icon: "briefcase", order: 1, completions: {} },
+      dinner: { label: "Dinner", color: "#9d70ff", icon: "home", order: 2, completions: {} },
+      cleaning: { label: "Cleaning", color: "#5a8cff", icon: "star", order: 3, completions: {} },
+      weight: { label: "Weight", color: "#ff74ba", icon: "health", order: 4, completions: {} },
+      running: { label: "Running", color: "#46d7c5", icon: "flag", order: 5, completions: {} }
+    };
+
+    function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector, instant = false }) {
       if (element.dataset.holdBound === "true") return;
       element.dataset.holdBound = "true";
       let startTimer = null;
@@ -1296,14 +1232,21 @@
         if (ignoreSelector && event.target.closest(ignoreSelector)) return;
         completedByHold = false;
         element.setPointerCapture?.(event.pointerId);
+        if (instant) {
+          completedByHold = true;
+          onComplete?.(element);
+          return;
+        }
         startTimer = window.setTimeout(() => {
-          if (!element.classList.contains(completeClass)) {
+          if (!completeClass || !element.classList.contains(completeClass)) {
             element.classList.add(activeClass);
           }
           completeTimer = window.setTimeout(() => {
             completedByHold = true;
             element.classList.remove(activeClass);
-            element.classList.toggle(completeClass);
+            if (completeClass) {
+              element.classList.toggle(completeClass);
+            }
             onComplete?.(element);
           }, HOLD_FILL_MS);
         }, HOLD_DELAY_MS);
@@ -1325,6 +1268,101 @@
 
     function iconSvg(icon) {
       return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">${iconPaths[icon] || iconPaths.star}</svg>`;
+    }
+
+    function buildTaskIconPicker() {
+      taskForm.querySelector(".icon-picker").innerHTML = Object.keys(iconPaths).map((icon) => `
+        <button class="icon-choice" type="button" aria-label="${icon} icon" data-icon="${icon}">
+          ${iconSvg(icon)}
+        </button>
+      `).join("");
+    }
+
+    function habitKey(label) {
+      return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    }
+
+    function loadHabitStore() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(HABIT_STORAGE_KEY) || "{}");
+        const merged = { ...defaultHabits, ...(parsed && typeof parsed === "object" ? parsed : {}) };
+        Object.entries(merged).forEach(([id, habit], index) => {
+        merged[id] = {
+          ...defaultHabits[id],
+          ...habit,
+          label: habit.label || defaultHabits[id]?.label || "Habit",
+            color: allowedColors.includes((habit.color || "").toLowerCase()) ? habit.color : (defaultHabits[id]?.color || "#5a8cff"),
+            icon: iconPaths[habit.icon] ? habit.icon : (defaultHabits[id]?.icon || "star"),
+            order: Number.isFinite(Number(habit.order)) ? Number(habit.order) : index,
+            completions: normalizeCompletions(habit.completions || {})
+          };
+        });
+        return merged;
+      } catch {
+        return { ...defaultHabits };
+      }
+    }
+
+    function saveHabitStore(store) {
+      localStorage.setItem(HABIT_STORAGE_KEY, JSON.stringify(store));
+    }
+
+    function normalizeCompletions(completions) {
+      return Object.fromEntries(Object.entries(completions || {}).map(([date, value]) => {
+        const level = value === true ? 2 : Math.max(0, Math.min(2, Number(value) || 0));
+        return [date, level];
+      }).filter(([, level]) => level > 0));
+    }
+
+    function sortedHabits(store) {
+      return Object.entries(store).sort(([, a], [, b]) => (Number(a.order) || 0) - (Number(b.order) || 0));
+    }
+
+    function renderIndexHabits() {
+      const store = loadHabitStore();
+      document.querySelector(".habit-grid").innerHTML = sortedHabits(store).map(([id, habit]) => `
+        <button class="habit" data-habit-id="${id}" style="--glow: ${habit.color}; color: ${habit.color}">
+          <span class="bubble icon-bubble">
+            ${iconSvg(habit.icon)}
+          </span>
+          <span class="habit-title" style="color: ${habit.color}">${habit.label}</span>
+        </button>
+      `).join("");
+      saveHabitStore(store);
+    }
+
+    function restoreHabitCompletions() {
+      const store = loadHabitStore();
+      const today = todayValue();
+      document.querySelectorAll(".habit").forEach((habit) => {
+        const data = store[habit.dataset.habitId];
+        setHabitLevelClasses(habit, Number(data?.completions?.[today]) || 0);
+      });
+    }
+
+    function setHabitLevelClasses(habit, level) {
+      habit.classList.toggle("is-half", level === 1);
+      habit.classList.toggle("is-filled", level === 2);
+      habit.dataset.level = String(level);
+    }
+
+    function cycleHabitCompletion(habit) {
+      const store = loadHabitStore();
+      const label = habit.querySelector(".habit-title")?.textContent.trim() || "Habit";
+      const id = habit.dataset.habitId || habitKey(label);
+      store[id] = store[id] || { label, color: "#5a8cff", icon: "star", order: Object.keys(store).length, completions: {} };
+      store[id].label = label;
+      store[id].color = store[id].color || "#5a8cff";
+      store[id].icon = store[id].icon || "star";
+      const currentLevel = Number(store[id].completions[todayValue()]) || 0;
+      const nextLevel = (currentLevel + 1) % 3;
+      if (nextLevel > 0) {
+        store[id].completions[todayValue()] = nextLevel;
+      } else {
+        delete store[id].completions[todayValue()];
+      }
+      setHabitLevelClasses(habit, nextLevel);
+      saveHabitStore(store);
     }
 
     function refreshTaskMeta(task) {
@@ -1801,10 +1839,15 @@
       editingTask = null;
     }
 
+    buildTaskIconPicker();
+    renderIndexHabits();
+    restoreHabitCompletions();
+
     document.querySelectorAll(".habit").forEach((habit) => {
       bindHold(habit, {
         activeClass: "is-holding",
-        completeClass: "is-filled"
+        onComplete: cycleHabitCompletion,
+        instant: true
       });
     });
 
@@ -1860,6 +1903,10 @@
     });
 
     window.addEventListener("openTaskComposer", () => openTaskModal("add"));
+    if (new URLSearchParams(window.location.search).get("add") === "task") {
+      openTaskModal("add");
+      history.replaceState(null, "", "index.html");
+    }
   </script>
   <script src="bottom-bar.js"></script>
 </body>
