@@ -163,6 +163,8 @@
       display: grid;
       justify-items: center;
       gap: 12px;
+      touch-action: manipulation;
+      user-select: none;
     }
 
     .bubble {
@@ -181,6 +183,31 @@
         inset 0 16px 28px rgba(255, 255, 255, 0.04),
         inset 0 -18px 32px rgba(0, 0, 0, 0.28),
         var(--soft-shadow);
+    }
+
+    .bubble::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.34), transparent 24%),
+        linear-gradient(180deg, color-mix(in srgb, var(--glow) 94%, white 10%), var(--glow));
+      opacity: 0.9;
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 180ms ease-out;
+    }
+
+    .habit.is-holding .bubble::before {
+      transform: scaleY(1);
+      transition: transform 900ms cubic-bezier(0.22, 0.7, 0.16, 1);
+    }
+
+    .habit.is-filled .bubble::before {
+      transform: scaleY(1);
+      transition: transform 260ms ease-out;
     }
 
     .bubble::after {
@@ -215,6 +242,12 @@
       filter:
         drop-shadow(0 13px 16px rgba(0, 0, 0, 0.4))
         drop-shadow(0 0 12px color-mix(in srgb, currentColor 28%, transparent));
+    }
+
+    .habit.is-filled svg {
+      filter:
+        drop-shadow(0 13px 16px rgba(0, 0, 0, 0.48))
+        drop-shadow(0 0 16px rgba(255, 255, 255, 0.18));
     }
 
     .glyph-outline {
@@ -291,7 +324,8 @@
       display: grid;
       grid-template-columns: 54px 1fr 24px;
       align-items: center;
-      gap: 10px;
+      column-gap: 10px;
+      row-gap: 0;
       padding: 17px 19px 17px 20px;
       border-radius: 17px;
       background:
@@ -302,6 +336,46 @@
       border-left: 3px solid var(--accent);
       box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
       backdrop-filter: blur(18px);
+      overflow: hidden;
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 180ms ease;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .task-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--accent) 34%, transparent), color-mix(in srgb, var(--accent) 15%, transparent)),
+        rgba(255, 255, 255, 0.03);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 180ms ease-out;
+    }
+
+    .task-card.is-holding::before {
+      transform: scaleX(1);
+      transition: transform 900ms cubic-bezier(0.22, 0.7, 0.16, 1);
+    }
+
+    .task-card.completed::before {
+      transform: scaleX(1);
+      transition: transform 320ms ease-out;
+    }
+
+    .task-card.completed {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow:
+        0 14px 36px color-mix(in srgb, var(--accent) 18%, transparent),
+        var(--soft-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .task-card > * {
+      position: relative;
+      z-index: 1;
     }
 
     .check {
@@ -311,6 +385,29 @@
       border: 2px solid var(--accent);
       box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 28%, transparent);
       justify-self: center;
+      display: grid;
+      place-items: center;
+      transition: background 200ms ease, transform 160ms ease, box-shadow 200ms ease;
+    }
+
+    .check::after {
+      content: "";
+      width: 12px;
+      height: 7px;
+      border-left: 2px solid #06101d;
+      border-bottom: 2px solid #06101d;
+      transform: rotate(-45deg) scale(0);
+      transform-origin: center;
+      transition: transform 180ms ease;
+    }
+
+    .task-card.completed .check {
+      background: var(--accent);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 42%, transparent);
+    }
+
+    .task-card.completed .check::after {
+      transform: rotate(-45deg) scale(1);
     }
 
     .task-title {
@@ -342,71 +439,36 @@
       stroke: rgba(255, 255, 255, 0.72);
       stroke-width: 2.8;
       justify-self: end;
+      transition: transform 220ms ease;
     }
 
-    .nav {
-      position: absolute;
-      z-index: 2;
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-      min-height: 76px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      align-items: center;
-      gap: 5px;
-      padding: 8px 10px;
-      border-radius: 28px;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)),
-        rgba(18, 24, 36, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      box-shadow: 0 24px 58px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(26px);
+    .task-card.open .chevron {
+      transform: rotate(90deg);
     }
 
-    .nav-item {
-      min-width: 0;
-      height: 58px;
-      display: grid;
-      justify-items: center;
-      align-content: center;
-      gap: 4px;
-      color: rgba(255, 255, 255, 0.66);
-      font-size: 12px;
-      font-weight: 750;
-      letter-spacing: 0;
+    .task-card.no-notes .chevron {
+      display: none;
     }
 
-    .nav-item svg {
-      width: 27px;
-      height: 27px;
-      stroke-width: 2.25;
+    .task-notes {
+      grid-column: 2 / 4;
+      margin: 0;
+      max-height: 0;
+      overflow: hidden;
+      color: rgba(232, 238, 252, 0.72);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: max-height 240ms ease, opacity 180ms ease, transform 220ms ease, margin-top 220ms ease;
     }
 
-    .nav-item.active {
-      color: var(--blue);
-    }
-
-    .add {
-      position: relative;
-      width: 62px;
-      height: 62px;
-      margin: -22px auto 0;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.52), transparent 27%),
-        linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
-      box-shadow: 0 14px 36px rgba(98, 119, 255, 0.52);
-      color: white;
-    }
-
-    .add svg {
-      width: 32px;
-      height: 32px;
-      stroke-width: 2.4;
+    .task-card.open .task-notes {
+      max-height: 90px;
+      opacity: 1;
+      transform: translateY(0);
+      margin-top: 12px;
     }
 
     .sr-only {
@@ -644,8 +706,8 @@
         </div>
 
         <div class="task-list">
-          <article class="task-card" style="--accent: var(--blue)">
-            <span class="check" aria-hidden="true"></span>
+          <article class="task-card" style="--accent: var(--blue)" data-notes="Review calendar, choose top three priorities, and block one focused work session.">
+            <button class="check" aria-label="Complete Plan my day" type="button"></button>
             <div>
               <p class="task-title">Plan my day</p>
               <span class="tag">
@@ -658,10 +720,11 @@
             <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
+            <p class="task-notes">Review calendar, choose top three priorities, and block one focused work session.</p>
           </article>
 
-          <article class="task-card" style="--accent: var(--green)">
-            <span class="check" aria-hidden="true"></span>
+          <article class="task-card" style="--accent: var(--green)" data-notes="Add budget section, tighten the timeline, and send the final draft before 4 PM.">
+            <button class="check" aria-label="Complete Finish project proposal" type="button"></button>
             <div>
               <p class="task-title">Finish project proposal</p>
               <span class="tag">
@@ -675,10 +738,11 @@
             <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
+            <p class="task-notes">Add budget section, tighten the timeline, and send the final draft before 4 PM.</p>
           </article>
 
-          <article class="task-card" style="--accent: var(--orange)">
-            <span class="check" aria-hidden="true"></span>
+          <article class="task-card no-notes" style="--accent: var(--orange)">
+            <button class="check" aria-label="Complete Go for a walk" type="button"></button>
             <div>
               <p class="task-title">Go for a walk</p>
               <span class="tag">
@@ -730,5 +794,76 @@
       </button>
     </nav>
   </main>
+  <script>
+    const HOLD_MS = 900;
+
+    function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector }) {
+      let timer = null;
+      let completedByHold = false;
+
+      const cancel = () => {
+        clearTimeout(timer);
+        timer = null;
+        element.classList.remove(activeClass);
+      };
+
+      element.addEventListener("pointerdown", (event) => {
+        if (ignoreSelector && event.target.closest(ignoreSelector)) return;
+        completedByHold = false;
+        element.setPointerCapture?.(event.pointerId);
+        if (!element.classList.contains(completeClass)) {
+          element.classList.add(activeClass);
+        }
+        timer = window.setTimeout(() => {
+          completedByHold = true;
+          element.classList.remove(activeClass);
+          element.classList.toggle(completeClass);
+          onComplete?.(element);
+        }, HOLD_MS);
+      });
+
+      element.addEventListener("pointerup", cancel);
+      element.addEventListener("pointercancel", cancel);
+      element.addEventListener("pointerleave", cancel);
+      element.addEventListener("contextmenu", (event) => event.preventDefault());
+
+      element.addEventListener("click", (event) => {
+        if (completedByHold) {
+          event.preventDefault();
+          event.stopPropagation();
+          completedByHold = false;
+        }
+      }, true);
+    }
+
+    document.querySelectorAll(".habit").forEach((habit) => {
+      bindHold(habit, {
+        activeClass: "is-holding",
+        completeClass: "is-filled"
+      });
+    });
+
+    document.querySelectorAll(".task-card").forEach((task) => {
+      const check = task.querySelector(".check");
+      const hasNotes = Boolean(task.dataset.notes);
+
+      bindHold(task, {
+        activeClass: "is-holding",
+        completeClass: "completed",
+        ignoreSelector: ".check"
+      });
+
+      check?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        task.classList.toggle("completed");
+      });
+
+      task.addEventListener("click", (event) => {
+        if (event.target.closest(".check") || !hasNotes) return;
+        task.classList.toggle("open");
+      });
+    });
+  </script>
+  <script src="bottom-bar.js"></script>
 </body>
 </html>
