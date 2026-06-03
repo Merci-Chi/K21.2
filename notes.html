@@ -131,19 +131,38 @@
       gap: 14px;
       margin-bottom: 20px;
     }
+    #editorView .editor-title,
+#editorView .blocks,
+#editorView .add-line {
+  margin-left: 22px;
+  margin-right: 22px;
+  width: calc(100% - 44px);
+}
 
-    .topbar.center {
-      position: sticky;
-      top: 0;
-      z-index: 12;
-      align-items: center;
-      margin-bottom: 14px;
-      padding: 6px 0 10px;
-      background:
-        linear-gradient(180deg, rgba(4, 6, 12, 0.96), rgba(4, 6, 12, 0.76) 72%, transparent);
-      backdrop-filter: blur(12px);
-    }
+ .topbar.center {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 12;
 
+  width: 100%;
+  margin: 0 0 14px;
+  padding: 14px 22px 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(4, 6, 12, 0.96),
+    rgba(4, 6, 12, 0.76) 72%,
+    transparent
+  );
+  backdrop-filter: none;
+}
     .title-stack {
       min-width: 0;
       flex: 1;
@@ -608,23 +627,23 @@
     }
 
     .toolbar {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: calc(var(--nav-height) + 12px + var(--keyboard-offset));
-      z-index: 16;
-      display: none;
-      gap: 7px;
-      overflow-x: auto;
-      padding: 9px;
-      border-radius: 22px;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.038)),
-        rgba(17, 23, 35, 0.94);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(16px);
-    }
+  position: fixed;
+  left: 18px;
+  right: 18px;
+  bottom: calc(10px + var(--keyboard-offset));
+  z-index: 30;
+  display: none;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 9px;
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.038)),
+    rgba(17, 23, 35, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+}
 
     .editor-active .toolbar {
       display: flex;
@@ -1080,22 +1099,28 @@
       display: flex;
     }
 
-    @media (max-width: 460px) {
-      body {
-        padding: 0;
-      }
+ #editorView {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
 
-      .phone {
-        width: 100%;
-        height: 100dvh;
-        border: 0;
-        border-radius: 0;
-      }
+@media (max-width: 460px) {
+  body {
+    padding: 0;
+  }
 
-      .app {
-        padding-inline: 18px;
-      }
-    }
+  .phone {
+    width: 100%;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .app {
+    padding-inline: 18px;
+  }
+}
   </style>
 </head>
 <body>
