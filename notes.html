@@ -283,8 +283,15 @@
       transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
     }
 
- .selection-active .note-card.selected,
-.selection-active .block.selected {
+ .selection-active .note-card.selected {
+  border-color: color-mix(in srgb, var(--accent) 68%, rgba(255, 255, 255, 0.24));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 48%, transparent),
+    0 18px 42px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.selection-active .block.selected:not(.grouped) {
   border-color: color-mix(in srgb, var(--accent) 68%, rgba(255, 255, 255, 0.24));
   box-shadow:
     0 0 0 2px color-mix(in srgb, var(--accent) 48%, transparent),
@@ -312,6 +319,12 @@
 }
 
 .selection-active .block-group.selected .block.selected {
+  border-color: transparent;
+  box-shadow: none;
+  background: transparent;
+}
+
+.selection-active .block-group.selected .block {
   border-color: transparent;
   box-shadow: none;
 }
@@ -462,10 +475,14 @@
       border-color: rgba(255, 255, 255, 0.07);
     }
 
- .selection-active .block.selected {
+ .selection-active .block.selected:not(.grouped) {
   background:
     linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
     rgba(255, 255, 255, 0.035);
+}
+
+.selection-active .block-group.selected .block.selected {
+  background: transparent;
 }
 
 .selection-active .block-group.selected .block.selected {
