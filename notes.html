@@ -12,7 +12,7 @@
       --panel-strong: rgba(25, 33, 50, 0.96);
       --line: rgba(255, 255, 255, 0.11);
       --line-strong: rgba(255, 255, 255, 0.2);
-      --text: #f7f8ff;
+      --text: #fff;
       --muted: #a5adbd;
       --blue: #5a8cff;
       --green: #46d29c;
@@ -215,6 +215,12 @@
       color: #fff;
       background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
       box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
+    }
+
+    .icon-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--blue));
+      box-shadow: 0 12px 28px rgba(72, 167, 255, 0.24), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
     }
 
     .icon-btn.danger {
@@ -436,7 +442,7 @@
       margin: 0 0 12px;
       border: 0;
       outline: none;
-      color: var(--text);
+      color: #fff;
       background: transparent;
       font-size: 34px;
       font-weight: 920;
@@ -615,7 +621,8 @@
 
     .bullet .block-line,
     .number .block-line,
-    .task .block-line {
+    .task .block-line,
+    .dropdown .block-line {
       grid-template-columns: auto 1fr;
       align-items: start;
     }
@@ -642,13 +649,45 @@
     }
 
     .task-check.checked {
-      background: var(--green);
-      box-shadow: 0 0 18px rgba(70, 210, 156, 0.28);
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--blue));
+      box-shadow: 0 0 18px rgba(255, 116, 186, 0.22), 0 0 18px rgba(72, 167, 255, 0.18);
     }
 
     .task.done .editable {
-      color: rgba(255, 255, 255, 0.44);
+      color: #fff;
       text-decoration: line-through;
+    }
+
+    .dropdown-caret {
+      min-width: 24px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+    }
+
+    .dropdown-children {
+      display: grid;
+      gap: 6px;
+      margin: 7px 0 0 32px;
+      padding-left: 12px;
+      border-left: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .dropdown-child-editable {
+      min-height: 22px;
+      outline: none;
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.38;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .dropdown-child-editable:empty::before {
+      content: attr(data-placeholder);
+      color: rgba(255, 255, 255, 0.34);
     }
 
     .image-block {
@@ -875,13 +914,15 @@
 .block-icon-edit {
   display: none;
   grid-template-columns: auto auto;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
-  margin-top: 8px;
-  padding: 8px;
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  justify-content: start;
+  width: max-content;
+  margin: 6px 0 0 0;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .selection-active .block.selected .block-icon-edit {
@@ -889,11 +930,9 @@
 }
 
 .block-icon-control,
-.block-color-control,
-.tool-color-preview,
-.tool-icon-preview {
-  width: 38px;
-  height: 38px;
+.block-color-control {
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -902,8 +941,7 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.11);
 }
 
-.block-color-control,
-.tool-color-preview {
+.block-color-control {
   background: var(--picked-color, var(--accent));
 }
 
@@ -1733,8 +1771,6 @@
         <span>Drag selected blocks to reorder.</span>
       </div>
       <div class="selection-actions">
-        <button class="icon-btn block-tool" type="button" data-command="open-block-color-menu" aria-label="Block icon color"><span class="tool-color-preview" aria-hidden="true"></span></button>
-        <button class="icon-btn block-tool" type="button" data-command="open-block-icon-menu" aria-label="Block icon"><span class="tool-icon-preview" aria-hidden="true"><i class="fa-solid fa-circle" aria-hidden="true"></i></span></button>
         <button class="icon-btn block-tool" type="button" data-command="format-bold" aria-label="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="format-italic" aria-label="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="format-underline" aria-label="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
@@ -2271,6 +2307,23 @@ function cleanBlock(block) {
   if (block.type === "task") {
     block.checked = Boolean(block.checked);
   }
+
+  if (block.type === "dropdown") {
+    if (!block.children.length) {
+      block.children.push({
+        id: uid(),
+        type: "paragraph",
+        text: "",
+        size: "subtext",
+        children: []
+      });
+    }
+
+    block.children.forEach(child => {
+      child.size = child.size || "subtext";
+      child.type = child.type || "paragraph";
+    });
+  }
 }
 
     function saveState() {
@@ -2552,8 +2605,8 @@ if (document.activeElement !== titleInput) {
 }
 
 titleInput.style.color = parentBlock
-  ? parentBlock.interiorAccent || note.accent || "var(--text)"
-  : "var(--text)";
+  ? "#fff"
+  : "#fff";
 
 blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
@@ -2604,6 +2657,18 @@ function blockIconEditorHtml(block) {
       <button class="block-icon-control" type="button" data-command="open-block-icon-menu" data-id="${block.id}" aria-label="Choose block icon">
         ${iconSvg(block.icon || "solid:circle")}
       </button>
+    </div>
+  `;
+}
+
+function dropdownChildrenHtml(block) {
+  const children = Array.isArray(block.children) ? block.children : [];
+
+  return `
+    <div class="dropdown-children">
+      ${children.map(child => `
+        <div class="dropdown-child-editable" contenteditable="true" spellcheck="true" data-id="${child.id}" data-parent-id="${block.id}" data-field="text" data-placeholder="Add context">${sanitizeHtml(child.text || "")}</div>
+      `).join("")}
     </div>
   `;
 }
@@ -2716,6 +2781,8 @@ if (block.type === "url") {
           ? `<span class="marker">${numberFor(index)}.</span>`
           : block.type === "task"
             ? `<button class="task-check ${block.checked ? "checked" : ""}" type="button" data-command="toggle-task" data-id="${block.id}" aria-label="Toggle task">${block.checked ? '<i class="fa-solid fa-check" aria-hidden="true"></i>' : ""}</button>`
+            : block.type === "dropdown"
+              ? `<span class="dropdown-caret"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></span>`
             : "";
    return `
   <article class="block ${block.type} ${block.icon ? "has-icon" : ""} ${block.type === "card-square" ? "card card-square" : ""} ${block.type === "card-half" ? "card card-half" : ""} ${block.type === "card-long" ? "card card-long" : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
@@ -2724,6 +2791,7 @@ if (block.type === "url") {
       <div class="editable ${block.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write" style="${block.textGradient ? `--text-gradient:${escapeHtml(block.textGradient)}` : block.textColor ? `color:${escapeHtml(block.textColor)}` : ""}">${sanitizeHtml(block.text || "")}</div>
     </div>
 
+    ${block.type === "dropdown" ? dropdownChildrenHtml(block) : ""}
     ${blockIconEditorHtml(block)}
   </article>
 `;
@@ -2903,6 +2971,20 @@ function updateEditorModeLabel() {
     return base;
   }
 
+  if (type === "dropdown") {
+    return {
+      ...base,
+      type: "dropdown",
+      children: [{
+        id: uid(),
+        type: "paragraph",
+        text: "",
+        size: "subtext",
+        children: []
+      }]
+    };
+  }
+
   return {
     ...base,
     type: "paragraph"
@@ -2919,6 +3001,23 @@ function updateEditorModeLabel() {
       selection.removeAllRanges();
       selection.addRange(range);
     }
+function focusDropdownChild(parentId, childId) {
+  const editable = blocksEl.querySelector(`[data-parent-id="${CSS.escape(parentId)}"][data-id="${CSS.escape(childId)}"][contenteditable="true"]`);
+  if (!editable) return;
+  editable.focus();
+  const range = document.createRange();
+  range.selectNodeContents(editable);
+  range.collapse(false);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+function activeChildBlock(parentId, childId) {
+  const parent = activeBlocks().find(item => item.id === parentId);
+  if (!parent || !Array.isArray(parent.children)) return null;
+  return parent.children.find(child => child.id === childId) || null;
+}
+
 function deleteEmptyBlock(blockId) {
   const blocks = activeBlocks();
   const index = blocks.findIndex(block => block.id === blockId);
@@ -2938,10 +3037,12 @@ function deleteEmptyBlock(blockId) {
   renderEditor();
 }
     function updateBlockField(target) {
-      const block = activeBlocks().find(item => item.id === target.dataset.id);
+      const block = target.dataset.parentId
+        ? activeChildBlock(target.dataset.parentId, target.dataset.id)
+        : activeBlocks().find(item => item.id === target.dataset.id);
       if (!block) return;
       block[target.dataset.field] = target.dataset.field === "text" ? sanitizeHtml(target.innerHTML) : target.textContent;
-      focusedBlockId = block.id;
+      focusedBlockId = target.dataset.parentId || block.id;
       saveState();
     }
 
@@ -2969,7 +3070,12 @@ function deleteEmptyBlock(blockId) {
     function handleEnter(event) {
       const editable = event.target.closest("[contenteditable='true']");
       if (!editable || editable.dataset.field !== "text") return;
-      const block = activeBlocks().find(item => item.id === editable.dataset.id);
+      const parentDropdown = editable.dataset.parentId
+        ? activeBlocks().find(item => item.id === editable.dataset.parentId)
+        : null;
+      const block = parentDropdown
+        ? parentDropdown.children?.find(item => item.id === editable.dataset.id)
+        : activeBlocks().find(item => item.id === editable.dataset.id);
       if (!block) return;
       if (event.key !== "Enter") return;
       event.preventDefault();
@@ -2980,6 +3086,25 @@ function deleteEmptyBlock(blockId) {
       }
       const split = editableSplitHtml(editable);
       block.text = split.before;
+      if (parentDropdown) {
+        const children = parentDropdown.children || [];
+        const childIndex = children.findIndex(item => item.id === block.id);
+        const nextChild = {
+          id: uid(),
+          type: "paragraph",
+          text: split.after,
+          size: "subtext",
+          children: []
+        };
+
+        children.splice(childIndex >= 0 ? childIndex + 1 : children.length, 0, nextChild);
+        parentDropdown.children = children;
+        focusedBlockId = parentDropdown.id;
+        saveState();
+        renderEditor();
+        setTimeout(() => focusDropdownChild(parentDropdown.id, nextChild.id), 30);
+        return;
+      }
       if (["bullet", "number", "task"].includes(block.type) && !stripHtml(block.text)) {
         block.type = "paragraph";
         renderEditor();
@@ -3085,16 +3210,15 @@ function closeSelection() {
     groupButton.setAttribute("aria-label", isGrouped ? "Ungroup" : "Group");
   }
 
-  const selectedBlock = active && selection.kind === "block" ? firstSelectedBlock() : null;
-  const colorPreview = selectionBar.querySelector(".tool-color-preview");
-  const iconPreview = selectionBar.querySelector(".tool-icon-preview");
+  const pinButton = selectionBar.querySelector('[data-command="pin-selected-note"]');
 
-  if (colorPreview) {
-    colorPreview.style.setProperty("--picked-color", selectedBlock?.iconColor || "var(--blue)");
-  }
+  if (pinButton) {
+    const selectedNotes = active && selection.kind === "note"
+      ? state.notes.filter(note => selection.ids.has(note.id))
+      : [];
+    const pinned = Boolean(selectedNotes.length && selectedNotes.every(note => note.pinned));
 
-  if (iconPreview) {
-    iconPreview.innerHTML = iconSvg(selectedBlock?.icon || "solid:circle");
+    pinButton.classList.toggle("active", pinned);
   }
 
   updateEditorModeLabel();
@@ -3525,7 +3649,17 @@ if (event.target.closest(".image-open") && !selection.kind) {
       `).join("");
     }
 
-    function openBlockColorMenu() {
+    function targetBlockForPicker(id) {
+      if (!id) return;
+      focusedBlockId = id;
+      selection.kind = "block";
+      selection.ids = new Set([id]);
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function openBlockColorMenu(id = "") {
+      targetBlockForPicker(id);
       if (!selectedBlockIds().length) return;
       renderBlockColorChoices();
       blockColorModal.classList.add("open");
@@ -3600,7 +3734,8 @@ if (event.target.closest(".image-open") && !selection.kind) {
       `;
     }
 
-    function openBlockIconMenu() {
+    function openBlockIconMenu(id = "") {
+      targetBlockForPicker(id);
       if (!selectedBlockIds().length) return;
       renderBlockIconPicker(activeBlockIconCategory);
       blockIconModal.classList.add("open");
@@ -3802,6 +3937,17 @@ if (event.target.closest(".image-open") && !selection.kind) {
         if (type === "task") block.checked = Boolean(block.checked);
         else delete block.checked;
         if (type === "heading") block.children = block.children || [];
+        else if (type === "dropdown") {
+          block.children = Array.isArray(block.children) && block.children.length
+            ? block.children
+            : [{
+              id: uid(),
+              type: "paragraph",
+              text: "",
+              size: "subtext",
+              children: []
+            }];
+        }
         else delete block.children;
       });
       closeSelection();
@@ -4447,7 +4593,7 @@ if (name === "move-note-down") {
       if (name === "add-bullet") convertBlocks("bullet");
       if (name === "add-number") convertBlocks("number");
       if (name === "add-task") convertBlocks("task");
-      if (name === "add-heading") convertBlocks("heading");
+      if (name === "add-heading") convertBlocks("dropdown");
       if (name === "photo") photoInput.click();
       if (name === "toggle-task") toggleTask(element.dataset.id);
 if (name === "open-image") {
@@ -4485,10 +4631,10 @@ if (name === "open-image") {
       if (name === "open-size-menu") openSizeMenu();
       if (name === "close-size-menu") closeSizeMenu();
       if (name === "set-block-size") setSelectedSize(element.dataset.size);
-      if (name === "open-block-color-menu") openBlockColorMenu();
+      if (name === "open-block-color-menu") openBlockColorMenu(element.dataset.id);
       if (name === "close-block-color-menu") closeBlockColorMenu();
       if (name === "set-block-icon-color") setBlockIconColor(element.dataset.color);
-      if (name === "open-block-icon-menu") openBlockIconMenu();
+      if (name === "open-block-icon-menu") openBlockIconMenu(element.dataset.id);
       if (name === "close-block-icon-menu") closeBlockIconMenu();
       if (name === "set-block-icon") setBlockIcon(element.dataset.icon);
       if (name === "block-icon-category") {
