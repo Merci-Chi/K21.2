@@ -462,11 +462,15 @@
       border-color: rgba(255, 255, 255, 0.07);
     }
 
-    .block.selected {
-      background:
-        linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
-        rgba(255, 255, 255, 0.035);
-    }
+ .selection-active .block.selected {
+  background:
+    linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
+    rgba(255, 255, 255, 0.035);
+}
+
+.selection-active .block-group.selected .block.selected {
+  background: transparent;
+}
     .selection-active [contenteditable="true"] {
   pointer-events: none;
   -webkit-user-select: none;
@@ -1920,25 +1924,44 @@ function renderBlocksHtml(blocks, accent) {
         preventDefault() {}
       });
     }
+function idsForSelection(kind, id) {
+  if (kind !== "block") return [id];
 
-    function enterSelection(kind, id) {
-      selection.kind = kind;
-      selection.ids = new Set([id]);
-      updateSelectionUi();
-      refreshSelectionClasses();
-    }
+  const block = activeBlocks().find(item => item.id === id);
 
-    function toggleSelection(kind, id) {
-      if (selection.kind !== kind) {
-        selection.kind = kind;
-        selection.ids = new Set();
-      }
-      if (selection.ids.has(id)) selection.ids.delete(id);
-      else selection.ids.add(id);
-      if (!selection.ids.size) closeSelection();
-      updateSelectionUi();
-      refreshSelectionClasses();
-    }
+  if (!block || !block.groupId) return [id];
+
+  return activeBlocks()
+    .filter(item => item.groupId === block.groupId)
+    .map(item => item.id);
+}
+ function enterSelection(kind, id) {
+  selection.kind = kind;
+  selection.ids = new Set(idsForSelection(kind, id));
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
+function toggleSelection(kind, id) {
+  const ids = idsForSelection(kind, id);
+
+  if (selection.kind !== kind) {
+    selection.kind = kind;
+    selection.ids = new Set();
+  }
+
+  const alreadySelected = ids.every(itemId => selection.ids.has(itemId));
+
+  if (alreadySelected) {
+    ids.forEach(itemId => selection.ids.delete(itemId));
+  } else {
+    ids.forEach(itemId => selection.ids.add(itemId));
+  }
+
+  if (!selection.ids.size) closeSelection();
+
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
 
     function closeSelection() {
       selection.kind = null;
