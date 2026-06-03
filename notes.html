@@ -1771,6 +1771,7 @@ let blockPath = [];
     const toast = document.getElementById("toast");
     const toastText = document.getElementById("toastText");
     const selectionBar = document.getElementById("selectionBar");
+	const selectionTitle = document.getElementById("selectionTitle");
 	const editorModeText = document.getElementById("editorModeText");
 	const toolbar = document.getElementById("toolbar");
     let noteDraft = null;
@@ -1912,55 +1913,33 @@ function activeParentBlock() {
   return parent;
 }
 
-function openInteriorNote(blockId) {
+function goBackOneLevel() {
+  if (!blockPath.length) {
+    return false;
+  }
+
+  const parentBlockId = blockPath[blockPath.length - 1];
+
+  blockPath = blockPath.slice(0, -1);
+  focusedBlockId = parentBlockId;
+
   closeSelection();
-
-  const block = activeBlocks().find(item => item.id === blockId);
-  if (!block) return;
-
-  if (!block.interiorTitle) {
-    block.interiorTitle = stripHtml(block.text || "Inside block");
-  }
-
-  if (!block.interiorAccent) {
-    block.interiorAccent = block.accent || activeNote().accent;
-  }
-
-  if (!Array.isArray(block.children)) {
-    block.children = [];
-  }
-
-  if (!block.children.length) {
-    block.children.push({
-      id: uid(),
-      type: "paragraph",
-      text: "",
-      children: []
-    });
-  }
-
-  blockPath.push(blockId);
-  focusedBlockId = block.children[0].id;
-
   saveState();
+  setView("editor");
   renderEditor();
 
   setTimeout(() => {
-    focusBlock(focusedBlockId);
+    const parentBlock = blocksEl.querySelector(`[data-id="${parentBlockId}"]`);
+
+    if (parentBlock) {
+      parentBlock.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
   }, 50);
-}
 
-function goBackOneLevel() {
-  if (blockPath.length) {
-    blockPath.pop();
-    focusedBlockId = null;
-    closeSelection();
-    saveState();
-    renderEditor();
-    return true;
-  }
-
-  return false;
+  return true;
 }
     function sortedNotes() {
       return [...state.notes].sort((a, b) => {
@@ -3376,38 +3355,38 @@ async function handlePhoto(files) {
   const block = activeBlocks().find(item => item.id === blockId);
   if (!block) return;
 
+  if (!block.interiorTitle) {
+    block.interiorTitle = stripHtml(block.text || "Inside block");
+  }
+
+  if (!block.interiorAccent) {
+    block.interiorAccent = block.accent || activeNote().accent;
+  }
+
   if (!Array.isArray(block.children)) {
-    block.children = [{ id: uid(), type: "paragraph", text: "" }];
+    block.children = [];
   }
 
-  const note = {
-    id: `interior-${block.id}`,
-    title: stripHtml(block.text || "Interior note"),
-    pinned: false,
-    accent: activeNote().accent,
-    icon: activeNote().icon,
-    order: state.notes.length,
-    blocks: block.children
-  };
-
-  const existing = state.notes.find(item => item.id === note.id);
-
-  if (!existing) {
-    state.notes.push(note);
-  } else {
-    existing.title = note.title;
-    existing.blocks = block.children;
+  if (!block.children.length) {
+    block.children.push({
+      id: uid(),
+      type: "paragraph",
+      text: "",
+      children: []
+    });
   }
 
-  state.activeNoteId = note.id;
-  focusedBlockId = null;
+  blockPath = [...blockPath, blockId];
+  focusedBlockId = block.children[0]?.id || null;
 
   saveState();
   setView("editor");
+  renderEditor();
 
   setTimeout(() => {
-    const firstEditable = blocksEl.querySelector("[contenteditable='true']");
-    if (firstEditable) firstEditable.focus();
+    if (focusedBlockId) {
+      focusBlock(focusedBlockId);
+    }
   }, 50);
 }
 function moveNoteCard(id, direction) {
@@ -3623,8 +3602,13 @@ if (name === "open-note") {
   }
 
   state.activeNoteId = element.dataset.id;
+  blockPath = [];
+  focusedBlockId = null;
+
+  closeSelection();
   saveState();
   setView("editor");
+  renderEditor();
   return;
 }
 if (name === "open-insert-after") {
@@ -3641,8 +3625,14 @@ if (name === "close-card-options") {
   closeCardOptions();
   return;
 }
-      if (name === "back") {
-  if (goBackOneLevel()) return;
+if (name === "back") {
+  if (goBackOneLevel()) {
+    return;
+  }
+
+  closeSelection();
+  blockPath = [];
+  focusedBlockId = null;
   setView("notes");
   return;
 }
