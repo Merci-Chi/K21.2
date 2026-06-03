@@ -905,27 +905,31 @@
       </div>
     </div>
 
-    <nav class="nav" aria-label="Primary navigation">
-      <button class="nav-item" type="button" data-command="home">
-        <i class="fa-solid fa-house" aria-hidden="true"></i>
-        Home
-      </button>
-      <button class="nav-item" type="button" data-command="habits">
-        <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
-        Habits
-      </button>
-      <button class="nav-add" type="button" data-command="smart-add" aria-label="Add">
-        <i class="fa-solid fa-plus" aria-hidden="true"></i>
-      </button>
-      <button class="nav-item active" type="button" data-command="notes">
-        <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
-        Notes
-      </button>
-      <button class="nav-item" type="button" data-command="photo">
-        <i class="fa-solid fa-image" aria-hidden="true"></i>
-        Photo
-      </button>
-    </nav>
+<nav class="nav" aria-label="Primary navigation">
+  <button class="nav-item" type="button">
+    <i class="fa-solid fa-house" aria-hidden="true"></i>
+    Home
+  </button>
+
+  <button class="nav-item" type="button">
+    <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+    Habits
+  </button>
+
+  <button class="add" type="button" aria-label="Add">
+    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+  </button>
+
+  <button class="nav-item" type="button">
+    <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
+    Notes
+  </button>
+
+  <button class="nav-item" type="button">
+    <i class="fa-solid fa-image" aria-hidden="true"></i>
+    Photo
+  </button>
+</nav>
 
     <div class="modal" id="optionsModal" aria-hidden="true">
       <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
@@ -1705,7 +1709,14 @@
     searchInput.addEventListener("input", renderNotes);
     photoInput.addEventListener("change", event => handlePhoto(event.target.files));
 
+    window.addEventListener("openNotesComposer", () => {
+      newNote();
+    });
+searchInput.addEventListener("input", renderNotes);
+    photoInput.addEventListener("change", event => handlePhoto(event.target.files));
     renderAll();
   </script>
+
+  <script src="bottom-bar.js"></script>
 </body>
 </html>
