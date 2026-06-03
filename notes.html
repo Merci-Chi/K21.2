@@ -349,7 +349,8 @@
   overflow-x: auto;
 }
 
-.notes-tools-open .note-actions {
+.notes-tools-open .note-actions,
+.note-card.selected .note-actions {
   display: flex;
 }
 
@@ -1340,7 +1341,7 @@
     const storageKey = "clean-mobile-notes-v1";
     const colors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff"];
     const icons = ["fa-note-sticky", "fa-book-open", "fa-pen", "fa-heart-pulse", "fa-lightbulb", "fa-list-check", "fa-star"];
-    const swipeMin = 35;
+    const swipeMin = 18;
 
     const initialState = {
       activeNoteId: "daily-reset",
@@ -1836,30 +1837,43 @@
         y: event.clientY,
         id: element.dataset.id,
         kind: element.dataset.kind,
-        element
+        element,
+        done: false
       };
     });
 
-    element.addEventListener("pointerup", event => {
-      if (!touch || touch.element !== element) return;
+    element.addEventListener("pointermove", event => {
+      if (!touch || touch.element !== element || touch.done) return;
 
       const dx = event.clientX - touch.x;
       const dy = Math.abs(event.clientY - touch.y);
 
-      if (Math.abs(dx) > swipeMin && dy < 42) {
+      if (Math.abs(dx) > swipeMin && dy < 70) {
+        touch.done = true;
+        event.preventDefault();
+
+        if (touch.kind === "note" && dx > 0) {
+          toggleSelection("note", touch.id);
+          phone.classList.add("notes-tools-open");
+        }
+
         if (touch.kind === "block" && dx > 0) {
-          toggleSelection(touch.kind, touch.id);
-        } else if (touch.kind === "note" && dx > 0) {
-          toggleSelection(touch.kind, touch.id);
-        } else if (touch.kind === "note" && dx < 0) {
-          revealDelete(touch.kind, touch.id, element);
+          toggleSelection("block", touch.id);
+        }
+
+        if (touch.kind === "note" && dx < 0) {
+          revealDelete("note", touch.id, element);
         }
       }
+    });
 
+    element.addEventListener("pointerup", () => {
       touch = null;
     });
 
-    element.addEventListener("pointercancel", () => touch = null);
+    element.addEventListener("pointercancel", () => {
+      touch = null;
+    });
 
     element.addEventListener("contextmenu", event => {
       event.preventDefault();
