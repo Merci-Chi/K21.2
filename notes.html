@@ -2508,9 +2508,18 @@ function command(name, element) {
   }
 
 if (name === "pin-selected-note") {
-  const id = selectedNoteId();
-  if (!id) return;
-  togglePin(id);
+  if (selection.kind !== "note" || !selection.ids.size) return;
+
+  selection.ids.forEach(id => {
+    const note = state.notes.find(item => item.id === id);
+    if (note) note.pinned = !note.pinned;
+  });
+
+  reindex();
+  saveState();
+  renderNotes();
+  updateSelectionUi();
+  refreshSelectionClasses();
 }
 
 if (name === "move-selected-note-up") {
