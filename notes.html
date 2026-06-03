@@ -1472,15 +1472,54 @@
       </section>
     </div>
 
-    <div class="modal" id="insertModal" aria-hidden="true">
-      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="insertTitle">
-        <div class="grabber"></div>
-        <div class="sheet-head">
-          <h2 id="insertTitle">Add</h2>
-          <button class="icon-btn" type="button" data-command="close-insert" aria-label="Close add menu">
-            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-          </button>
-          <div class="modal" id="cardModal" aria-hidden="true">
+  <div class="modal" id="insertModal" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="insertTitle">
+    <div class="grabber"></div>
+
+    <div class="sheet-head">
+      <h2 id="insertTitle">Add</h2>
+      <button class="icon-btn" type="button" data-command="close-insert" aria-label="Close add menu">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="insert-list">
+      <button class="insert-option" type="button" data-command="insert-block" data-type="paragraph">
+        <i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Text Box</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="open-card-options">
+        <i class="fa-solid fa-note-sticky" aria-hidden="true"></i><span>Card</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="insert-block" data-type="heading">
+        <i class="fa-solid fa-heading" aria-hidden="true"></i><span>Heading</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="insert-block" data-type="number">
+        <i class="fa-solid fa-list-ol" aria-hidden="true"></i><span>Number</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="insert-block" data-type="bullet">
+        <i class="fa-solid fa-list-ul" aria-hidden="true"></i><span>Bullet</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="insert-block" data-type="task">
+        <i class="fa-solid fa-square-check" aria-hidden="true"></i><span>Checkbox</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="insert-block" data-type="image">
+        <i class="fa-solid fa-image" aria-hidden="true"></i><span>Image</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="insert-block" data-type="url">
+        <i class="fa-solid fa-link" aria-hidden="true"></i><span>URL</span>
+      </button>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="cardModal" aria-hidden="true">
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
     <div class="grabber"></div>
 
@@ -1506,45 +1545,6 @@
     </div>
   </section>
 </div>
-        </div>
-
-  <div class="insert-list">
-  <button class="insert-option" type="button" data-command="insert-block" data-type="paragraph">
-    <i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Text Box</span>
-  </button>
-
-  <button class="insert-option" type="button" data-command="open-card-options">
-    <i class="fa-solid fa-note-sticky" aria-hidden="true"></i><span>Card</span>
-  </button>
-
-  <button class="insert-option" type="button" data-command="insert-block" data-type="heading">
-    <i class="fa-solid fa-heading" aria-hidden="true"></i><span>Heading</span>
-  </button>
-
-  <button class="insert-option" type="button" data-command="insert-block" data-type="number">
-    <i class="fa-solid fa-list-ol" aria-hidden="true"></i><span>Number</span>
-  </button>
-
-  <button class="insert-option" type="button" data-command="insert-block" data-type="bullet">
-    <i class="fa-solid fa-list-ul" aria-hidden="true"></i><span>Bullet</span>
-  </button>
-
-  <button class="insert-option" type="button" data-command="insert-block" data-type="task">
-    <i class="fa-solid fa-square-check" aria-hidden="true"></i><span>Checkbox</span>
-  </button>
-
-  <button class="insert-option" type="button" data-command="insert-block" data-type="image">
-    <i class="fa-solid fa-image" aria-hidden="true"></i><span>Image</span>
-  </button>
-
-  <button class="insert-option" type="button" data-command="insert-block" data-type="url">
-    <i class="fa-solid fa-link" aria-hidden="true"></i><span>URL</span>
-  </button>
-</div>
-      </section>
-    </div>
-
-    <div class="modal" id="sizeModal" aria-hidden="true">
       <section class="sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="sizeTitle">
         <div class="grabber"></div>
         <div class="sheet-head">
@@ -1659,6 +1659,7 @@ let blockPath = [];
     const titleInput = document.getElementById("titleInput");
     const noteModal = document.getElementById("noteModal");
     const insertModal = document.getElementById("insertModal");
+    const cardModal = document.getElementById("cardModal");
     const sizeModal = document.getElementById("sizeModal");
     const viewTextModal = document.getElementById("viewTextModal");
     const viewTextField = document.getElementById("viewTextField");
@@ -3318,6 +3319,9 @@ if (event.target === titleInput) {
     insertModal.addEventListener("click", event => {
       if (event.target === insertModal) closeInsert();
     });
+    cardModal.addEventListener("click", event => {
+  if (event.target === cardModal) closeCardOptions();
+});
     sizeModal.addEventListener("click", event => {
       if (event.target === sizeModal) closeSizeMenu();
     });
