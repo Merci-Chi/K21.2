@@ -2392,7 +2392,23 @@
       saveState();
       setView("editor");
     }
+function moveNoteCard(id, direction) {
+  const visibleNotes = sortedNotes();
+  const index = visibleNotes.findIndex(note => note.id === id);
+  const targetIndex = index + direction;
 
+  if (index < 0 || targetIndex < 0 || targetIndex >= visibleNotes.length) return;
+
+  const current = visibleNotes[index];
+  const target = visibleNotes[targetIndex];
+
+  const currentOrder = current.order || 0;
+  current.order = target.order || 0;
+  target.order = currentOrder;
+
+  saveState();
+  renderNotes();
+}
 function command(name, element) {
   if (name === "toggle-note-tools") {
     phone.classList.toggle("notes-tools-open");
@@ -2410,14 +2426,13 @@ function command(name, element) {
       if (name === "habits") showToast("Habits is habits.html", "fa-bullseye");
       if (name === "pin-note") togglePin(element.dataset.id);
       if (name === "edit-note") openNoteModal(element.dataset.id);
-      if (name === "move-note-up") {
-        enterSelection("note", element.dataset.id);
-        moveSelected(-1);
-      }
-      if (name === "move-note-down") {
-        enterSelection("note", element.dataset.id);
-        moveSelected(1);
-      }
+if (name === "move-note-up") {
+  moveNoteCard(element.dataset.id, -1);
+}
+
+if (name === "move-note-down") {
+  moveNoteCard(element.dataset.id, 1);
+}
       if (name === "duplicate-note") {
         duplicateNote(element.dataset.id);
         saveState();
