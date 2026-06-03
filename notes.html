@@ -2555,25 +2555,56 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
       renderAll();
     }
 
-    function deleteSelected() {
-      if (!selection.kind || !selection.ids.size) return;
-      remember();
-      if (selection.kind === "note") {
-        undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
-        state.notes = state.notes.filter(note => !selection.ids.has(note.id));
-        state.activeNoteId = state.notes[0]?.id || null;
-      }
-      if (selection.kind === "block") {
-        undo = { kind: "block", noteId: activeNote().id, blocks: JSON.parse(JSON.stringify(activeBlocks())) };
-        activeNote().blocks = activeBlocks().filter(block => !selection.ids.has(block.id));
-        if (!activeNote().blocks.length) activeNote().blocks.push(createBlock("paragraph"));
-      }
-      closeSelection();
-      saveState();
-      renderAll();
-      showUndo();
+   function deleteSelected() {
+  if (!selection.kind || !selection.ids.size) return;
+
+  remember();
+
+  const selectedIds = new Set(selection.ids);
+
+  if (selection.kind === "note") {
+    undo = {
+      kind: "note",
+      notes: JSON.parse(JSON.stringify(state.notes)),
+      activeNoteId: state.activeNoteId
+    };
+
+    state.notes = state.notes.filter(note => !selectedIds.has(note.id));
+
+    if (selectedIds.has(state.activeNoteId)) {
+      state.activeNoteId = state.notes[0]?.id || null;
     }
 
+    reindex();
+  }
+
+  if (selection.kind === "block") {
+    const blocks = activeBlocks();
+
+    undo = {
+      kind: "block",
+      noteId: activeNote().id,
+      blocks: JSON.parse(JSON.stringify(blocks))
+    };
+
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      if (selectedIds.has(blocks[i].id)) {
+        blocks.splice(i, 1);
+      }
+    }
+
+    if (!blocks.length) {
+      blocks.push(createBlock("paragraph"));
+    }
+
+    focusedBlockId = blocks[0]?.id || null;
+  }
+
+  closeSelection();
+  saveState();
+  renderAll();
+  showUndo();
+}
     function selectedBlockIds() {
       if (selection.kind === "block" && selection.ids.size) return [...selection.ids];
       return focusedBlockId ? [focusedBlockId] : [];
@@ -3112,10 +3143,9 @@ if (name === "edit-selected-note") {
 }
 
 if (name === "delete-selected-note") {
-  const id = selectedNoteId();
-  if (!id) return;
+  if (selection.kind !== "note" || !selection.ids.size) return;
 
-  deleteNote(id);
+  deleteSelected();
   return;
 }
 
@@ -3300,10 +3330,11 @@ if (event.target === titleInput) {
       const block = event.target.closest(".block");
       if (block) focusedBlockId = block.dataset.id;
     });
-
- document.addEventListener("dblclick", event => {
+document.addEventListener("click", event => {
+  if (event.target.closest("[data-command]")) return;
   if (selection.kind && selection.ids.size) return;
-  if (event.target.closest(".task-check, .image-open, .action-btn")) return;
+  if (event.target.closest("[contenteditable='true']")) return;
+  if (event.target.closest(".task-check, .image-open, .action-btn, .block-insert-row")) return;
 
   const block = event.target.closest(".block");
   if (!block) return;
