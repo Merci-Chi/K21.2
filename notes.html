@@ -2807,7 +2807,7 @@ if (name === "delete-selected-note") {
 }
   if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
-  if (name === "open-note") {
+if (name === "open-note") {
   if (selection.kind === "note" && selection.ids.size) {
     toggleSelection("note", element.dataset.id);
     return;
