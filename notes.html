@@ -302,7 +302,7 @@
 .block-group {
   display: grid;
   gap: 3px;
-  padding: 5px;
+  padding: 0;
   border: 1px solid transparent;
   border-radius: 20px;
 }
@@ -313,9 +313,12 @@
     0 0 0 2px color-mix(in srgb, var(--accent) 48%, transparent),
     0 18px 42px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
-    rgba(255, 255, 255, 0.025);
+  background: transparent;
+}
+.selection-active .block-group.selected .block {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
 .selection-active .block-group.selected .block.selected {
@@ -475,7 +478,7 @@
       border-color: rgba(255, 255, 255, 0.07);
     }
 
- .selection-active .block.selected:not(.grouped) {
+ .selection-active .blocks > .block.selected {
   background:
     linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
     rgba(255, 255, 255, 0.035);
