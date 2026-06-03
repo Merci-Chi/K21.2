@@ -2393,18 +2393,23 @@
       setView("editor");
     }
 function moveNoteCard(id, direction) {
-  const visibleNotes = sortedNotes();
-  const index = visibleNotes.findIndex(note => note.id === id);
+  const notes = sortedNotes();
+  const index = notes.findIndex(note => note.id === id);
   const targetIndex = index + direction;
 
-  if (index < 0 || targetIndex < 0 || targetIndex >= visibleNotes.length) return;
+  if (index < 0 || targetIndex < 0 || targetIndex >= notes.length) return;
 
-  const current = visibleNotes[index];
-  const target = visibleNotes[targetIndex];
+  const current = notes[index];
+  const target = notes[targetIndex];
 
-  const currentOrder = current.order || 0;
-  current.order = target.order || 0;
-  target.order = currentOrder;
+  if (current.pinned !== target.pinned) return;
+
+  notes.splice(index, 1);
+  notes.splice(targetIndex, 0, current);
+
+  notes.forEach((note, i) => {
+    note.order = i;
+  });
 
   saveState();
   renderNotes();
