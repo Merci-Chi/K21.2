@@ -1630,7 +1630,7 @@
       toastText.textContent = message;
       toast.classList.add("show");
       clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 10000);
     }
 
     function newNote() {
