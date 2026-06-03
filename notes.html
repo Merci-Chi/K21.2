@@ -711,9 +711,27 @@
   backdrop-filter: blur(16px);
 }
 
-    .editor-active .toolbar {
-      display: flex;
-    }
+.editor-active .toolbar {
+  display: flex;
+}
+
+@media (min-width: 461px) {
+  .editor-active .toolbar {
+    display: none;
+  }
+
+  .editor-active.selection-active .toolbar {
+    display: flex;
+  }
+
+  .toolbar {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: calc(var(--nav-height) + 24px);
+    z-index: 19;
+  }
+}
 
     .toolbar button {
       min-width: 40px;
