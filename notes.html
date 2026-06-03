@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Notes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #000;
+      --surface: rgba(13, 17, 27, 0.96);
+      --surface-2: rgba(255, 255, 255, 0.055);
+      --line: rgba(255, 255, 255, 0.11);
+      --text: #f7f8ff;
+      --muted: #a5adbd;
+      --blue: #5a8cff;
+      --pink: #ff74ba;
+      --yellow: #ffd33d;
+      --green: #46d29c;
+      --teal: #46d7c5;
+      --purple: #9d70ff;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+      --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      scrollbar-width: none;
+    }
+
+    *::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    html {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      touch-action: manipulation;
+    }
+
+    body {
+      height: 100%;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      color: var(--text);
+      background: #000;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    button, input, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      border: 0;
+      background: transparent;
+      cursor: default;
+      touch-action: manipulation;
+    }
+
+    .phone {
+      position: relative;
+      width: min(100%, 1120px);
+      height: min(932px, calc(100dvh - 44px));
+      min-height: 0;
+      max-height: 100dvh;
+      overflow: hidden;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 28%),
+        linear-gradient(180deg, #04060c 0%, #000 42%, #000 100%);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%);
+      opacity: 0.2;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 236px 1fr;
+      overflow: hidden;
+      overscroll-behavior: contain;
+    }
+
+    .sidebar {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 14px;
+      padding: 28px 16px 112px;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: rgba(255, 255, 255, 0.78);
+      background: rgba(255, 255, 255, 0.065);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .icon-btn.danger {
+      color: #ff7b7d;
+    }
+
+    .page-list {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .page-tab {
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: center;
+      gap: 9px;
+      padding: 0 11px;
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 13px;
+      font-weight: 850;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.045);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+    }
+
+    .page-tab.active {
+      color: white;
+      background: color-mix(in srgb, var(--blue) 25%, rgba(255, 255, 255, 0.06));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1));
+    }
+
+    .shortcut-note {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.46);
+      font-size: 11px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .workspace {
+      min-height: 0;
+      overflow-y: auto;
+      padding: 42px clamp(20px, 5vw, 54px) 126px;
+    }
+
+    .doc-head {
+      display: grid;
+      gap: 12px;
+      margin: 0 auto 18px;
+      max-width: 780px;
+    }
+
+    .doc-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .doc-title {
+      min-height: 54px;
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(38px, 7vw, 64px);
+      line-height: 0.96;
+      font-weight: 920;
+      letter-spacing: 0;
+      outline: none;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .doc-title:empty::before,
+    .editable:empty::before {
+      content: attr(data-placeholder);
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .mobile-pages {
+      display: none;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 4px 0 16px;
+    }
+
+    .action-row,
+    .format-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .format-bar {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      margin: 0 auto 16px;
+      max-width: 780px;
+      padding: 9px;
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+        rgba(13, 18, 29, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .tool,
+    .choice-pill {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 10px;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
+    .tool.active,
+    .choice-pill.active {
+      color: white;
+      background: color-mix(in srgb, var(--blue) 26%, rgba(255, 255, 255, 0.06));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 55%, rgba(255, 255, 255, 0.1));
+    }
+
+    .color-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--dot);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .color-dot.active {
+      outline: 2px solid white;
+      outline-offset: 3px;
+    }
+
+    .selection-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin: 0 auto 14px;
+      max-width: 780px;
+      padding: 9px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
+    .selection-bar.active {
+      display: flex;
+    }
+
+    .selection-label {
+      flex: 1;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .canvas {
+      max-width: 780px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .note-card {
+      --accent: var(--blue);
+      position: relative;
+      min-height: 158px;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 18px;
+      color: var(--text);
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 46%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.024)),
+        var(--surface);
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--accent);
+      box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .note-card.wide,
+    .note-card.tall,
+    .note-card.group {
+      grid-column: 1 / -1;
+    }
+
+    .note-card.tall {
+      min-height: 288px;
+    }
+
+    .note-card.selected {
+      box-shadow:
+        0 0 0 2px color-mix(in srgb, var(--accent) 72%, white),
+        var(--soft-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .note-card.focused {
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--accent) 18%, transparent), transparent 52%),
+        rgba(22, 28, 42, 0.98);
+    }
+
+    .drag-handle {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .card-edit {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    .card-title {
+      margin: 0;
+      padding: 28px 34px 0 0;
+      font-size: 18px;
+      line-height: 1.15;
+      font-weight: 900;
+      outline: none;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .note-blocks {
+      display: grid;
+      gap: 7px;
+      color: rgba(238, 243, 255, 0.82);
+      font-size: 14px;
+      line-height: 1.42;
+    }
+
+    .note-block {
+      min-height: 20px;
+      border-radius: 8px;
+      outline: none;
+      word-break: break-word;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .note-block:focus,
+    .card-title:focus,
+    .doc-title:focus {
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--blue)) 42%, transparent);
+    }
+
+    .note-block.title { font-size: 24px; font-weight: 920; line-height: 1.05; }
+    .note-block.header { font-size: 18px; font-weight: 880; }
+    .note-block.subtitle { color: rgba(255, 255, 255, 0.64); font-size: 14px; font-weight: 760; }
+    .note-block.highlight { padding: 3px 6px; background: rgba(255, 211, 61, 0.18); }
+    .note-block.code { padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); }
+    .note-block.block { border-left: 3px solid var(--accent); padding-left: 9px; }
+    .note-block.checkbox::before { content: "□ "; color: var(--accent); font-weight: 900; }
+    .note-block.bullet::before { content: "• "; color: var(--accent); font-weight: 900; }
+    .note-block.numbered::before { content: attr(data-index) ". "; color: var(--accent); font-weight: 900; }
+    .note-block.checked::before { content: "☑ "; }
+
+    .bold { font-weight: 900; }
+    .italic { font-style: italic; }
+    .underline { text-decoration: underline; text-decoration-thickness: 1.5px; }
+
+    .card-image {
+      width: 100%;
+      max-height: 210px;
+      object-fit: cover;
+      border-radius: 14px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .group-grid .note-card {
+      grid-column: auto;
+      min-height: 120px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+      border-radius: 22px;
+      color: rgba(255, 255, 255, 0.58);
+      text-align: center;
+      font-size: 14px;
+      font-weight: 780;
+      background: rgba(255, 255, 255, 0.045);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 14px 18px calc(98px + env(safe-area-inset-bottom));
+      background: rgba(2, 6, 14, 0.68);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .sheet {
+      width: min(100%, 430px);
+      max-height: min(84dvh, 780px);
+      display: grid;
+      gap: 10px;
+      overflow-y: auto;
+      padding: 15px;
+      border-radius: 24px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+        rgba(17, 23, 35, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .sheet-title {
+      margin: 0;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 13px;
+      padding: 11px 12px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      font: inherit;
+      font-size: 16px;
+      outline: none;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .field textarea {
+      min-height: 132px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .image-preview {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      display: none;
+      border-radius: 14px;
+    }
+
+    .image-preview.active {
+      display: block;
+    }
+
+    .form-submit {
+      min-height: 48px;
+      border-radius: 15px;
+      color: white;
+      font-weight: 900;
+      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+      box-shadow: 0 14px 32px rgba(98, 119, 255, 0.34);
+    }
+
+    .history-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .history-item {
+      display: grid;
+      gap: 5px;
+      padding: 12px;
+      border-radius: 15px;
+      color: rgba(255, 255, 255, 0.78);
+      text-align: left;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
+    .history-item strong {
+      color: white;
+      font-size: 13px;
+    }
+
+    .history-item span {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        display: block;
+        padding: 0;
+      }
+
+      .phone {
+        width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .app {
+        display: block;
+        overflow-y: auto;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .workspace {
+        min-height: 100%;
+        padding: 46px 20px 126px;
+      }
+
+      .mobile-pages {
+        display: flex;
+      }
+
+      .format-bar {
+        top: 0;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .canvas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 380px) {
+      .workspace {
+        padding-inline: 16px;
+      }
+
+      .canvas,
+      .group-grid {
+        gap: 10px;
+      }
+
+      .note-card {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="Notes workspace">
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <h1>Notes</h1>
+          <button class="icon-btn add-page" type="button" aria-label="Add page"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="page-list" aria-label="Pages"></div>
+        <p class="shortcut-note">Shortcuts: Cmd/Ctrl C X V Z A G. Shift+V opens clipboard history. Shift+G ungroups.</p>
+      </aside>
+
+      <section class="workspace">
+        <div class="mobile-pages" aria-label="Pages"></div>
+        <header class="doc-head">
+          <span class="doc-kicker"><i class="fa-regular fa-note-sticky"></i> Craft-style workspace</span>
+          <h1 class="doc-title editable" contenteditable="true" spellcheck="true" data-placeholder="Untitled page"></h1>
+          <div class="action-row">
+            <button class="tool add-card-top" type="button"><i class="fa-solid fa-plus"></i> Card</button>
+            <button class="tool add-page-mobile" type="button"><i class="fa-regular fa-file"></i> Page</button>
+            <button class="tool show-clipboard" type="button"><i class="fa-regular fa-clipboard"></i> Clipboard</button>
+          </div>
+        </header>
+
+        <div class="format-bar" aria-label="Formatting">
+          <button class="tool" type="button" data-tool="bold"><b>B</b></button>
+          <button class="tool" type="button" data-tool="underline"><u>U</u></button>
+          <button class="tool" type="button" data-tool="italic"><i>I</i></button>
+          <button class="tool" type="button" data-tool="highlight">Highlight</button>
+          <button class="tool" type="button" data-tool="code">&lt;/&gt;</button>
+          <button class="tool" type="button" data-tool="block">Block</button>
+          <button class="tool" type="button" data-tool="focus">Focus</button>
+          <button class="choice-pill" type="button" data-type="body">Body</button>
+          <button class="choice-pill" type="button" data-type="title">Title</button>
+          <button class="choice-pill" type="button" data-type="header">Header</button>
+          <button class="choice-pill" type="button" data-type="subtitle">Subtitle</button>
+          <button class="choice-pill" type="button" data-list="none">None</button>
+          <button class="choice-pill" type="button" data-list="bullet">Bullets</button>
+          <button class="choice-pill" type="button" data-list="numbered">Numbered</button>
+          <button class="choice-pill" type="button" data-list="checkbox">Checks</button>
+          <button class="color-dot" type="button" data-color="#f7f8ff" style="--dot:#f7f8ff" aria-label="White"></button>
+          <button class="color-dot" type="button" data-color="#ff74ba" style="--dot:#ff74ba" aria-label="Pink"></button>
+          <button class="color-dot" type="button" data-color="#ffd33d" style="--dot:#ffd33d" aria-label="Yellow"></button>
+          <button class="color-dot" type="button" data-color="#46d29c" style="--dot:#46d29c" aria-label="Green"></button>
+          <button class="color-dot" type="button" data-color="#46d7c5" style="--dot:#46d7c5" aria-label="Teal"></button>
+          <button class="color-dot" type="button" data-color="#5a8cff" style="--dot:#5a8cff" aria-label="Blue"></button>
+          <button class="color-dot" type="button" data-color="#9d70ff" style="--dot:#9d70ff" aria-label="Purple"></button>
+        </div>
+
+        <div class="selection-bar">
+          <span class="selection-label">0 selected</span>
+          <button class="icon-btn move-left" type="button" aria-label="Move selected left"><i class="fa-solid fa-arrow-left"></i></button>
+          <button class="icon-btn move-right" type="button" aria-label="Move selected right"><i class="fa-solid fa-arrow-right"></i></button>
+          <button class="icon-btn group-selected" type="button" aria-label="Group selected"><i class="fa-solid fa-layer-group"></i></button>
+          <button class="icon-btn ungroup-selected" type="button" aria-label="Ungroup selected"><i class="fa-solid fa-object-ungroup"></i></button>
+          <button class="icon-btn danger delete-selected" type="button" aria-label="Delete selected"><i class="fa-solid fa-trash"></i></button>
+          <button class="icon-btn clear-selected" type="button" aria-label="Clear selection"><i class="fa-solid fa-minus"></i></button>
+        </div>
+
+        <section class="canvas" aria-label="Note cards"></section>
+      </section>
+    </div>
+
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 10.7 12 3l9 7.7V20a1 1 0 0 1-1 1h-5.2v-6.6H9.2V21H4a1 1 0 0 1-1-1v-9.3Z" />
+        </svg>
+        Home
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="8" stroke="currentColor" />
+          <circle cx="12" cy="12" r="3" stroke="currentColor" />
+        </svg>
+        Habits
+      </button>
+      <button class="add" aria-label="Add note item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-linecap="round" />
+        </svg>
+      </button>
+      <button class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" />
+          <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" />
+        </svg>
+        Notes
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" />
+          <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-linecap="round" />
+        </svg>
+        Profile
+      </button>
+    </nav>
+
+    <div class="modal-backdrop" id="cardModal" aria-hidden="true">
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cardModalTitle">
+        <div class="sheet-head">
+          <h2 class="sheet-title" id="cardModalTitle">Add card</h2>
+          <button class="icon-btn close-card" type="button" aria-label="Close card editor">x</button>
+        </div>
+        <label class="field">
+          Card title
+          <input name="cardTitle" type="text" placeholder="Title" />
+        </label>
+        <div class="action-row size-picker">
+          <button class="choice-pill active" type="button" data-size="square">Square</button>
+          <button class="choice-pill" type="button" data-size="wide">Page width</button>
+          <button class="choice-pill" type="button" data-size="tall">Tall</button>
+        </div>
+        <label class="field">
+          Notes
+          <textarea name="cardBody" placeholder="Write one block per line"></textarea>
+        </label>
+        <label class="field">
+          Image
+          <input name="cardImage" type="file" accept="image/*" />
+          <img class="image-preview" alt="" />
+        </label>
+        <button class="form-submit save-card" type="button">Save card</button>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="clipboardModal" aria-hidden="true">
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="clipboardTitle">
+        <div class="sheet-head">
+          <h2 class="sheet-title" id="clipboardTitle">Clipboard history</h2>
+          <button class="icon-btn close-clipboard" type="button" aria-label="Close clipboard history">x</button>
+        </div>
+        <div class="history-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const NOTES_KEY = "routineDashboard.notes.v2";
+    const OLD_NOTES_KEY = "routineDashboard.notes.v1";
+    const CLIPBOARD_KEY = "routineDashboard.notesClipboard.v1";
+    const pageList = document.querySelector(".page-list");
+    const mobilePages = document.querySelector(".mobile-pages");
+    const canvas = document.querySelector(".canvas");
+    const selectionBar = document.querySelector(".selection-bar");
+    const docTitle = document.querySelector(".doc-title");
+    const cardModal = document.querySelector("#cardModal");
+    const clipboardModal = document.querySelector("#clipboardModal");
+    const titleInput = cardModal.querySelector('[name="cardTitle"]');
+    const bodyInput = cardModal.querySelector('[name="cardBody"]');
+    const imageInput = cardModal.querySelector('[name="cardImage"]');
+    const imagePreview = cardModal.querySelector(".image-preview");
+    let activePageId = "";
+    let editingCardId = "";
+    let selectedIds = new Set();
+    let activeCardId = "";
+    let activeBlockIndex = 0;
+    let holdTimer = null;
+    let draftImage = "";
+    let undoStack = [];
+    let redoStack = [];
+    let saveTimer = null;
+
+    const colors = ["#5a8cff", "#ff74ba", "#ffd33d", "#46d29c", "#46d7c5", "#9d70ff"];
+
+    function uid(prefix) {
+      return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function starterStore() {
+      const pageId = uid("page");
+      return {
+        activePageId: pageId,
+        pages: [{
+          id: pageId,
+          title: "Today",
+          cards: [{
+            id: uid("card"),
+            title: "Ideas",
+            size: "wide",
+            accent: "#5a8cff",
+            type: "header",
+            list: "bullet",
+            tools: ["highlight"],
+            color: "#f7f8ff",
+            image: "",
+            blocks: ["Plan the day", "Capture quick notes", "Turn ideas into tasks"]
+          }, {
+            id: uid("card"),
+            title: "Quick Tasks",
+            size: "square",
+            accent: "#46d7c5",
+            type: "body",
+            list: "checkbox",
+            tools: [],
+            color: "#f7f8ff",
+            image: "",
+            blocks: ["Clean up dashboard", "Sketch notes flow"]
+          }]
+        }]
+      };
+    }
+
+    function migrateOldStore(oldStore) {
+      if (!oldStore?.pages?.length) return null;
+      return {
+        activePageId: oldStore.activePageId || oldStore.pages[0].id,
+        pages: oldStore.pages.map((page) => ({
+          id: page.id || uid("page"),
+          title: page.title || "Untitled",
+          cards: (page.cards || []).map((card) => ({
+            id: card.id || uid("card"),
+            title: card.title || "Untitled",
+            size: card.size || "wide",
+            accent: card.accent || colors[Math.floor(Math.random() * colors.length)],
+            type: card.type || "body",
+            list: card.list || "none",
+            tools: Array.isArray(card.tools) ? card.tools : [],
+            color: card.color || "#f7f8ff",
+            image: card.image || "",
+            blocks: Array.isArray(card.blocks) ? card.blocks : []
+          }))
+        }))
+      };
+    }
+
+    function loadStore() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(NOTES_KEY));
+        if (saved?.pages?.length) return saved;
+      } catch {}
+      try {
+        const migrated = migrateOldStore(JSON.parse(localStorage.getItem(OLD_NOTES_KEY)));
+        if (migrated) return migrated;
+      } catch {}
+      return starterStore();
+    }
+
+    function saveStore(store, pushHistory = true) {
+      store.activePageId = activePageId;
+      localStorage.setItem(NOTES_KEY, JSON.stringify(store));
+      if (pushHistory) queueHistorySnapshot(store);
+    }
+
+    function queueHistorySnapshot(store) {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        const snapshot = JSON.stringify(store);
+        if (undoStack[undoStack.length - 1] !== snapshot) {
+          undoStack.push(snapshot);
+          if (undoStack.length > 60) undoStack.shift();
+          redoStack = [];
+        }
+      }, 140);
+    }
+
+    function currentPage(store) {
+      return store.pages.find((page) => page.id === activePageId) || store.pages[0];
+    }
+
+    function getCard(store, id = activeCardId) {
+      const page = currentPage(store);
+      return page.cards.find((card) => card.id === id);
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function textFromHtml(element) {
+      return element.innerText.replace(/\u00a0/g, " ").trim();
+    }
+
+    function render() {
+      const store = loadStore();
+      activePageId = store.activePageId || store.pages[0].id;
+      const page = currentPage(store);
+      activePageId = page.id;
+      docTitle.textContent = page.title || "";
+      renderPages(store);
+      canvas.innerHTML = page.cards.length ? page.cards.map((card) => cardHtml(card)).join("") : '<div class="empty-state">Tap + to add a page or a card. Cards can be edited right here.</div>';
+      updateSelection();
+      bindCards();
+      bindEditable();
+      syncFormatBar();
+    }
+
+    function renderPages(store) {
+      const html = store.pages.map((page) => `
+        <button class="page-tab ${page.id === activePageId ? "active" : ""}" type="button" data-page="${page.id}">
+          <i class="fa-regular fa-note-sticky" aria-hidden="true"></i><span>${escapeHtml(page.title || "Untitled")}</span>
+        </button>
+      `).join("");
+      pageList.innerHTML = html;
+      mobilePages.innerHTML = html;
+      document.querySelectorAll(".page-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          activePageId = tab.dataset.page;
+          selectedIds.clear();
+          const store = loadStore();
+          saveStore(store, false);
+          render();
+        });
+      });
+    }
+
+    function blockHtml(text, card, index) {
+      const classes = ["note-block", card.type, card.list, ...card.tools].filter(Boolean).join(" ");
+      return `<div class="${classes}" contenteditable="true" spellcheck="true" data-card="${card.id}" data-block="${index}" data-index="${index + 1}" data-placeholder="Add block" style="color:${card.color || "#f7f8ff"}">${escapeHtml(text)}</div>`;
+    }
+
+    function cardHtml(card, nested = false) {
+      const selected = selectedIds.has(card.id) ? "selected" : "";
+      const focused = card.tools?.includes("focus") ? "focused" : "";
+      if (card.kind === "group") {
+        return `
+          <article class="note-card group ${selected} ${focused}" data-card="${card.id}" style="--accent:${card.accent || "#9d70ff"}">
+            <span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>
+            <button class="card-edit" type="button" aria-label="Edit ${escapeHtml(card.title)}"><i class="fa-solid fa-pencil"></i></button>
+            <h2 class="card-title editable" contenteditable="true" spellcheck="true" data-card="${card.id}" data-field="title" data-placeholder="Group title">${escapeHtml(card.title || "Group")}</h2>
+            <div class="group-grid">${(card.children || []).map((child) => cardHtml(child, true)).join("")}</div>
+          </article>
+        `;
+      }
+      return `
+        <article class="note-card ${card.size || "square"} ${selected} ${focused}" data-card="${card.id}" style="--accent:${card.accent || "#5a8cff"}">
+          ${nested ? "" : '<span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>'}
+          <button class="card-edit" type="button" aria-label="Edit ${escapeHtml(card.title)}"><i class="fa-solid fa-pencil"></i></button>
+          <h2 class="card-title editable" contenteditable="true" spellcheck="true" data-card="${card.id}" data-field="title" data-placeholder="Card title">${escapeHtml(card.title || "")}</h2>
+          ${card.image ? `<img class="card-image" src="${card.image}" alt="">` : ""}
+          <div class="note-blocks">${(card.blocks || [""]).map((block, index) => blockHtml(block, card, index)).join("")}</div>
+        </article>
+      `;
+    }
+
+    function bindCards() {
+      canvas.querySelectorAll(".note-card").forEach((card) => {
+        card.addEventListener("pointerdown", (event) => {
+          if (event.target.closest("[contenteditable], .card-edit")) return;
+          holdTimer = setTimeout(() => toggleSelect(card.dataset.card), 320);
+        });
+        card.addEventListener("pointerup", () => clearTimeout(holdTimer));
+        card.addEventListener("pointerleave", () => clearTimeout(holdTimer));
+        card.addEventListener("click", (event) => {
+          if (event.target.closest(".card-edit")) {
+            openCardModal(card.dataset.card);
+            return;
+          }
+          if (!event.target.closest("[contenteditable]") && selectedIds.size) toggleSelect(card.dataset.card);
+        });
+      });
+    }
+
+    function bindEditable() {
+      docTitle.addEventListener("input", updatePageTitle);
+      canvas.querySelectorAll("[contenteditable]").forEach((editable) => {
+        editable.addEventListener("focus", () => {
+          activeCardId = editable.dataset.card || "";
+          activeBlockIndex = Number(editable.dataset.block || 0);
+          syncFormatBar();
+        });
+        editable.addEventListener("input", () => {
+          if (editable.dataset.field === "title") updateCardTitle(editable);
+          else updateBlock(editable);
+        });
+        editable.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" && editable.classList.contains("note-block") && !event.shiftKey) {
+            event.preventDefault();
+            insertBlockAfter(editable);
+          }
+        });
+      });
+    }
+
+    function updatePageTitle() {
+      const store = loadStore();
+      currentPage(store).title = textFromHtml(docTitle) || "Untitled";
+      saveStore(store);
+      renderPages(store);
+    }
+
+    function updateCardTitle(editable) {
+      const store = loadStore();
+      const card = findCardDeep(currentPage(store).cards, editable.dataset.card);
+      if (card) card.title = textFromHtml(editable);
+      saveStore(store);
+    }
+
+    function updateBlock(editable) {
+      const store = loadStore();
+      const card = findCardDeep(currentPage(store).cards, editable.dataset.card);
+      if (card) card.blocks[Number(editable.dataset.block)] = textFromHtml(editable);
+      saveStore(store);
+    }
+
+    function insertBlockAfter(editable) {
+      const store = loadStore();
+      const card = findCardDeep(currentPage(store).cards, editable.dataset.card);
+      const index = Number(editable.dataset.block);
+      if (!card) return;
+      card.blocks.splice(index + 1, 0, "");
+      saveStore(store);
+      render();
+      const next = canvas.querySelector(`[data-card="${card.id}"][data-block="${index + 1}"]`);
+      if (next) next.focus();
+    }
+
+    function findCardDeep(cards, id) {
+      for (const card of cards) {
+        if (card.id === id) return card;
+        if (card.children) {
+          const child = findCardDeep(card.children, id);
+          if (child) return child;
+        }
+      }
+      return null;
+    }
+
+    function toggleSelect(id) {
+      if (selectedIds.has(id)) selectedIds.delete(id);
+      else selectedIds.add(id);
+      render();
+    }
+
+    function updateSelection() {
+      selectionBar.classList.toggle("active", selectedIds.size > 0);
+      selectionBar.querySelector(".selection-label").textContent = `${selectedIds.size} selected`;
+    }
+
+    function activeCards() {
+      const page = currentPage(loadStore());
+      return page.cards.filter((card) => selectedIds.has(card.id));
+    }
+
+    function applyToTargets(mutator) {
+      const store = loadStore();
+      const page = currentPage(store);
+      const targets = selectedIds.size ? page.cards.filter((card) => selectedIds.has(card.id)) : [findCardDeep(page.cards, activeCardId)].filter(Boolean);
+      targets.forEach(mutator);
+      saveStore(store);
+      render();
+    }
+
+    function syncFormatBar() {
+      const store = loadStore();
+      const card = findCardDeep(currentPage(store).cards, activeCardId) || activeCards()[0];
+      document.querySelectorAll(".format-bar [data-tool]").forEach((button) => {
+        button.classList.toggle("active", Boolean(card?.tools?.includes(button.dataset.tool)));
+      });
+      document.querySelectorAll(".format-bar [data-type]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.type === (card?.type || "body"));
+      });
+      document.querySelectorAll(".format-bar [data-list]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.list === (card?.list || "none"));
+      });
+      document.querySelectorAll(".format-bar .color-dot").forEach((button) => {
+        button.classList.toggle("active", button.dataset.color === (card?.color || "#f7f8ff"));
+      });
+    }
+
+    function copySelection(shouldCut = false) {
+      const store = loadStore();
+      const page = currentPage(store);
+      const cards = page.cards.filter((card) => selectedIds.has(card.id));
+      if (!cards.length) return false;
+      const payload = JSON.stringify({ type: "cards", cards });
+      addClipboardItem("Cards", cards.map((card) => card.title).join(", "), payload);
+      navigator.clipboard?.writeText(payload).catch(() => {});
+      if (shouldCut) {
+        page.cards = page.cards.filter((card) => !selectedIds.has(card.id));
+        selectedIds.clear();
+        saveStore(store);
+        render();
+      }
+      return true;
+    }
+
+    async function pasteCards() {
+      let text = "";
+      try { text = await navigator.clipboard.readText(); } catch {}
+      const history = loadClipboard();
+      if (!text && history[0]) text = history[0].payload;
+      if (!text) return false;
+      pastePayload(text);
+      return true;
+    }
+
+    function pastePayload(payload) {
+      const store = loadStore();
+      const page = currentPage(store);
+      try {
+        const parsed = JSON.parse(payload);
+        if (parsed.type === "cards" && Array.isArray(parsed.cards)) {
+          page.cards.unshift(...parsed.cards.map(cloneCard));
+        } else {
+          page.cards.unshift(textCard(payload));
+        }
+      } catch {
+        page.cards.unshift(textCard(payload));
+      }
+      saveStore(store);
+      render();
+    }
+
+    function cloneCard(card) {
+      return {
+        ...card,
+        id: uid("card"),
+        children: card.children?.map(cloneCard)
+      };
+    }
+
+    function textCard(text) {
+      return {
+        id: uid("card"),
+        title: "Pasted note",
+        size: "wide",
+        accent: colors[Math.floor(Math.random() * colors.length)],
+        type: "body",
+        list: "none",
+        tools: [],
+        color: "#f7f8ff",
+        image: "",
+        blocks: String(text).split(/\n+/).map((line) => line.trim()).filter(Boolean)
+      };
+    }
+
+    function addClipboardItem(title, preview, payload) {
+      const history = loadClipboard().filter((item) => item.payload !== payload);
+      history.unshift({ id: uid("clip"), title, preview, payload, createdAt: Date.now() });
+      localStorage.setItem(CLIPBOARD_KEY, JSON.stringify(history.slice(0, 12)));
+    }
+
+    function loadClipboard() {
+      try { return JSON.parse(localStorage.getItem(CLIPBOARD_KEY)) || []; } catch { return []; }
+    }
+
+    function showClipboard() {
+      const list = clipboardModal.querySelector(".history-list");
+      const history = loadClipboard();
+      list.innerHTML = history.length ? history.map((item) => `
+        <button class="history-item" type="button" data-clip="${item.id}">
+          <strong>${escapeHtml(item.title)}</strong>
+          <span>${escapeHtml(item.preview || "Saved item")}</span>
+        </button>
+      `).join("") : '<div class="empty-state">Copy cards to build clipboard history.</div>';
+      list.querySelectorAll(".history-item").forEach((button) => {
+        button.addEventListener("click", () => {
+          const item = loadClipboard().find((clip) => clip.id === button.dataset.clip);
+          if (item) pastePayload(item.payload);
+          closeClipboard();
+        });
+      });
+      clipboardModal.classList.add("open");
+      clipboardModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeClipboard() {
+      clipboardModal.classList.remove("open");
+      clipboardModal.setAttribute("aria-hidden", "true");
+    }
+
+    function groupSelected() {
+      if (selectedIds.size < 2) return;
+      const store = loadStore();
+      const page = currentPage(store);
+      const grouped = page.cards.filter((card) => selectedIds.has(card.id));
+      const firstIndex = page.cards.findIndex((card) => selectedIds.has(card.id));
+      page.cards = page.cards.filter((card) => !selectedIds.has(card.id));
+      page.cards.splice(Math.max(firstIndex, 0), 0, {
+        id: uid("group"),
+        kind: "group",
+        title: "Group",
+        size: "wide",
+        accent: "#9d70ff",
+        type: "body",
+        list: "none",
+        tools: ["block"],
+        color: "#f7f8ff",
+        blocks: [],
+        children: grouped
+      });
+      selectedIds.clear();
+      saveStore(store);
+      render();
+    }
+
+    function ungroupSelected() {
+      const store = loadStore();
+      const page = currentPage(store);
+      const nextCards = [];
+      page.cards.forEach((card) => {
+        if (selectedIds.has(card.id) && card.kind === "group") nextCards.push(...(card.children || []));
+        else nextCards.push(card);
+      });
+      page.cards = nextCards;
+      selectedIds.clear();
+      saveStore(store);
+      render();
+    }
+
+    function moveSelected(direction) {
+      const store = loadStore();
+      const page = currentPage(store);
+      const step = direction === "left" ? -1 : 1;
+      const ids = direction === "left" ? [...selectedIds] : [...selectedIds].reverse();
+      ids.forEach((id) => {
+        const index = page.cards.findIndex((card) => card.id === id);
+        const next = index + step;
+        if (index >= 0 && next >= 0 && next < page.cards.length) {
+          [page.cards[index], page.cards[next]] = [page.cards[next], page.cards[index]];
+        }
+      });
+      saveStore(store);
+      render();
+    }
+
+    function deleteSelected() {
+      const store = loadStore();
+      const page = currentPage(store);
+      page.cards = page.cards.filter((card) => !selectedIds.has(card.id));
+      selectedIds.clear();
+      saveStore(store);
+      render();
+    }
+
+    function addPage() {
+      const store = loadStore();
+      const page = { id: uid("page"), title: `Page ${store.pages.length + 1}`, cards: [] };
+      store.pages.push(page);
+      activePageId = page.id;
+      saveStore(store);
+      render();
+    }
+
+    function openCardModal(cardId = "") {
+      const store = loadStore();
+      const card = findCardDeep(currentPage(store).cards, cardId) || {
+        id: "",
+        title: "",
+        size: "wide",
+        image: "",
+        blocks: []
+      };
+      editingCardId = card.id;
+      draftImage = card.image || "";
+      cardModal.querySelector(".sheet-title").textContent = card.id ? "Edit card" : "Add card";
+      titleInput.value = card.title || "";
+      bodyInput.value = (card.blocks || []).join("\n");
+      imageInput.value = "";
+      imagePreview.src = draftImage;
+      imagePreview.classList.toggle("active", Boolean(draftImage));
+      cardModal.querySelectorAll(".size-picker .choice-pill").forEach((button) => {
+        button.classList.toggle("active", button.dataset.size === (card.size || "wide"));
+      });
+      cardModal.classList.add("open");
+      cardModal.setAttribute("aria-hidden", "false");
+      requestAnimationFrame(() => titleInput.focus());
+    }
+
+    function closeCardModal() {
+      cardModal.classList.remove("open");
+      cardModal.setAttribute("aria-hidden", "true");
+      editingCardId = "";
+    }
+
+    function saveCardFromModal() {
+      const store = loadStore();
+      const page = currentPage(store);
+      const card = findCardDeep(page.cards, editingCardId) || {
+        id: uid("card"),
+        accent: colors[Math.floor(Math.random() * colors.length)],
+        type: "body",
+        list: "none",
+        tools: [],
+        color: "#f7f8ff"
+      };
+      const isNew = !findCardDeep(page.cards, card.id);
+      card.title = titleInput.value.trim() || "Untitled";
+      card.size = cardModal.querySelector(".size-picker .active")?.dataset.size || "wide";
+      card.image = draftImage;
+      card.blocks = bodyInput.value.split("\n").map((line) => line.trim()).filter(Boolean);
+      if (isNew) page.cards.unshift(card);
+      saveStore(store);
+      closeCardModal();
+      render();
+    }
+
+    function undo() {
+      if (undoStack.length < 2) return;
+      const current = undoStack.pop();
+      redoStack.push(current);
+      const previous = undoStack[undoStack.length - 1];
+      localStorage.setItem(NOTES_KEY, previous);
+      activePageId = JSON.parse(previous).activePageId;
+      selectedIds.clear();
+      render();
+    }
+
+    function redo() {
+      const next = redoStack.pop();
+      if (!next) return;
+      undoStack.push(next);
+      localStorage.setItem(NOTES_KEY, next);
+      activePageId = JSON.parse(next).activePageId;
+      selectedIds.clear();
+      render();
+    }
+
+    function selectAllCards() {
+      const page = currentPage(loadStore());
+      selectedIds = new Set(page.cards.map((card) => card.id));
+      render();
+    }
+
+    function isEditingText() {
+      const active = document.activeElement;
+      return active && (active.matches("input, textarea") || active.isContentEditable);
+    }
+
+    document.querySelectorAll(".format-bar [data-tool]").forEach((button) => {
+      button.addEventListener("click", () => {
+        applyToTargets((card) => {
+          card.tools = card.tools || [];
+          if (card.tools.includes(button.dataset.tool)) card.tools = card.tools.filter((tool) => tool !== button.dataset.tool);
+          else card.tools.push(button.dataset.tool);
+        });
+      });
+    });
+
+    document.querySelectorAll(".format-bar [data-type]").forEach((button) => {
+      button.addEventListener("click", () => applyToTargets((card) => { card.type = button.dataset.type; }));
+    });
+
+    document.querySelectorAll(".format-bar [data-list]").forEach((button) => {
+      button.addEventListener("click", () => applyToTargets((card) => { card.list = button.dataset.list; }));
+    });
+
+    document.querySelectorAll(".format-bar .color-dot").forEach((button) => {
+      button.addEventListener("click", () => applyToTargets((card) => { card.color = button.dataset.color; }));
+    });
+
+    cardModal.querySelectorAll(".size-picker .choice-pill").forEach((button) => {
+      button.addEventListener("click", () => {
+        cardModal.querySelectorAll(".size-picker .choice-pill").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+      });
+    });
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        draftImage = reader.result;
+        imagePreview.src = draftImage;
+        imagePreview.classList.add("active");
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.querySelector(".add-page").addEventListener("click", addPage);
+    document.querySelector(".add-page-mobile").addEventListener("click", addPage);
+    document.querySelector(".add-card-top").addEventListener("click", () => openCardModal());
+    document.querySelector(".show-clipboard").addEventListener("click", showClipboard);
+    document.querySelector(".move-left").addEventListener("click", () => moveSelected("left"));
+    document.querySelector(".move-right").addEventListener("click", () => moveSelected("right"));
+    document.querySelector(".group-selected").addEventListener("click", groupSelected);
+    document.querySelector(".ungroup-selected").addEventListener("click", ungroupSelected);
+    document.querySelector(".delete-selected").addEventListener("click", deleteSelected);
+    document.querySelector(".clear-selected").addEventListener("click", () => { selectedIds.clear(); render(); });
+    cardModal.querySelector(".save-card").addEventListener("click", saveCardFromModal);
+    cardModal.querySelector(".close-card").addEventListener("click", closeCardModal);
+    clipboardModal.querySelector(".close-clipboard").addEventListener("click", closeClipboard);
+    cardModal.addEventListener("click", (event) => { if (event.target === cardModal) closeCardModal(); });
+    clipboardModal.addEventListener("click", (event) => { if (event.target === clipboardModal) closeClipboard(); });
+
+    document.addEventListener("keydown", async (event) => {
+      const mod = event.metaKey || event.ctrlKey;
+      if (!mod) return;
+      const key = event.key.toLowerCase();
+      if (key === "z" && event.shiftKey) { event.preventDefault(); redo(); return; }
+      if (key === "z") { event.preventDefault(); undo(); return; }
+      if (key === "a" && !isEditingText()) { event.preventDefault(); selectAllCards(); return; }
+      if (key === "g" && event.shiftKey) { event.preventDefault(); ungroupSelected(); return; }
+      if (key === "g") { event.preventDefault(); groupSelected(); return; }
+      if (key === "c" && selectedIds.size) { event.preventDefault(); copySelection(false); return; }
+      if (key === "x" && selectedIds.size) { event.preventDefault(); copySelection(true); return; }
+      if (key === "v" && event.shiftKey) { event.preventDefault(); showClipboard(); return; }
+      if (key === "v" && !isEditingText()) { event.preventDefault(); await pasteCards(); }
+    });
+
+    window.addEventListener("openNotesComposer", (event) => {
+      if (event.detail?.kind === "note-page") addPage();
+      else openCardModal();
+    });
+
+    const initial = loadStore();
+    activePageId = initial.activePageId || initial.pages[0].id;
+    localStorage.setItem(NOTES_KEY, JSON.stringify(initial));
+    undoStack = [JSON.stringify(initial)];
+    render();
+  </script>
+  <script src="bottom-bar.js"></script>
+</body>
+</html>
