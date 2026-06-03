@@ -1691,15 +1691,56 @@ let blockPath = [];
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
     }
 
-    function loadState() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(storageKey));
-        if (Array.isArray(saved?.notes)) return saved;
-      } catch (error) {
-        console.warn(error);
+function loadState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey));
+
+    if (saved && Array.isArray(saved.notes) && saved.notes.length) {
+      saved.notes.forEach((note, noteIndex) => {
+        note.id ||= uid();
+        note.title ||= "Untitled note";
+        note.pinned = Boolean(note.pinned);
+        note.accent ||= colors[noteIndex % colors.length];
+        note.icon ||= icons[noteIndex % icons.length];
+        note.order = Number.isFinite(note.order) ? note.order : noteIndex;
+
+        if (!Array.isArray(note.blocks) || !note.blocks.length) {
+          note.blocks = [{ id: uid(), type: "paragraph", text: "", children: [] }];
+        }
+
+        note.blocks.forEach(cleanBlock);
+      });
+
+      if (!saved.activeNoteId || !saved.notes.some(note => note.id === saved.activeNoteId)) {
+        saved.activeNoteId = saved.notes[0].id;
       }
-      return JSON.parse(JSON.stringify(initialState));
+
+      return saved;
     }
+  } catch (error) {
+    console.warn(error);
+  }
+
+  const fresh = JSON.parse(JSON.stringify(initialState));
+  localStorage.setItem(storageKey, JSON.stringify(fresh));
+  return fresh;
+}
+
+function cleanBlock(block) {
+  block.id ||= uid();
+  block.type ||= "paragraph";
+  block.text ||= "";
+
+  if (!Array.isArray(block.children)) {
+    block.children = [];
+  }
+
+  block.children.forEach(cleanBlock);
+
+  if (block.type === "task") {
+    block.checked = Boolean(block.checked);
+  }
+}
 
     function saveState() {
       localStorage.setItem(storageKey, JSON.stringify(state));
@@ -3258,33 +3299,38 @@ if (name === "move-note-down") {
     }
 
  document.addEventListener("click", event => {
+  const button = event.target.closest("[data-command]");
+
+  if (button) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    blockNextClick = false;
+
+    if (
+      selection.kind === "note" &&
+      selection.ids.size &&
+      button.dataset.command === "open-note"
+    ) {
+      const card = button.closest(".note-card");
+
+      if (card) {
+        toggleSelection("note", card.dataset.id);
+      }
+
+      return;
+    }
+
+    command(button.dataset.command, button);
+    return;
+  }
+
   if (blockNextClick) {
     event.preventDefault();
     event.stopPropagation();
     blockNextClick = false;
     return;
   }
-
-  const button = event.target.closest("[data-command]");
-  if (!button) return;
-
-  if (
-    selection.kind === "note" &&
-    selection.ids.size &&
-    button.dataset.command === "open-note"
-  ) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const card = button.closest(".note-card");
-    if (card) {
-      toggleSelection("note", card.dataset.id);
-    }
-
-    return;
-  }
-
-  command(button.dataset.command, button);
 });
     document.addEventListener("input", event => {
 if (event.target === titleInput) {
@@ -3363,8 +3409,15 @@ document.addEventListener("click", event => {
       if (event.target.closest(".image-close")) return;
       revealImageControls();
     });
-    toolbar.addEventListener("mousedown", event => event.preventDefault());
-    selectionBar.addEventListener("mousedown", event => event.preventDefault());
+    toolbar.addEventListener("mousedown", event => {
+  if (event.target.closest("[data-command]")) return;
+  event.preventDefault();
+});
+
+selectionBar.addEventListener("mousedown", event => {
+  if (event.target.closest("[data-command]")) return;
+  event.preventDefault();
+});
 
     function updateKeyboardOffset() {
       if (!window.visualViewport) return;
