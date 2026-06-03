@@ -1822,7 +1822,7 @@
           const dx = event.clientX - touch.x;
           const dy = Math.abs(event.clientY - touch.y);
           if (Math.abs(dx) > swipeMin && dy < 42) {
-            if (touch.kind === "block" && dx < 0) {
+            if (touch.kind === "block" && dx > 0) {
               toggleSelection(touch.kind, touch.id);
             } else if (touch.kind === "note" && dx > 0) {
               toggleSelection(touch.kind, touch.id);
