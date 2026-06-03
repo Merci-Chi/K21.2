@@ -750,8 +750,99 @@
 }
 
 .url .editable {
-  color: #8fb3ff;
+  display: none;
+}
+
+.url-card {
+  display: grid;
+  gap: 8px;
+}
+
+.url-display {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.45;
   text-decoration: underline;
+  background: linear-gradient(90deg, #5a8cff 0%, #9d70ff 48%, #ff74ba 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  overflow-wrap: anywhere;
+}
+
+.url-fields {
+  display: none;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+.block.has-icon .block-line {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.block-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+  border-radius: 10px;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.block-icon-edit {
+  display: none;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.selection-active .block.selected .block-icon-edit {
+  display: grid;
+}
+
+.block-icon-field {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 11px;
+  outline: none;
+  padding: 0 10px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.selection-active .url.selected .url-fields {
+  display: grid;
+}
+
+.url-field {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  outline: none;
+  padding: 0 11px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.url-field::placeholder {
+  color: rgba(255, 255, 255, 0.34);
 }
 
     .add-line i {
@@ -1343,11 +1434,18 @@
   </button>
 
   <div class="title-stack">
-    <p class="kicker"><i class="fa-solid fa-pen" aria-hidden="true"></i> Editing</p>
+    <p class="kicker" id="editorModeLabel">
+  <i class="fa-solid fa-pen" aria-hidden="true"></i>
+  <span id="editorModeText">Editing</span>
+</p>
   </div>
 
   <div class="top-actions">
-    <button class="icon-btn" type="button" data-command="undo-action" aria-label="Undo">
+  <button class="icon-btn" type="button" data-command="toggle-block-selection-mode" aria-label="Selection mode">
+    <i class="fa-solid fa-pen" aria-hidden="true"></i>
+  </button>
+
+  <button class="icon-btn" type="button" data-command="undo-action" aria-label="Undo">
       <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
     </button>
 
@@ -1673,8 +1771,8 @@ let blockPath = [];
     const toast = document.getElementById("toast");
     const toastText = document.getElementById("toastText");
     const selectionBar = document.getElementById("selectionBar");
-    const selectionTitle = document.getElementById("selectionTitle");
-    const toolbar = document.getElementById("toolbar");
+	const editorModeText = document.getElementById("editorModeText");
+	const toolbar = document.getElementById("toolbar");
     let noteDraft = null;
     let imageControlsTimer = null;
     let blockClipboard = [];
@@ -1820,12 +1918,25 @@ function openInteriorNote(blockId) {
   const block = activeBlocks().find(item => item.id === blockId);
   if (!block) return;
 
+  if (!block.interiorTitle) {
+    block.interiorTitle = stripHtml(block.text || "Inside block");
+  }
+
+  if (!block.interiorAccent) {
+    block.interiorAccent = block.accent || activeNote().accent;
+  }
+
   if (!Array.isArray(block.children)) {
-    block.children = [{ id: uid(), type: "paragraph", text: "", children: [] }];
+    block.children = [];
   }
 
   if (!block.children.length) {
-    block.children.push({ id: uid(), type: "paragraph", text: "", children: [] });
+    block.children.push({
+      id: uid(),
+      type: "paragraph",
+      text: "",
+      children: []
+    });
   }
 
   blockPath.push(blockId);
@@ -1932,9 +2043,13 @@ const parentBlock = activeParentBlock();
 
 if (document.activeElement !== titleInput) {
   titleInput.value = parentBlock
-    ? stripHtml(parentBlock.text || "Inside block")
+    ? parentBlock.interiorTitle || stripHtml(parentBlock.text || "Inside block")
     : note.title || "";
 }
+
+titleInput.style.color = parentBlock
+  ? parentBlock.interiorAccent || note.accent || "var(--text)"
+  : "var(--text)";
 
 blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
@@ -1949,6 +2064,49 @@ blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
       <button type="button" data-command="open-insert-after" data-after-id="${afterId}" aria-label="Add block here">
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
       </button>
+    </div>
+  `;
+}
+function blockHasInteriorContent(block) {
+  if (!block || !Array.isArray(block.children)) return false;
+
+  return block.children.some(child => {
+    if (child.type === "image" && child.src) return true;
+
+    if (stripHtml(child.text || "").trim()) return true;
+
+    if (child.type === "url" && String(child.url || "").trim()) return true;
+
+    if (Array.isArray(child.children) && blockHasInteriorContent(child)) return true;
+
+    return false;
+  });
+}
+
+function blockIconHtml(block) {
+  if (!block.icon) return "";
+
+  return `
+    <span class="block-icon">
+      <i class="fa-solid ${escapeHtml(block.icon)}" aria-hidden="true"></i>
+    </span>
+  `;
+}
+
+function blockIconEditorHtml(block) {
+  return `
+    <div class="block-icon-edit">
+      <span class="block-icon">
+        <i class="fa-solid ${escapeHtml(block.icon || "fa-circle")}" aria-hidden="true"></i>
+      </span>
+
+      <input
+        class="block-icon-field"
+        type="text"
+        value="${escapeHtml(block.icon || "")}"
+        placeholder="Icon name, ex: fa-star"
+        data-id="${block.id}"
+      />
     </div>
   `;
 }
@@ -1994,6 +2152,17 @@ function renderBlocksHtml(blocks, accent) {
 
   return html;
 }
+function safeUrl(value) {
+  const raw = String(value || "").trim();
+
+  if (!raw) return "";
+
+  if (/^https?:\/\//i.test(raw)) {
+    return raw;
+  }
+
+  return `https://${raw}`;
+}
     function renderBlock(block, index, accent) {
       if (block.type === "image") {
   const imageCommand = block.src ? "open-image" : "choose-image-for-block";
@@ -2008,6 +2177,24 @@ function renderBlocksHtml(blocks, accent) {
     </article>
   `;
 }
+if (block.type === "url") {
+  const label = stripHtml(block.text || "").trim() || "Untitled link";
+
+  return `
+    <article class="block url ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+      <div class="url-card">
+        <button class="url-display" type="button" data-command="open-url" data-id="${block.id}">
+          ${escapeHtml(label)}
+        </button>
+
+        <div class="url-fields">
+          <input class="url-field" type="text" value="${escapeHtml(label)}" placeholder="Visible link text" data-field="label" data-id="${block.id}" />
+          <input class="url-field" type="url" value="${escapeHtml(block.url || "")}" placeholder="https://example.com" data-field="url" data-id="${block.id}" />
+        </div>
+      </div>
+    </article>
+  `;
+}
       const marker = block.type === "bullet"
         ? `<span class="marker">•</span>`
         : block.type === "number"
@@ -2015,14 +2202,16 @@ function renderBlocksHtml(blocks, accent) {
           : block.type === "task"
             ? `<button class="task-check ${block.checked ? "checked" : ""}" type="button" data-command="toggle-task" data-id="${block.id}" aria-label="Toggle task">${block.checked ? '<i class="fa-solid fa-check" aria-hidden="true"></i>' : ""}</button>`
             : "";
-      return `
-        <article class="block ${block.type} ${block.type === "card-square" ? "card card-square" : ""} ${block.type === "card-half" ? "card card-half" : ""} ${block.type === "card-long" ? "card card-long" : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
-          <div class="block-line">
-            ${marker}
-            <div class="editable" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write">${sanitizeHtml(block.text || "")}</div>
-          </div>
-        </article>
-      `;
+   return `
+  <article class="block ${block.type} ${block.icon ? "has-icon" : ""} ${block.type === "card-square" ? "card card-square" : ""} ${block.type === "card-half" ? "card card-half" : ""} ${block.type === "card-long" ? "card card-long" : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <div class="block-line">
+      ${marker || blockIconHtml(block)}
+      <div class="editable" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write">${sanitizeHtml(block.text || "")}</div>
+    </div>
+
+    ${blockIconEditorHtml(block)}
+  </article>
+`;
     }
 
     function sizeForType(type) {
@@ -2046,7 +2235,17 @@ function renderBlocksHtml(blocks, accent) {
       if (view === "notes") renderNotes();
       if (view === "editor") renderEditor();
     }
+function updateEditorModeLabel() {
+  if (!editorModeText) return;
 
+  const inSelectionMode = Boolean(
+    currentView === "editor" &&
+    selection.kind === "block" &&
+    selection.ids.size
+  );
+
+  editorModeText.textContent = inSelectionMode ? "Selection Mode" : "Editing";
+}
     function renderAll() {
       renderNotes();
       if (currentView === "editor") renderEditor();
@@ -2121,12 +2320,13 @@ function renderBlocksHtml(blocks, accent) {
   setTimeout(() => focusBlock(block.id), 50);
 }
  function createBlock(type) {
-  const base = {
-    id: uid(),
-    type,
-    text: "",
-    children: []
-  };
+ const base = {
+  id: uid(),
+  type,
+  text: "",
+  icon: "",
+  children: []
+};
 
   if (type === "task") {
     return { ...base, checked: false };
@@ -2137,12 +2337,13 @@ function renderBlocksHtml(blocks, accent) {
   }
 
   if (type === "url") {
-    return {
-      ...base,
-      type: "url",
-      text: "https://"
-    };
-  }
+  return {
+    ...base,
+    type: "url",
+    text: "Link text",
+    url: "https://"
+  };
+}
 
   if (type === "card-square") {
     return {
@@ -2339,29 +2540,31 @@ function closeSelection() {
   refreshSelectionClasses();
 }
 
-    function updateSelectionUi() {
-      const active = Boolean(selection.kind && selection.ids.size);
-      phone.classList.toggle("selection-active", active);
-      phone.classList.toggle("block-selection", active && selection.kind === "block");
-      phone.classList.toggle("note-selection", active && selection.kind === "note");
-      selectionTitle.textContent = `${selection.ids.size || 0} ${selection.kind || "item"}${selection.ids.size === 1 ? "" : "s"} selected`;
+ function updateSelectionUi() {
+  const active = Boolean(selection.kind && selection.ids.size);
+  phone.classList.toggle("selection-active", active);
+  phone.classList.toggle("block-selection", active && selection.kind === "block");
+  phone.classList.toggle("note-selection", active && selection.kind === "note");
+  selectionTitle.textContent = `${selection.ids.size || 0} ${selection.kind || "item"}${selection.ids.size === 1 ? "" : "s"} selected`;
 
-const selectionHint = selectionBar.querySelector(".selection-text span");
-if (selectionHint) {
-  selectionHint.textContent = selection.kind === "note"
-    ? "Drag selected notes to reorder."
-    : "Drag selected blocks to reorder.";
+  const selectionHint = selectionBar.querySelector(".selection-text span");
+  if (selectionHint) {
+    selectionHint.textContent = selection.kind === "note"
+      ? "Drag selected notes to reorder."
+      : "Drag selected blocks to reorder.";
+  }
+
+  const groupButton = selectionBar.querySelector('[data-command="group-selected"]');
+
+  if (groupButton) {
+    const isGrouped = Boolean(selectedGroupId());
+
+    groupButton.classList.toggle("ungroup-mode", isGrouped);
+    groupButton.setAttribute("aria-label", isGrouped ? "Ungroup" : "Group");
+  }
+
+  updateEditorModeLabel();
 }
-const groupButton = selectionBar.querySelector('[data-command="group-selected"]');
-
-if (groupButton) {
-  const isGrouped = Boolean(selectedGroupId());
-
-  groupButton.classList.toggle("ungroup-mode", isGrouped);
-  groupButton.setAttribute("aria-label", isGrouped ? "Ungroup" : "Group");
-}
-    }
-
 function refreshSelectionClasses() {
   document.querySelectorAll("[data-kind][data-id]").forEach(el => {
     el.classList.toggle("selected", selection.ids.has(el.dataset.id));
@@ -2372,11 +2575,17 @@ function refreshSelectionClasses() {
     group.classList.toggle("selected", hasSelectedBlock);
   });
 }
-    function handleSelectionModeTap(event) {
+ function handleSelectionModeTap(event) {
   const active = Boolean(selection.kind && selection.ids.size);
   if (!active) return;
 
-  if (event.target.closest(".action-btn, .selection-bar, .toolbar, .modal")) return;
+  if (
+    event.target.closest(
+      ".url-field, .block-icon-field, .action-btn, .selection-bar, .toolbar, .modal"
+    )
+  ) {
+    return;
+  }
 
   const item = event.target.closest("[data-kind][data-id]");
   if (!item) return;
@@ -2394,7 +2603,6 @@ function refreshSelectionClasses() {
     toggleSelection(item.dataset.kind, item.dataset.id);
   }
 }
-
 noteList.addEventListener("pointerdown", handleSelectionModeTap, true);
 noteList.addEventListener("click", handleSelectionModeTap, true);
 
@@ -2417,7 +2625,11 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
     let holdTimer = null;
 
     element.addEventListener("pointerdown", event => {
-      if (event.target.closest("input, textarea, .action-btn, .task-check, .image-open")) return;
+      if (event.target.closest("input, textarea, .url-field, .action-btn, .task-check")) return;
+
+if (event.target.closest(".image-open") && !selection.kind) {
+  // allow image blocks to be long-pressed/swiped for selection
+}
 
       touch = {
         x: event.clientX,
@@ -3019,67 +3231,117 @@ function insertBlock(type) {
       titleInput.style.height = "auto";
       titleInput.style.height = `${titleInput.scrollHeight}px`;
     }
+function findBlockEverywhere(blockId, blocks = activeBlocks()) {
+  for (const block of blocks) {
+    if (block.id === blockId) return block;
 
- function handlePhoto(files) {
+    if (Array.isArray(block.children)) {
+      const found = findBlockEverywhere(blockId, block.children);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
+function fileToImageDataUrl(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new Image();
+
+      img.onload = () => {
+        const maxSize = 1200;
+        const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        resolve(canvas.toDataURL("image/jpeg", 0.78));
+      };
+
+      img.onerror = () => resolve(reader.result);
+      img.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+async function handlePhoto(files) {
   const imageFiles = [...files].filter(file => file.type.startsWith("image/"));
   if (!imageFiles.length) return;
 
   ensureNote();
 
-  imageFiles.forEach(file => {
-    const reader = new FileReader();
+  for (const file of imageFiles) {
+    remember();
 
-    reader.onload = () => {
-      remember();
+    const imageData = await fileToImageDataUrl(file);
 
-      const blocks = activeBlocks();
+    if (pendingImageBlockId) {
+      const block = findBlockEverywhere(pendingImageBlockId);
 
-      if (pendingImageBlockId) {
-        const block = blocks.find(item => item.id === pendingImageBlockId);
+      if (block && block.type === "image") {
+        block.src = imageData;
+        focusedBlockId = block.id;
+        pendingImageBlockId = null;
 
-        if (block && block.type === "image") {
-          block.src = reader.result;
-          focusedBlockId = block.id;
-          pendingImageBlockId = null;
+        renderEditor();
 
+        try {
           saveState();
-          renderEditor();
-          showToast("Photo added", "fa-image");
+        } catch (error) {
+          console.warn(error);
+          showToast("Photo is showing, but it may be too large to save.", "fa-triangle-exclamation");
           return;
         }
+
+        showToast("Photo added", "fa-image");
+        return;
       }
+    }
 
-      const block = {
-        id: uid(),
-        type: "image",
-        src: reader.result,
-        children: []
-      };
+    const blocks = activeBlocks();
 
-      const index = focusedBlockId
-        ? blocks.findIndex(item => item.id === focusedBlockId)
-        : -1;
-
-      blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
-      focusedBlockId = block.id;
-
-      saveState();
-
-      if (currentView !== "editor") {
-        setView("editor");
-      } else {
-        renderEditor();
-      }
-
-      showToast("Photo added", "fa-image");
+    const block = {
+      id: uid(),
+      type: "image",
+      text: "",
+      src: imageData,
+      children: []
     };
 
-    reader.readAsDataURL(file);
-  });
+    const index = focusedBlockId
+      ? blocks.findIndex(item => item.id === focusedBlockId)
+      : -1;
+
+    blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
+
+    focusedBlockId = block.id;
+
+    if (currentView !== "editor") {
+      setView("editor");
+    } else {
+      renderEditor();
+    }
+
+    try {
+      saveState();
+    } catch (error) {
+      console.warn(error);
+      showToast("Photo is showing, but it may be too large to save.", "fa-triangle-exclamation");
+      return;
+    }
+
+    showToast("Photo added", "fa-image");
+  }
 
   photoInput.value = "";
 }
-
     function openImage(id) {
       const block = activeBlocks().find(item => item.id === id);
       if (!block?.src) return;
@@ -3209,7 +3471,13 @@ if (name === "close-toast") {
   return;
 }
 if (name === "choose-image-for-block") {
+  if (selection.kind === "block" && selection.ids.size) {
+    toggleSelection("block", element.dataset.id);
+    return;
+  }
+
   pendingImageBlockId = element.dataset.id;
+  photoInput.value = "";
   photoInput.click();
   return;
 }
@@ -3217,6 +3485,28 @@ if (name === "quick-text-block") {
   addBlock("paragraph", element.dataset.afterId || null);
   return;
 }
+if (name === "open-url") {
+  if (selection.kind === "block" && selection.ids.size) {
+    toggleSelection("block", element.dataset.id);
+    return;
+  }
+
+  const block = findBlockEverywhere(element.dataset.id);
+  const href = safeUrl(block?.url || "");
+
+  if (!href) return;
+
+  window.open(href, "_blank");
+  return;
+}
+
+if (name === "edit-url-label") {
+  return;
+}
+
+if (name === "edit-url-href") {
+  return;
+}
 
 if (name === "open-insert-after") {
   openInsertAfter(element.dataset.afterId);
@@ -3231,10 +3521,47 @@ if (name === "open-insert-after") {
   openInsertAfter(element.dataset.afterId);
   return;
 }
-  if (name === "toggle-note-tools") {
-    phone.classList.toggle("notes-tools-open");
+if (name === "toggle-note-tools") {
+  if (selection.kind === "note" && selection.ids.size) {
+    closeSelection();
     return;
   }
+
+  const firstNote = sortedNotes()[0];
+
+  if (!firstNote) {
+    showToast("No notes to select", "fa-pen");
+    return;
+  }
+
+  enterSelection("note", firstNote.id);
+  phone.classList.add("notes-tools-open");
+
+  if (document.activeElement) document.activeElement.blur();
+
+  return;
+}
+
+if (name === "toggle-block-selection-mode") {
+  if (selection.kind === "block" && selection.ids.size) {
+    closeSelection();
+    return;
+  }
+
+  const blocks = activeBlocks();
+  const targetId = focusedBlockId || blocks[0]?.id;
+
+  if (!targetId) {
+    showToast("No blocks to select", "fa-pen");
+    return;
+  }
+
+  enterSelection("block", targetId);
+
+  if (document.activeElement) document.activeElement.blur();
+
+  return;
+}
 
 if (name === "pin-selected-note") {
   const id = selectedNoteId();
@@ -3349,7 +3676,20 @@ if (name === "move-note-down") {
       if (name === "add-heading") convertBlocks("heading");
       if (name === "photo") photoInput.click();
       if (name === "toggle-task") toggleTask(element.dataset.id);
-      if (name === "open-image") openImage(element.dataset.id);
+if (name === "open-image") {
+  if (selection.kind === "block" && selection.ids.size) {
+    toggleSelection("block", element.dataset.id);
+    return;
+  }
+
+  const block = findBlockEverywhere(element.dataset.id);
+  if (!block?.src) return;
+
+  imageViewerImg.src = block.src;
+  imageViewer.classList.add("open");
+  imageViewer.setAttribute("aria-hidden", "false");
+  return;
+}
       if (name === "close-image") closeImage();
       if (name === "format-bold") applyInlineFormat("bold");
       if (name === "format-italic") applyInlineFormat("italic");
@@ -3392,6 +3732,8 @@ if (name === "move-note-down") {
     }
 
  document.addEventListener("click", event => {
+  if (event.target.matches(".url-field")) return;
+
   const button = event.target.closest("[data-command]");
 
   if (button) {
@@ -3425,12 +3767,40 @@ if (name === "move-note-down") {
     return;
   }
 });
-    document.addEventListener("input", event => {
-if (event.target === titleInput) {
+
+document.addEventListener("input", event => {
+if (event.target.matches(".block-icon-field")) {
+  const block = findBlockEverywhere(event.target.dataset.id);
+  if (!block) return;
+
+  block.icon = event.target.value.trim();
+
+  saveState();
+  renderEditor();
+  return;
+}
+  if (event.target.matches(".url-field")) {
+    const block = findBlockEverywhere(event.target.dataset.id);
+    if (!block) return;
+
+    if (event.target.dataset.field === "label") {
+      block.text = event.target.value;
+    }
+
+    if (event.target.dataset.field === "url") {
+      block.url = event.target.value;
+    }
+
+    saveState();
+    renderNotes();
+    return;
+  }
+
+  if (event.target === titleInput) {
   const parentBlock = activeParentBlock();
 
   if (parentBlock) {
-    parentBlock.text = sanitizeHtml(titleInput.value);
+    parentBlock.interiorTitle = titleInput.value;
   } else {
     activeNote().title = titleInput.value;
   }
@@ -3439,12 +3809,13 @@ if (event.target === titleInput) {
   saveState();
   return;
 }
-      const editable = event.target.closest("[contenteditable='true']");
-      if (editable?.dataset?.id) {
-        focusedBlockId = editable.dataset.id;
-        updateBlockField(editable);
-      }
-    });
+  const editable = event.target.closest("[contenteditable='true']");
+
+  if (editable?.dataset?.id) {
+    focusedBlockId = editable.dataset.id;
+    updateBlockField(editable);
+  }
+});
 
     document.addEventListener("keydown", event => {
       handleEnter(event);
@@ -3478,10 +3849,27 @@ if (event.target === titleInput) {
   }, 80);
 });
 document.addEventListener("click", event => {
+  if (event.target.matches(".url-field, .block-icon-field")) return;
   if (event.target.closest("[data-command]")) return;
   if (selection.kind && selection.ids.size) return;
-  if (event.target.closest("[contenteditable='true']")) return;
   if (event.target.closest(".task-check, .image-open, .action-btn, .block-insert-row")) return;
+
+  const blockEl = event.target.closest(".block");
+  if (!blockEl) return;
+
+  const block = findBlockEverywhere(blockEl.dataset.id);
+  if (!blockHasInteriorContent(block)) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (document.activeElement) document.activeElement.blur();
+
+  openInteriorNote(blockEl.dataset.id);
+});
+document.addEventListener("dblclick", event => {
+  if (selection.kind && selection.ids.size) return;
+  if (event.target.closest(".task-check, .image-open, .action-btn, .url-field, .block-icon-field, .block-insert-row")) return;
 
   const block = event.target.closest(".block");
   if (!block) return;
