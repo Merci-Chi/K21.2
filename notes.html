@@ -283,15 +283,38 @@
       transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
     }
 
-    .note-card.selected,
-    .block.selected {
-      border-color: color-mix(in srgb, var(--accent) 68%, rgba(255, 255, 255, 0.24));
-      box-shadow:
-        0 0 0 2px color-mix(in srgb, var(--accent) 48%, transparent),
-        0 18px 42px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
+ .selection-active .note-card.selected,
+.selection-active .block.selected {
+  border-color: color-mix(in srgb, var(--accent) 68%, rgba(255, 255, 255, 0.24));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 48%, transparent),
+    0 18px 42px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
 
+.block-group {
+  display: grid;
+  gap: 3px;
+  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+}
+
+.selection-active .block-group.selected {
+  border-color: color-mix(in srgb, var(--accent) 68%, rgba(255, 255, 255, 0.24));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 48%, transparent),
+    0 18px 42px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
+    rgba(255, 255, 255, 0.025);
+}
+
+.selection-active .block-group.selected .block.selected {
+  border-color: transparent;
+  box-shadow: none;
+}
     .note-card.reveal-delete,
     .block.reveal-delete {
       border-color: color-mix(in srgb, var(--red) 70%, rgba(255, 255, 255, 0.2));
@@ -1624,12 +1647,47 @@
         return;
       }
       if (document.activeElement !== titleInput) titleInput.value = note.title || "";
-      blocksEl.innerHTML = note.blocks.map((block, index) => renderBlock(block, index, note.accent)).join("");
+      blocksEl.innerHTML = renderBlocksHtml(note.blocks, note.accent);
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
       wireDragging(blocksEl.querySelectorAll(".block"), "block");
       autoSizeTitle();
     }
+function renderBlocksHtml(blocks, accent) {
+  let html = "";
+  let index = 0;
 
+  while (index < blocks.length) {
+    const block = blocks[index];
+
+    if (block.groupId) {
+      const groupId = block.groupId;
+      const groupItems = [];
+
+      while (index < blocks.length && blocks[index].groupId === groupId) {
+        groupItems.push({
+          block: blocks[index],
+          index
+        });
+        index += 1;
+      }
+
+      const groupSelected = groupItems.some(item => selection.ids.has(item.block.id));
+
+      html += `
+        <div class="block-group ${groupSelected ? "selected" : ""}" style="--accent:${accent}">
+          ${groupItems.map(item => renderBlock(item.block, item.index, accent)).join("")}
+        </div>
+      `;
+
+      continue;
+    }
+
+    html += renderBlock(block, index, accent);
+    index += 1;
+  }
+
+  return html;
+}
     function renderBlock(block, index, accent) {
       if (block.type === "image") {
         return `
@@ -1923,8 +1981,10 @@ noteList.addEventListener("click", handleSelectionModeTap, true);
 blocksEl.addEventListener("pointerdown", handleSelectionModeTap, true);
 blocksEl.addEventListener("click", handleSelectionModeTap, true);
 
-  function wireSwipeTargets(elements) {
+ function wireSwipeTargets(elements) {
   elements.forEach(element => {
+    let holdTimer = null;
+
     element.addEventListener("pointerdown", event => {
       if (event.target.closest("input, textarea, .action-btn, .task-check, .image-open")) return;
 
@@ -1936,6 +1996,20 @@ blocksEl.addEventListener("click", handleSelectionModeTap, true);
         element,
         done: false
       };
+
+      holdTimer = setTimeout(() => {
+        if (!touch || touch.element !== element || touch.done) return;
+
+        touch.done = true;
+
+        toggleSelection(touch.kind, touch.id);
+
+        if (touch.kind === "note") {
+          phone.classList.add("notes-tools-open");
+        }
+
+        if (document.activeElement) document.activeElement.blur();
+      }, 450);
     });
 
     element.addEventListener("pointermove", event => {
@@ -1944,7 +2018,12 @@ blocksEl.addEventListener("click", handleSelectionModeTap, true);
       const dx = event.clientX - touch.x;
       const dy = Math.abs(event.clientY - touch.y);
 
+      if (Math.abs(dx) > 8 || dy > 8) {
+        clearTimeout(holdTimer);
+      }
+
       if (Math.abs(dx) > swipeMin && dy < 70) {
+        clearTimeout(holdTimer);
         touch.done = true;
         event.preventDefault();
 
@@ -1964,10 +2043,12 @@ blocksEl.addEventListener("click", handleSelectionModeTap, true);
     });
 
     element.addEventListener("pointerup", () => {
+      clearTimeout(holdTimer);
       touch = null;
     });
 
     element.addEventListener("pointercancel", () => {
+      clearTimeout(holdTimer);
       touch = null;
     });
 
