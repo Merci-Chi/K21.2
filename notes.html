@@ -794,14 +794,14 @@
   place-items: center;
   margin-top: 1px;
   border-radius: 10px;
-  color: var(--accent);
+  color: var(--block-icon-color, var(--accent));
   background: rgba(255, 255, 255, 0.055);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .block-icon-edit {
   display: none;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto auto;
   gap: 8px;
   align-items: center;
   margin-top: 8px;
@@ -815,15 +815,30 @@
   display: grid;
 }
 
-.block-icon-field {
-  width: 100%;
-  min-height: 36px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 11px;
-  outline: none;
-  padding: 0 10px;
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.055);
+.block-icon-control,
+.block-color-control,
+.tool-color-preview,
+.tool-icon-preview {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.11);
+}
+
+.block-color-control,
+.tool-color-preview {
+  background: var(--picked-color, var(--accent));
+}
+
+.text-gradient {
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
 }
 
 .selection-active .url.selected .url-fields {
@@ -1185,6 +1200,29 @@
       gap: 9px;
     }
 
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .preset-color,
+    .preset-gradient {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--preset);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .preset-gradient {
+      border-radius: 16px;
+    }
+
+    .preset-color.active,
+    .preset-gradient.active {
+      box-shadow: inset 0 0 0 3px #fff, 0 0 0 2px rgba(255, 255, 255, 0.2), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
     .size-option {
       min-height: 48px;
       display: flex;
@@ -1294,6 +1332,149 @@
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
         rgba(255, 255, 255, 0.06);
+    }
+
+    .categorized-icon-picker {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .icon-category-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding: 1px;
+      align-items: stretch;
+    }
+
+    .icon-category {
+      min-width: 0;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 7px;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 11.5px;
+      font-weight: 850;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      white-space: nowrap;
+    }
+
+    .icon-category.active {
+      color: var(--text);
+      background: color-mix(in srgb, var(--blue) 24%, rgba(255, 255, 255, 0.055));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1));
+    }
+
+    .icon-category i {
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 40px);
+      justify-content: space-between;
+      gap: 7px 5px;
+      padding: 1px;
+    }
+
+    .categorized-icon-picker .icon-choice {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      color: rgba(255, 255, 255, 0.68);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
+    .categorized-icon-picker .icon-choice.active {
+      color: var(--text);
+      background: color-mix(in srgb, var(--blue) 24%, rgba(255, 255, 255, 0.055));
+      box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1)),
+        0 0 20px color-mix(in srgb, var(--blue) 18%, transparent);
+    }
+
+    .categorized-icon-picker .icon-choice svg,
+    .categorized-icon-picker .icon-choice i {
+      width: 21px;
+      height: 21px;
+      stroke-width: 2.25;
+    }
+
+    .categorized-icon-picker .icon-choice i {
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .icon-empty {
+      grid-column: 1 / -1;
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.52);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .icon-pager {
+      display: grid;
+      grid-template-columns: 34px 1fr 34px;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+    }
+
+    .icon-page-button {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.78);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
+    .icon-page-button:disabled {
+      opacity: 0.34;
+    }
+
+    .icon-page-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.52);
+      font-size: 11.5px;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .icon-page-number {
+      min-width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.62);
+      background: rgba(255, 255, 255, 0.045);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+    }
+
+    .icon-page-number.active {
+      color: var(--text);
+      background: color-mix(in srgb, var(--blue) 22%, rgba(255, 255, 255, 0.055));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 46%, rgba(255, 255, 255, 0.1));
     }
 
     .image-viewer {
@@ -1463,10 +1644,12 @@
       <button type="button" data-command="format-bold" aria-label="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
       <button type="button" data-command="format-italic" aria-label="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
       <button type="button" data-command="format-underline" aria-label="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
+      <button type="button" data-command="open-size-menu" aria-label="Text size"><strong aria-hidden="true">aA</strong></button>
+      <button type="button" data-command="open-text-color-menu" aria-label="Text color"><i class="fa-solid fa-palette" aria-hidden="true"></i></button>
       <button type="button" data-command="add-bullet" aria-label="Add bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
       <button type="button" data-command="add-number" aria-label="Add numbered item"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
       <button type="button" data-command="add-task" aria-label="Add checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
-      <button type="button" data-command="add-heading" aria-label="Add heading"><i class="fa-solid fa-heading" aria-hidden="true"></i></button>
+      <button type="button" data-command="add-heading" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>
       <button type="button" data-command="photo" aria-label="Add photo"><i class="fa-solid fa-image" aria-hidden="true"></i></button>
       <button class="primary" type="button" data-command="add-text" aria-label="Add text"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
     </nav>
@@ -1477,6 +1660,16 @@
         <span>Drag selected blocks to reorder.</span>
       </div>
       <div class="selection-actions">
+        <button class="icon-btn block-tool" type="button" data-command="open-block-color-menu" aria-label="Block icon color"><span class="tool-color-preview" aria-hidden="true"></span></button>
+        <button class="icon-btn block-tool" type="button" data-command="open-block-icon-menu" aria-label="Block icon"><span class="tool-icon-preview" aria-hidden="true"><i class="fa-solid fa-circle" aria-hidden="true"></i></span></button>
+        <button class="icon-btn block-tool" type="button" data-command="format-bold" aria-label="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="format-italic" aria-label="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="format-underline" aria-label="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="add-bullet" aria-label="Make bullet list"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="add-number" aria-label="Make numbered list"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="add-task" aria-label="Make checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="add-heading" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="open-text-color-menu" aria-label="Text color"><i class="fa-solid fa-palette" aria-hidden="true"></i></button>
    		<button class="icon-btn block-tool" type="button" data-command="group-selected" aria-label="Group"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="cut-selected" aria-label="Cut"><i class="fa-solid fa-scissors" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="copy-selected" aria-label="Copy"><i class="fa-solid fa-copy" aria-hidden="true"></i></button>
@@ -1662,6 +1855,45 @@
     </div>
   </section>
 </div>
+
+<div class="modal" id="blockColorModal" aria-hidden="true">
+  <section class="sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="blockColorTitle">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <h2 id="blockColorTitle">Icon color</h2>
+      <button class="icon-btn" type="button" data-command="close-block-color-menu" aria-label="Close icon color">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="preset-grid" id="blockColorChoices"></div>
+  </section>
+</div>
+
+<div class="modal" id="blockIconModal" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="blockIconTitle">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <h2 id="blockIconTitle">Icon</h2>
+      <button class="icon-btn" type="button" data-command="close-block-icon-menu" aria-label="Close icon">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="icon-row categorized-icon-picker" id="blockIconChoices"></div>
+  </section>
+</div>
+
+<div class="modal" id="textColorModal" aria-hidden="true">
+  <section class="sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="textColorTitle">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <h2 id="textColorTitle">Text color</h2>
+      <button class="icon-btn" type="button" data-command="close-text-color-menu" aria-label="Close text color">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="preset-grid" id="textColorChoices"></div>
+  </section>
+</div>
       <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="viewTextTitle">
         <div class="grabber"></div>
         <div class="sheet-head">
@@ -1692,6 +1924,72 @@
     const storageKey = "clean-mobile-notes-v1";
     const colors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff"];
     const icons = ["fa-note-sticky", "fa-book-open", "fa-pen", "fa-heart-pulse", "fa-lightbulb", "fa-list-check", "fa-star"];
+    const ICON_RECENTS_KEY = "routineDashboard.iconRecents.v1";
+    const ICON_PAGE_SIZE = 18;
+    const MAX_ICON_PAGES = 5;
+    const legacyIconMap = {
+      calendar: "solid:calendar-days",
+      briefcase: "solid:briefcase",
+      health: "solid:heart-pulse",
+      star: "solid:star",
+      book: "solid:book",
+      home: "solid:house",
+      flag: "solid:flag",
+      heart: "solid:heart",
+      dumbbell: "solid:dumbbell",
+      running: "solid:person-running",
+      apple: "solid:apple-whole",
+      utensils: "solid:utensils",
+      chart: "solid:chart-line",
+      trophy: "solid:trophy",
+      flame: "solid:fire",
+      water: "solid:droplet",
+      "fa-note-sticky": "solid:note-sticky",
+      "fa-book-open": "solid:book-open",
+      "fa-pen": "solid:pen",
+      "fa-heart-pulse": "solid:heart-pulse",
+      "fa-lightbulb": "solid:lightbulb",
+      "fa-list-check": "solid:list-check",
+      "fa-star": "solid:star"
+    };
+    const iconCategories = [
+      { id: "recents", label: "Recents", icon: "clock-rotate-left" },
+      { id: "tasks", label: "Tasks", icon: "list-check" },
+      { id: "fitness", label: "Fitness", icon: "person-running" },
+      { id: "other", label: "Other", icon: "shapes" }
+    ];
+    const fixedIconGroups = {
+      tasks: [
+        "calendar-days", "calendar-check", "clock", "hourglass-half", "list", "list-check",
+        "check", "circle-check", "square-check", "clipboard", "clipboard-check", "file-lines",
+        "folder", "inbox", "briefcase", "envelope", "bell", "bookmark",
+        "tag", "flag", "pen", "pencil", "paperclip", "link",
+        "lock", "key", "gear", "wrench", "screwdriver-wrench", "hammer",
+        "trash", "box-archive", "download", "upload", "print", "table",
+        "bars", "ellipsis", "filter", "sort", "magnifying-glass", "plus",
+        "minus", "xmark", "rotate-right", "calculator", "receipt", "wallet",
+        "credit-card", "chart-line", "chart-simple", "bullseye", "star", "circle-plus"
+      ],
+      fitness: [
+        "person-running", "person-walking", "person-hiking", "shoe-prints", "dumbbell", "bicycle",
+        "stopwatch", "heart-pulse", "medal", "trophy", "fire", "route",
+        "location-dot", "droplet", "bottle-water", "moon", "sun", "heart",
+        "leaf", "seedling", "stethoscope", "kit-medical", "pills", "bandage",
+        "bone", "tooth", "wheelchair", "hospital", "syringe", "brain",
+        "lungs", "scale-balanced", "user-doctor", "notes-medical", "hand-holding-medical", "person"
+      ],
+      other: [
+        "utensils", "bowl-food", "apple-whole", "carrot", "pizza-slice", "burger",
+        "hotdog", "ice-cream", "cookie", "mug-hot", "martini-glass", "wine-glass",
+        "beer-mug-empty", "bread-slice", "cheese", "egg", "bacon", "lemon",
+        "house", "bed", "broom", "shirt", "bath", "couch",
+        "tv", "car", "plane", "map-location-dot", "camera", "music",
+        "video", "gamepad", "palette", "book", "graduation-cap", "user",
+        "users", "child", "face-smile", "gift", "lightbulb", "cloud",
+        "umbrella", "tree", "paw", "globe", "wifi", "phone",
+        "message", "shield-halved", "bolt", "gem", "crown", "rocket"
+      ]
+    };
     const swipeMin = 18;
 
     const initialState = {
@@ -1741,6 +2039,9 @@
     };
 
     let state = loadState();
+    let fontAwesomeIcons = buildFixedIconLibrary();
+    let activeIconCategory = "recents";
+    let activeIconPage = 0;
     let currentView = "notes";
     let selection = { kind: null, ids: new Set() };
     let touch = null;
@@ -1759,6 +2060,12 @@ let blockPath = [];
     const insertModal = document.getElementById("insertModal");
     const cardModal = document.getElementById("cardModal");
     const sizeModal = document.getElementById("sizeModal");
+    const blockColorModal = document.getElementById("blockColorModal");
+    const blockIconModal = document.getElementById("blockIconModal");
+    const textColorModal = document.getElementById("textColorModal");
+    const blockColorChoices = document.getElementById("blockColorChoices");
+    const blockIconChoices = document.getElementById("blockIconChoices");
+    const textColorChoices = document.getElementById("textColorChoices");
     const viewTextModal = document.getElementById("viewTextModal");
     const viewTextField = document.getElementById("viewTextField");
     const noteModalTitle = document.getElementById("noteModalTitle");
@@ -1784,6 +2091,19 @@ let blockPath = [];
     let blockNextClick = false;
     let pendingInsertAfterId = null;
     let pendingImageBlockId = null;
+    let activeBlockIconCategory = "recents";
+    let activeBlockIconPage = 0;
+    const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
+    const textColorPresets = [
+      { label: "White", color: "#f7f8ff" },
+      { label: "Muted", color: "#a5adbd" },
+      { label: "Blue", color: "#7db0ff" },
+      { label: "Green", color: "#5ee0ad" },
+      { label: "Pink", color: "#ff86c5" },
+      { label: "Gold", color: "#ffd866" },
+      { label: "Sky gradient", gradient: "linear-gradient(90deg, #5a8cff 0%, #46d7c5 100%)" },
+      { label: "Glow gradient", gradient: "linear-gradient(90deg, #5a8cff 0%, #9d70ff 48%, #ff74ba 100%)" }
+    ];
 
     function uid() {
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
@@ -1982,6 +2302,98 @@ function goBackOneLevel() {
       return (template.content.textContent || "").trim();
     }
 
+    function iconLabel(name) {
+      return name.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+    }
+
+    function normalizeIconValue(icon) {
+      const value = String(icon || "").trim();
+      if (!value || value.includes("mountain")) return "solid:star";
+      if (legacyIconMap[value]) return legacyIconMap[value];
+      if (value.startsWith("fa-")) return `solid:${value.replace(/^fa-/, "")}`;
+      if (value.includes(":")) return value;
+      return `solid:${value}`;
+    }
+
+    function parseIconValue(icon) {
+      const normalized = normalizeIconValue(icon);
+      const [style, ...nameParts] = normalized.split(":");
+      return {
+        name: nameParts.join(":") || "star",
+        style: ["solid", "regular", "brands"].includes(style) ? style : "solid"
+      };
+    }
+
+    function faClass(icon) {
+      const { name, style } = parseIconValue(icon);
+      return `fa-${style} fa-${name}`;
+    }
+
+    function categoryMarkup(category) {
+      return `<i class="fa-solid fa-${category.icon}" aria-hidden="true"></i>`;
+    }
+
+    function iconMatchesCategory(item, categoryId) {
+      return item.category === categoryId;
+    }
+
+    function categoryForIcon(name) {
+      return Object.entries(fixedIconGroups).find(([, names]) => names.includes(name))?.[0] || "other";
+    }
+
+    function buildFixedIconLibrary() {
+      const seen = new Set();
+      return Object.entries(fixedIconGroups).flatMap(([category, names]) => names.map((name) => {
+        const value = `solid:${name}`;
+        if (seen.has(value) || name.includes("mountain")) return null;
+        seen.add(value);
+        return {
+          category,
+          label: iconLabel(name),
+          name,
+          style: "solid",
+          terms: name
+        };
+      }).filter(Boolean)).slice(0, MAX_ICON_PAGES * ICON_PAGE_SIZE * 3);
+    }
+
+    function iconValue(item) {
+      return `${item.style}:${item.name}`;
+    }
+
+    function loadRecentIcons() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(ICON_RECENTS_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed.map(normalizeIconValue).filter((icon) => !icon.includes("mountain")).slice(0, 12) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveRecentIcons(icons) {
+      localStorage.setItem(ICON_RECENTS_KEY, JSON.stringify(icons.slice(0, 12)));
+    }
+
+    function rememberIcon(icon) {
+      const selected = normalizeIconValue(icon);
+      saveRecentIcons([selected, ...loadRecentIcons().filter((item) => item !== selected)]);
+    }
+
+    function iconFromValue(value) {
+      const { name, style } = parseIconValue(value);
+      return fontAwesomeIcons.find((item) => item.name === name && item.style === style) || {
+        category: categoryForIcon(name),
+        label: iconLabel(name),
+        name,
+        style,
+        terms: name
+      };
+    }
+
+    function iconSvg(icon) {
+      return `<i class="${faClass(icon)}" aria-hidden="true"></i>`;
+    }
+
     function renderNotes() {
       const query = searchInput.value.trim().toLowerCase();
       const notes = sortedNotes().filter(note => `${note.title} ${preview(note)}`.toLowerCase().includes(query));
@@ -1992,7 +2404,7 @@ function goBackOneLevel() {
       noteList.innerHTML = notes.map(note => `
         <article class="note-card ${selection.ids.has(note.id) ? "selected" : ""}" draggable="true" data-kind="note" data-id="${note.id}" style="--accent:${note.accent}">
           <button class="note-main" type="button" data-command="open-note" data-id="${note.id}" aria-label="Open ${escapeHtml(note.title)}">
-            <span class="note-icon"><i class="fa-solid ${note.icon}" aria-hidden="true"></i></span>
+            <span class="note-icon">${iconSvg(note.icon)}</span>
             <span class="note-copy">
               <span class="note-title">${escapeHtml(note.title || "Untitled note")}</span>
               ${preview(note) ? `<span class="note-preview">${escapeHtml(preview(note))}</span>` : ""}
@@ -2066,8 +2478,8 @@ function blockIconHtml(block) {
   if (!block.icon) return "";
 
   return `
-    <span class="block-icon">
-      <i class="fa-solid ${escapeHtml(block.icon)}" aria-hidden="true"></i>
+    <span class="block-icon" style="--block-icon-color:${escapeHtml(block.iconColor || "var(--accent)")}">
+      ${iconSvg(block.icon)}
     </span>
   `;
 }
@@ -2075,17 +2487,10 @@ function blockIconHtml(block) {
 function blockIconEditorHtml(block) {
   return `
     <div class="block-icon-edit">
-      <span class="block-icon">
-        <i class="fa-solid ${escapeHtml(block.icon || "fa-circle")}" aria-hidden="true"></i>
-      </span>
-
-      <input
-        class="block-icon-field"
-        type="text"
-        value="${escapeHtml(block.icon || "")}"
-        placeholder="Icon name, ex: fa-star"
-        data-id="${block.id}"
-      />
+      <button class="block-color-control" type="button" data-command="open-block-color-menu" data-id="${block.id}" aria-label="Choose block icon color" style="--picked-color:${escapeHtml(block.iconColor || "var(--accent)")}"></button>
+      <button class="block-icon-control" type="button" data-command="open-block-icon-menu" data-id="${block.id}" aria-label="Choose block icon">
+        ${iconSvg(block.icon || "solid:circle")}
+      </button>
     </div>
   `;
 }
@@ -2185,7 +2590,7 @@ if (block.type === "url") {
   <article class="block ${block.type} ${block.icon ? "has-icon" : ""} ${block.type === "card-square" ? "card card-square" : ""} ${block.type === "card-half" ? "card card-half" : ""} ${block.type === "card-long" ? "card card-long" : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
     <div class="block-line">
       ${marker || blockIconHtml(block)}
-      <div class="editable" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write">${sanitizeHtml(block.text || "")}</div>
+      <div class="editable ${block.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write" style="${block.textGradient ? `--text-gradient:${escapeHtml(block.textGradient)}` : block.textColor ? `color:${escapeHtml(block.textColor)}` : ""}">${sanitizeHtml(block.text || "")}</div>
     </div>
 
     ${blockIconEditorHtml(block)}
@@ -2245,7 +2650,7 @@ function updateEditorModeLabel() {
         title: noteDraft?.title || "",
         pinned: false,
         accent: noteDraft?.accent || colors[0],
-        icon: noteDraft?.icon || icons[0],
+        icon: normalizeIconValue(noteDraft?.icon || icons[0]),
         order: state.notes.length,
         blocks: [{ id: uid(), type: "paragraph", text: "" }]
       };
@@ -2269,7 +2674,7 @@ function updateEditorModeLabel() {
         title: "",
         pinned: false,
         accent: colors[0],
-        icon: icons[0],
+        icon: normalizeIconValue(icons[0]),
         order: state.notes.length,
         blocks: []
       };
@@ -2542,6 +2947,18 @@ function closeSelection() {
     groupButton.setAttribute("aria-label", isGrouped ? "Ungroup" : "Group");
   }
 
+  const selectedBlock = active && selection.kind === "block" ? firstSelectedBlock() : null;
+  const colorPreview = selectionBar.querySelector(".tool-color-preview");
+  const iconPreview = selectionBar.querySelector(".tool-icon-preview");
+
+  if (colorPreview) {
+    colorPreview.style.setProperty("--picked-color", selectedBlock?.iconColor || "var(--blue)");
+  }
+
+  if (iconPreview) {
+    iconPreview.innerHTML = iconSvg(selectedBlock?.icon || "solid:circle");
+  }
+
   updateEditorModeLabel();
 }
 function refreshSelectionClasses() {
@@ -2560,7 +2977,8 @@ function refreshSelectionClasses() {
 
   if (
     event.target.closest(
-      ".url-field, .block-icon-field, .action-btn, .selection-bar, .toolbar, .modal"
+      ".url-field, .action-btn, .selection-bar, .toolbar, .modal"
+        + ", .block-icon-control, .block-color-control"
     )
   ) {
     return;
@@ -2604,7 +3022,7 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
     let holdTimer = null;
 
     element.addEventListener("pointerdown", event => {
-      if (event.target.closest("input, textarea, .url-field, .action-btn, .task-check")) return;
+      if (event.target.closest("[contenteditable='true'], input, textarea, .url-field, .action-btn, .task-check, .block-icon-control, .block-color-control")) return;
 
 if (event.target.closest(".image-open") && !selection.kind) {
   // allow image blocks to be long-pressed/swiped for selection
@@ -2618,20 +3036,6 @@ if (event.target.closest(".image-open") && !selection.kind) {
         element,
         done: false
       };
-
-      holdTimer = setTimeout(() => {
-        if (!touch || touch.element !== element || touch.done) return;
-
-        touch.done = true;
-
-        toggleSelection(touch.kind, touch.id);
-
-        if (touch.kind === "note") {
-          phone.classList.add("notes-tools-open");
-        }
-
-        if (document.activeElement) document.activeElement.blur();
-      }, 450);
     });
 
     element.addEventListener("pointermove", event => {
@@ -2654,7 +3058,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
           phone.classList.add("notes-tools-open");
         }
 
-        if (touch.kind === "block" && dx > 0) {
+        if (touch.kind === "block" && dx < 0) {
           toggleSelection("block", touch.id);
         }
 
@@ -2675,6 +3079,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
     });
 
     element.addEventListener("contextmenu", event => {
+      if (event.target.closest("[contenteditable='true'], input, textarea")) return;
       event.preventDefault();
       openActions(element.dataset.kind, element.dataset.id);
     });
@@ -2971,6 +3376,161 @@ if (event.target.closest(".image-open") && !selection.kind) {
       sizeModal.setAttribute("aria-hidden", "true");
     }
 
+    function firstSelectedBlock() {
+      return selectedBlocks()[0] || null;
+    }
+
+    function renderBlockColorChoices() {
+      const selected = firstSelectedBlock()?.iconColor || "";
+      blockColorChoices.innerHTML = blockIconColors.map(color => `
+        <button class="preset-color ${selected === color ? "active" : ""}" type="button" data-command="set-block-icon-color" data-color="${color}" style="--preset:${color}" aria-label="Set icon color"></button>
+      `).join("");
+    }
+
+    function openBlockColorMenu() {
+      if (!selectedBlockIds().length) return;
+      renderBlockColorChoices();
+      blockColorModal.classList.add("open");
+      blockColorModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeBlockColorMenu() {
+      blockColorModal.classList.remove("open");
+      blockColorModal.setAttribute("aria-hidden", "true");
+    }
+
+    function setBlockIconColor(color) {
+      const ids = new Set(selectedBlockIds());
+      if (!ids.size) return;
+      remember();
+      activeBlocks().forEach(block => {
+        if (ids.has(block.id)) block.iconColor = color;
+      });
+      saveState();
+      closeBlockColorMenu();
+      renderEditor();
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function renderBlockIconPicker(categoryId = activeBlockIconCategory) {
+      activeBlockIconCategory = categoryId;
+      if (activeBlockIconCategory === "recents") activeBlockIconPage = 0;
+      const selected = normalizeIconValue(firstSelectedBlock()?.icon || "solid:circle");
+      const recentIcons = loadRecentIcons();
+      const recentFill = fontAwesomeIcons.filter((item) => !recentIcons.includes(iconValue(item)));
+      const categoryIcons = activeBlockIconCategory === "recents"
+        ? [...recentIcons.map(iconFromValue), ...recentFill].slice(0, 12)
+        : fontAwesomeIcons.filter((item) => iconMatchesCategory(item, activeBlockIconCategory));
+      const limitedIcons = categoryIcons.slice(0, MAX_ICON_PAGES * ICON_PAGE_SIZE);
+      const pageSize = activeBlockIconCategory === "recents" ? 12 : ICON_PAGE_SIZE;
+      const pageCount = Math.max(1, Math.ceil(limitedIcons.length / pageSize));
+      activeBlockIconPage = Math.min(activeBlockIconPage, pageCount - 1);
+      const visibleIcons = limitedIcons.slice(activeBlockIconPage * pageSize, activeBlockIconPage * pageSize + pageSize);
+
+      blockIconChoices.innerHTML = `
+        <div class="icon-category-row" role="tablist" aria-label="Icon categories">
+          ${iconCategories.map((category) => `
+            <button class="icon-category ${category.id === activeBlockIconCategory ? "active" : ""}" type="button" data-command="block-icon-category" data-icon-category="${category.id}">
+              ${categoryMarkup(category)}
+              <span>${category.label}</span>
+            </button>
+          `).join("")}
+        </div>
+        <div class="icon-grid" role="group" aria-label="Block icon choices">
+          ${visibleIcons.length ? visibleIcons.map((item) => `
+            <button class="icon-choice ${iconValue(item) === selected ? "active" : ""}" type="button" aria-label="${item.label} icon" data-command="set-block-icon" data-icon="${iconValue(item)}">
+              ${iconSvg(iconValue(item))}
+            </button>
+          `).join("") : '<span class="icon-empty">No icons here yet</span>'}
+        </div>
+        ${activeBlockIconCategory !== "recents" && pageCount > 1 ? `
+          <div class="icon-pager" aria-label="Icon pages">
+            <button class="icon-page-button" type="button" data-command="block-icon-page" data-icon-page="prev" ${activeBlockIconPage === 0 ? "disabled" : ""} aria-label="Previous icons">
+              <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <span class="icon-page-label">
+              ${Array.from({ length: pageCount }, (_, index) => `
+                <button class="icon-page-number ${index === activeBlockIconPage ? "active" : ""}" type="button" data-command="block-icon-page-number" data-icon-page-number="${index}" aria-label="Icon page ${index + 1}">${index + 1}</button>
+              `).join("")}
+            </span>
+            <button class="icon-page-button" type="button" data-command="block-icon-page" data-icon-page="next" ${activeBlockIconPage === pageCount - 1 ? "disabled" : ""} aria-label="Next icons">
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        ` : ""}
+      `;
+    }
+
+    function openBlockIconMenu() {
+      if (!selectedBlockIds().length) return;
+      renderBlockIconPicker(activeBlockIconCategory);
+      blockIconModal.classList.add("open");
+      blockIconModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeBlockIconMenu() {
+      blockIconModal.classList.remove("open");
+      blockIconModal.setAttribute("aria-hidden", "true");
+    }
+
+    function setBlockIcon(icon) {
+      const selected = normalizeIconValue(icon);
+      const ids = new Set(selectedBlockIds());
+      if (!ids.size) return;
+      remember();
+      activeBlocks().forEach(block => {
+        if (ids.has(block.id)) block.icon = selected;
+      });
+      rememberIcon(selected);
+      saveState();
+      closeBlockIconMenu();
+      renderEditor();
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function renderTextColorChoices() {
+      const block = firstSelectedBlock();
+      textColorChoices.innerHTML = textColorPresets.map((preset, index) => {
+        const active = preset.gradient ? block?.textGradient === preset.gradient : block?.textColor === preset.color && !block?.textGradient;
+        return `<button class="${preset.gradient ? "preset-gradient" : "preset-color"} ${active ? "active" : ""}" type="button" data-command="set-text-color" data-index="${index}" style="--preset:${preset.gradient || preset.color}" aria-label="${preset.label}"></button>`;
+      }).join("");
+    }
+
+    function openTextColorMenu() {
+      if (!selectedBlockIds().length) return;
+      renderTextColorChoices();
+      textColorModal.classList.add("open");
+      textColorModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeTextColorMenu() {
+      textColorModal.classList.remove("open");
+      textColorModal.setAttribute("aria-hidden", "true");
+    }
+
+    function setSelectedTextColor(index) {
+      const preset = textColorPresets[Number(index)];
+      const ids = new Set(selectedBlockIds());
+      if (!preset || !ids.size) return;
+      remember();
+      activeBlocks().forEach(block => {
+        if (!ids.has(block.id) || block.type === "image") return;
+        if (preset.gradient) {
+          block.textGradient = preset.gradient;
+          delete block.textColor;
+        } else {
+          block.textColor = preset.color;
+          delete block.textGradient;
+        }
+      });
+      saveState();
+      closeTextColorMenu();
+      renderEditor();
+      refreshSelectionClasses();
+    }
+
     function openViewText() {
       const block = selectedBlocks().find(item => item.type !== "image");
       if (!block) return;
@@ -3140,6 +3700,22 @@ function closeCardOptions() {
 }
 
     function applyInlineFormat(format) {
+      if (selection.kind === "block" && selection.ids.size) {
+        remember();
+        const tag = format === "bold" ? "strong" : format === "italic" ? "em" : "u";
+        const ids = new Set(selectedBlockIds());
+        activeBlocks().forEach(block => {
+          if (!ids.has(block.id) || block.type === "image") return;
+          const html = sanitizeHtml(block.text || "");
+          const plain = stripHtml(html);
+          if (!plain) return;
+          block.text = `<${tag}>${html}</${tag}>`;
+        });
+        saveState();
+        renderEditor();
+        refreshSelectionClasses();
+        return;
+      }
       const editable = document.activeElement?.closest?.("[contenteditable='true']")
         || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
       if (editable) editable.focus();
@@ -3161,7 +3737,7 @@ function insertBlock(type) {
         id,
         title: note?.title || "",
         accent: note?.accent || colors[0],
-        icon: note?.icon || icons[0]
+        icon: normalizeIconValue(note?.icon || icons[0])
       };
       noteModalTitle.textContent = id ? "Edit note" : "New note";
       noteTitleField.value = noteDraft.title;
@@ -3175,11 +3751,57 @@ function insertBlock(type) {
       colorChoices.innerHTML = colors.map(color => `
         <button class="swatch ${noteDraft.accent === color ? "active" : ""}" type="button" data-command="draft-color" data-color="${color}" style="--accent:${color}" aria-label="Set note color"></button>
       `).join("");
-      iconChoices.innerHTML = icons.map(icon => `
-        <button class="icon-choice ${noteDraft.icon === icon ? "active" : ""}" type="button" data-command="draft-icon" data-icon="${icon}" style="--accent:${noteDraft.accent}" aria-label="Set note icon">
-          <i class="fa-solid ${icon}" aria-hidden="true"></i>
-        </button>
-      `).join("");
+      renderNoteIconPicker(activeIconCategory);
+    }
+
+    function renderNoteIconPicker(categoryId = activeIconCategory) {
+      activeIconCategory = categoryId;
+      if (activeIconCategory === "recents") activeIconPage = 0;
+      const selected = normalizeIconValue(noteDraft?.icon || icons[0]);
+      const recentIcons = loadRecentIcons();
+      const recentFill = fontAwesomeIcons.filter((item) => !recentIcons.includes(iconValue(item)));
+      const categoryIcons = activeIconCategory === "recents"
+        ? [...recentIcons.map(iconFromValue), ...recentFill].slice(0, 12)
+        : fontAwesomeIcons.filter((item) => iconMatchesCategory(item, activeIconCategory));
+      const limitedIcons = categoryIcons.slice(0, MAX_ICON_PAGES * ICON_PAGE_SIZE);
+      const pageSize = activeIconCategory === "recents" ? 12 : ICON_PAGE_SIZE;
+      const pageCount = Math.max(1, Math.ceil(limitedIcons.length / pageSize));
+      activeIconPage = Math.min(activeIconPage, pageCount - 1);
+      const visibleIcons = limitedIcons.slice(activeIconPage * pageSize, activeIconPage * pageSize + pageSize);
+
+      iconChoices.classList.add("categorized-icon-picker");
+      iconChoices.innerHTML = `
+        <div class="icon-category-row" role="tablist" aria-label="Icon categories">
+          ${iconCategories.map((category) => `
+            <button class="icon-category ${category.id === activeIconCategory ? "active" : ""}" type="button" data-command="icon-category" data-icon-category="${category.id}">
+              ${categoryMarkup(category)}
+              <span>${category.label}</span>
+            </button>
+          `).join("")}
+        </div>
+        <div class="icon-grid" role="group" aria-label="Note icon choices">
+          ${visibleIcons.length ? visibleIcons.map((item) => `
+            <button class="icon-choice ${iconValue(item) === selected ? "active" : ""}" type="button" aria-label="${item.label} icon" data-command="draft-icon" data-icon="${iconValue(item)}">
+              ${iconSvg(iconValue(item))}
+            </button>
+          `).join("") : '<span class="icon-empty">No icons here yet</span>'}
+        </div>
+        ${activeIconCategory !== "recents" && pageCount > 1 ? `
+          <div class="icon-pager" aria-label="Icon pages">
+            <button class="icon-page-button" type="button" data-command="icon-page" data-icon-page="prev" ${activeIconPage === 0 ? "disabled" : ""} aria-label="Previous icons">
+              <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <span class="icon-page-label">
+              ${Array.from({ length: pageCount }, (_, index) => `
+                <button class="icon-page-number ${index === activeIconPage ? "active" : ""}" type="button" data-command="icon-page-number" data-icon-page-number="${index}" aria-label="Icon page ${index + 1}">${index + 1}</button>
+              `).join("")}
+            </span>
+            <button class="icon-page-button" type="button" data-command="icon-page" data-icon-page="next" ${activeIconPage === pageCount - 1 ? "disabled" : ""} aria-label="Next icons">
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        ` : ""}
+      `;
     }
 
     function closeNoteModal() {
@@ -3196,7 +3818,7 @@ function insertBlock(type) {
         if (!note) return;
         note.title = noteDraft.title;
         note.accent = noteDraft.accent;
-        note.icon = noteDraft.icon;
+        note.icon = normalizeIconValue(noteDraft.icon);
         saveState();
         closeNoteModal();
         renderAll();
@@ -3701,6 +4323,27 @@ if (name === "open-image") {
       if (name === "open-size-menu") openSizeMenu();
       if (name === "close-size-menu") closeSizeMenu();
       if (name === "set-block-size") setSelectedSize(element.dataset.size);
+      if (name === "open-block-color-menu") openBlockColorMenu();
+      if (name === "close-block-color-menu") closeBlockColorMenu();
+      if (name === "set-block-icon-color") setBlockIconColor(element.dataset.color);
+      if (name === "open-block-icon-menu") openBlockIconMenu();
+      if (name === "close-block-icon-menu") closeBlockIconMenu();
+      if (name === "set-block-icon") setBlockIcon(element.dataset.icon);
+      if (name === "block-icon-category") {
+        activeBlockIconPage = 0;
+        renderBlockIconPicker(element.dataset.iconCategory);
+      }
+      if (name === "block-icon-page") {
+        activeBlockIconPage += element.dataset.iconPage === "next" ? 1 : -1;
+        renderBlockIconPicker(activeBlockIconCategory);
+      }
+      if (name === "block-icon-page-number") {
+        activeBlockIconPage = Number(element.dataset.iconPageNumber) || 0;
+        renderBlockIconPicker(activeBlockIconCategory);
+      }
+      if (name === "open-text-color-menu") openTextColorMenu();
+      if (name === "close-text-color-menu") closeTextColorMenu();
+      if (name === "set-text-color") setSelectedTextColor(element.dataset.index);
       if (name === "open-view-text") openViewText();
       if (name === "close-view-text") closeViewText();
       if (name === "save-view-text") saveViewText();
@@ -3716,8 +4359,21 @@ if (name === "open-image") {
         renderNoteModalChoices();
       }
       if (name === "draft-icon" && noteDraft) {
-        noteDraft.icon = element.dataset.icon;
-        renderNoteModalChoices();
+        noteDraft.icon = normalizeIconValue(element.dataset.icon);
+        rememberIcon(noteDraft.icon);
+        renderNoteIconPicker(activeIconCategory);
+      }
+      if (name === "icon-category") {
+        activeIconPage = 0;
+        renderNoteIconPicker(element.dataset.iconCategory);
+      }
+      if (name === "icon-page") {
+        activeIconPage += element.dataset.iconPage === "next" ? 1 : -1;
+        renderNoteIconPicker(activeIconCategory);
+      }
+      if (name === "icon-page-number") {
+        activeIconPage = Number(element.dataset.iconPageNumber) || 0;
+        renderNoteIconPicker(activeIconCategory);
       }
     }
 
@@ -3759,16 +4415,6 @@ if (name === "open-image") {
 });
 
 document.addEventListener("input", event => {
-if (event.target.matches(".block-icon-field")) {
-  const block = findBlockEverywhere(event.target.dataset.id);
-  if (!block) return;
-
-  block.icon = event.target.value.trim();
-
-  saveState();
-  renderEditor();
-  return;
-}
   if (event.target.matches(".url-field")) {
     const block = findBlockEverywhere(event.target.dataset.id);
     if (!block) return;
@@ -3814,6 +4460,9 @@ if (event.target.matches(".block-icon-field")) {
         closeNoteModal();
         closeInsert();
         closeSizeMenu();
+        closeBlockColorMenu();
+        closeBlockIconMenu();
+        closeTextColorMenu();
         closeViewText();
         closeImage();
       }
@@ -3839,7 +4488,7 @@ if (event.target.matches(".block-icon-field")) {
   }, 80);
 });
 document.addEventListener("click", event => {
-  if (event.target.matches(".url-field, .block-icon-field")) return;
+  if (event.target.matches(".url-field")) return;
   if (event.target.closest("[data-command]")) return;
   if (selection.kind && selection.ids.size) return;
   if (event.target.closest(".task-check, .image-open, .action-btn, .block-insert-row")) return;
@@ -3859,7 +4508,7 @@ document.addEventListener("click", event => {
 });
 document.addEventListener("dblclick", event => {
   if (selection.kind && selection.ids.size) return;
-  if (event.target.closest(".task-check, .image-open, .action-btn, .url-field, .block-icon-field, .block-insert-row")) return;
+  if (event.target.closest(".task-check, .image-open, .action-btn, .url-field, .block-icon-control, .block-color-control, .block-insert-row")) return;
 
   const block = event.target.closest(".block");
   if (!block) return;
@@ -3890,6 +4539,24 @@ if (cardModal) {
 if (sizeModal) {
   sizeModal.addEventListener("click", event => {
     if (event.target === sizeModal) closeSizeMenu();
+  });
+}
+
+if (blockColorModal) {
+  blockColorModal.addEventListener("click", event => {
+    if (event.target === blockColorModal) closeBlockColorMenu();
+  });
+}
+
+if (blockIconModal) {
+  blockIconModal.addEventListener("click", event => {
+    if (event.target === blockIconModal) closeBlockIconMenu();
+  });
+}
+
+if (textColorModal) {
+  textColorModal.addEventListener("click", event => {
+    if (event.target === textColorModal) closeTextColorMenu();
   });
 }
 
