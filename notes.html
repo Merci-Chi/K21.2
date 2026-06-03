@@ -1531,8 +1531,9 @@
     let currentView = "notes";
     let selection = { kind: null, ids: new Set() };
     let touch = null;
-    let focusedBlockId = null;
-    let undo = null;
+let focusedBlockId = null;
+let undo = null;
+let blockPath = [];
 
     const phone = document.getElementById("phone");
     const notesView = document.getElementById("notesView");
@@ -1618,10 +1619,69 @@
       return state.notes.find(note => note.id === state.activeNoteId) || state.notes[0];
     }
 
-    function activeBlocks() {
-      return activeNote()?.blocks || [];
+function activeBlocks() {
+  let blocks = activeNote()?.blocks || [];
+
+  for (const blockId of blockPath) {
+    const block = blocks.find(item => item.id === blockId);
+    if (!block) return [];
+
+    if (!Array.isArray(block.children)) {
+      block.children = [];
     }
 
+    blocks = block.children;
+  }
+
+  return blocks;
+}
+function activeParentBlock() {
+  if (!blockPath.length) return null;
+
+  let blocks = activeNote()?.blocks || [];
+  let parent = null;
+
+  for (const blockId of blockPath) {
+    parent = blocks.find(item => item.id === blockId);
+    if (!parent) return null;
+
+    if (!Array.isArray(parent.children)) {
+      parent.children = [];
+    }
+
+    blocks = parent.children;
+  }
+
+  return parent;
+}
+
+function openInteriorNote(blockId) {
+  const block = activeBlocks().find(item => item.id === blockId);
+  if (!block) return;
+
+  if (!Array.isArray(block.children)) {
+    block.children = [];
+  }
+
+  blockPath.push(blockId);
+  focusedBlockId = null;
+  closeSelection();
+  saveState();
+  renderEditor();
+}
+
+function goBackOneLevel() {
+  if (blockPath.length) {
+    blockPath.pop();
+    focusedBlockId = null;
+    closeSelection();
+    saveState();
+    renderEditor();
+    return true;
+  }
+
+  return false;
+}
     function sortedNotes() {
       return [...state.notes].sort((a, b) => {
         if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
@@ -1699,8 +1759,15 @@
         setView("notes");
         return;
       }
-      if (document.activeElement !== titleInput) titleInput.value = note.title || "";
-      blocksEl.innerHTML = renderBlocksHtml(note.blocks, note.accent);
+const parentBlock = activeParentBlock();
+
+if (document.activeElement !== titleInput) {
+  titleInput.value = parentBlock
+    ? stripHtml(parentBlock.text || "Inside block")
+    : note.title || "";
+}
+
+blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
       wireDragging(blocksEl.querySelectorAll(".block"), "block");
       autoSizeTitle();
@@ -1861,15 +1928,43 @@ function renderBlocksHtml(blocks, accent) {
       setTimeout(() => focusBlock(block.id), 30);
     }
 
-    function createBlock(type) {
-      if (type === "task") return { id: uid(), type, text: "", checked: false };
-      if (type === "bullet") return { id: uid(), type, text: "" };
-      if (type === "number") return { id: uid(), type, text: "" };
-      if (type === "heading") return { id: uid(), type, text: "", children: [] };
-      if (type === "card") return { id: uid(), type, text: "" };
-      if (type === "image") return { id: uid(), type, src: "" };
-      return { id: uid(), type: "paragraph", text: "" };
-    }
+  function createBlock(type) {
+  const base = {
+    id: uid(),
+    type,
+    text: "",
+    children: []
+  };
+
+  if (type === "task") {
+    return { ...base, checked: false };
+  }
+
+  if (type === "image") {
+    return { ...base, src: "" };
+  }
+
+  if (type === "heading") {
+    return base;
+  }
+
+  if (type === "card") {
+    return base;
+  }
+
+  if (type === "bullet") {
+    return base;
+  }
+
+  if (type === "number") {
+    return base;
+  }
+
+  return {
+    ...base,
+    type: "paragraph"
+  };
+}
 
     function focusBlock(id) {
       const editable = blocksEl.querySelector(`[data-id="${CSS.escape(id)}"][contenteditable="true"]`);
@@ -2834,7 +2929,17 @@ if (name === "open-note") {
   setView("editor");
   return;
 }
-      if (name === "back" || name === "notes") setView("notes");
+      if (name === "back") {
+  if (goBackOneLevel()) return;
+  setView("notes");
+  return;
+}
+
+if (name === "notes") {
+  blockPath = [];
+  setView("notes");
+  return;
+}
       if (name === "home") showToast("Home is index.html", "fa-house");
       if (name === "habits") showToast("Habits is habits.html", "fa-bullseye");
       if (name === "pin-note") togglePin(element.dataset.id);
@@ -2931,12 +3036,19 @@ if (name === "move-note-down") {
   command(button.dataset.command, button);
 });
     document.addEventListener("input", event => {
-      if (event.target === titleInput) {
-        activeNote().title = titleInput.value;
-        autoSizeTitle();
-        saveState();
-        return;
-      }
+if (event.target === titleInput) {
+  const parentBlock = activeParentBlock();
+
+  if (parentBlock) {
+    parentBlock.text = sanitizeHtml(titleInput.value);
+  } else {
+    activeNote().title = titleInput.value;
+  }
+
+  autoSizeTitle();
+  saveState();
+  return;
+}
       const editable = event.target.closest("[contenteditable='true']");
       if (editable?.dataset?.id) {
         focusedBlockId = editable.dataset.id;
@@ -2968,11 +3080,18 @@ if (name === "move-note-down") {
       if (block) focusedBlockId = block.dataset.id;
     });
 
-    document.addEventListener("dblclick", event => {
-      const block = event.target.closest(".heading.block");
-      if (block) openInteriorNote(block.dataset.id);
-    });
+ document.addEventListener("dblclick", event => {
+  if (selection.kind && selection.ids.size) return;
+  if (event.target.closest(".task-check, .image-open, .action-btn")) return;
 
+  const block = event.target.closest(".block");
+  if (!block) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  openInteriorNote(block.dataset.id);
+});
     noteModal.addEventListener("click", event => {
       if (event.target === noteModal) closeNoteModal();
     });
