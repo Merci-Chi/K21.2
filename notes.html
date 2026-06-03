@@ -138,6 +138,11 @@
   margin-right: 22px;
   width: calc(100% - 44px);
 }
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
  .topbar.center {
   position: sticky;
@@ -337,12 +342,16 @@
       overflow-wrap: anywhere;
     }
 
-    .note-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      overflow-x: auto;
-    }
+.note-actions {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.notes-tools-open .note-actions {
+  display: flex;
+}
 
     .empty-state {
       min-height: 230px;
@@ -1135,9 +1144,15 @@
         <div class="title-stack">
           <h1>Notes</h1>
         </div>
-        <button class="icon-btn primary" type="button" data-command="new-note" aria-label="Create new note">
-          <i class="fa-solid fa-plus" aria-hidden="true"></i>
-        </button>
+<div class="top-actions">
+  <button class="icon-btn" type="button" data-command="toggle-note-tools" aria-label="Show note tools">
+    <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+  </button>
+
+  <button class="icon-btn primary" type="button" data-command="new-note" aria-label="Create new note">
+    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+  </button>
+</div>
       </header>
 
       <label class="search">
@@ -2378,8 +2393,13 @@
       setView("editor");
     }
 
-    function command(name, element) {
-      if (name === "new-note") openNoteModal();
+function command(name, element) {
+  if (name === "toggle-note-tools") {
+    phone.classList.toggle("notes-tools-open");
+    return;
+  }
+
+  if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
       if (name === "open-note") {
         state.activeNoteId = element.dataset.id;
