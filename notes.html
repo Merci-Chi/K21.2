@@ -2804,10 +2804,19 @@ if (name === "delete-selected-note") {
 }
   if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
-      if (name === "open-note") {
-        state.activeNoteId = element.dataset.id;
-        setView("editor");
-      }
+  if (name === "open-note") {
+  if (selection.kind === "note" && selection.ids.size) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
+    toggleSelection("note", element.dataset.id);
+    return;
+  }
+
+  state.activeNoteId = element.dataset.id;
+  saveState();
+  setView("editor");
+}
       if (name === "back" || name === "notes") setView("notes");
       if (name === "home") showToast("Home is index.html", "fa-house");
       if (name === "habits") showToast("Habits is habits.html", "fa-bullseye");
@@ -2875,18 +2884,28 @@ if (name === "move-note-down") {
       }
     }
 
-    document.addEventListener("click", event => {
-      const commandEl = event.target.closest("[data-command]");
-      if (commandEl) {
-        event.stopPropagation();
-        command(commandEl.dataset.command, commandEl);
-        return;
-      }
-      if (selection.kind && event.target.closest("[data-kind]")) {
-        const target = event.target.closest("[data-kind]");
-        if (!event.target.closest("[contenteditable='true']")) toggleSelection(target.dataset.kind, target.dataset.id);
-      }
-    });
+  document.addEventListener("click", event => {
+  const button = event.target.closest("[data-command]");
+  if (!button) return;
+
+  if (
+    selection.kind === "note" &&
+    selection.ids.size &&
+    button.dataset.command === "open-note"
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const card = button.closest(".note-card");
+    if (card) {
+      toggleSelection("note", card.dataset.id);
+    }
+
+    return;
+  }
+
+  command(button.dataset.command, button);
+});
 
     document.addEventListener("input", event => {
       if (event.target === titleInput) {
