@@ -638,7 +638,7 @@
     }
 
     .nav-item,
-    .nav-add {
+    .add {
       min-width: 0;
       display: grid;
       place-items: center;
@@ -656,7 +656,7 @@
       color: var(--text);
     }
 
-    .nav-add {
+    .add {
       width: 60px;
       height: 60px;
       border-radius: 22px;
@@ -1707,14 +1707,13 @@
     });
 
     searchInput.addEventListener("input", renderNotes);
-    photoInput.addEventListener("change", event => handlePhoto(event.target.files));
+photoInput.addEventListener("change", event => handlePhoto(event.target.files));
 
-    window.addEventListener("openNotesComposer", () => {
-      newNote();
-    });
-searchInput.addEventListener("input", renderNotes);
-    photoInput.addEventListener("change", event => handlePhoto(event.target.files));
-    renderAll();
+window.addEventListener("openNotesComposer", () => {
+  newNote();
+});
+
+renderAll();
   </script>
 
   <script src="bottom-bar.js"></script>
