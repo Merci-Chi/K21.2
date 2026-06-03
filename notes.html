@@ -2010,11 +2010,16 @@ if (groupButton) {
 }
     }
 
-    function refreshSelectionClasses() {
-      document.querySelectorAll("[data-kind][data-id]").forEach(el => {
-        el.classList.toggle("selected", selection.ids.has(el.dataset.id));
-      });
-    }
+function refreshSelectionClasses() {
+  document.querySelectorAll("[data-kind][data-id]").forEach(el => {
+    el.classList.toggle("selected", selection.ids.has(el.dataset.id));
+  });
+
+  document.querySelectorAll(".block-group").forEach(group => {
+    const hasSelectedBlock = Boolean(group.querySelector(".block.selected"));
+    group.classList.toggle("selected", hasSelectedBlock);
+  });
+}
     function handleSelectionModeTap(event) {
   const active = Boolean(selection.kind && selection.ids.size);
   if (!active) return;
@@ -2305,23 +2310,45 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
       showToast("Cut", "fa-scissors");
     }
 
-    function pasteBlocks() {
-      if (!blockClipboard.length) return;
-      remember();
-      const blocks = activeBlocks();
-      const afterId = selectedBlockIds().at(-1) || focusedBlockId;
-      const index = afterId ? blocks.findIndex(block => block.id === afterId) : blocks.length - 1;
-      const copies = JSON.parse(JSON.stringify(blockClipboard)).map(block => ({ ...block, id: uid() }));
-      blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, ...copies);
-      selection.kind = "block";
-      selection.ids = new Set(copies.map(block => block.id));
-      focusedBlockId = copies.at(-1)?.id || focusedBlockId;
-      saveState();
-      renderEditor();
-      updateSelectionUi();
-      refreshSelectionClasses();
+  function pasteBlocks() {
+  if (!blockClipboard.length) return;
+
+  remember();
+
+  const blocks = activeBlocks();
+  const afterId = selectedBlockIds().at(-1) || focusedBlockId;
+  const index = afterId ? blocks.findIndex(block => block.id === afterId) : blocks.length - 1;
+
+  const groupMap = new Map();
+
+  const copies = JSON.parse(JSON.stringify(blockClipboard)).map(block => {
+    const copy = {
+      ...block,
+      id: uid()
+    };
+
+    if (block.groupId) {
+      if (!groupMap.has(block.groupId)) {
+        groupMap.set(block.groupId, uid());
+      }
+
+      copy.groupId = groupMap.get(block.groupId);
     }
 
+    return copy;
+  });
+
+  blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, ...copies);
+
+  selection.kind = "block";
+  selection.ids = new Set(copies.map(block => block.id));
+  focusedBlockId = copies.at(-1)?.id || focusedBlockId;
+
+  saveState();
+  renderEditor();
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
     function groupSelectedBlocks() {
       const ids = selectedBlockIds();
       if (ids.length < 2) return;
