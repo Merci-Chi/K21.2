@@ -25,6 +25,7 @@
       --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
       --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
       --nav-height: 94px;
+      --keyboard-offset: 0px;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -132,8 +133,15 @@
     }
 
     .topbar.center {
+      position: sticky;
+      top: 0;
+      z-index: 12;
       align-items: center;
       margin-bottom: 14px;
+      padding: 6px 0 10px;
+      background:
+        linear-gradient(180deg, rgba(4, 6, 12, 0.96), rgba(4, 6, 12, 0.76) 72%, transparent);
+      backdrop-filter: blur(12px);
     }
 
     .title-stack {
@@ -376,7 +384,7 @@
     .blocks {
       display: grid;
       gap: 3px;
-      padding-bottom: 18px;
+      padding-bottom: 500px;
     }
 
     .block {
@@ -399,6 +407,31 @@
       background:
         linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
         rgba(255, 255, 255, 0.035);
+    }
+
+    .block.drop-before::before,
+    .block.drop-after::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+
+    .block.drop-before::before {
+      top: -3px;
+    }
+
+    .block.drop-after::after {
+      bottom: -3px;
+    }
+
+    .block.grouped {
+      border-color: color-mix(in srgb, var(--accent) 34%, rgba(255, 255, 255, 0.12));
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
     }
 
     .block-line {
@@ -428,6 +461,36 @@
       font-size: 24px;
       font-weight: 920;
       line-height: 1.12;
+    }
+
+    .size-title .editable {
+      font-size: 31px;
+      font-weight: 940;
+      line-height: 1.08;
+    }
+
+    .size-heading .editable {
+      font-size: 24px;
+      font-weight: 920;
+      line-height: 1.12;
+    }
+
+    .size-subtitle .editable {
+      font-size: 20px;
+      font-weight: 820;
+      line-height: 1.22;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .size-text .editable {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .size-subtext .editable {
+      font-size: 13px;
+      line-height: 1.38;
+      color: var(--muted);
     }
 
     .quote .editable {
@@ -509,14 +572,6 @@
       object-fit: cover;
     }
 
-    .image-caption {
-      padding: 12px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
-      outline: none;
-    }
-
     .empty-image {
       min-height: 150px;
       display: grid;
@@ -555,7 +610,7 @@
       position: absolute;
       left: 18px;
       right: 18px;
-      bottom: calc(var(--nav-height) + 12px);
+      bottom: calc(var(--nav-height) + 12px + var(--keyboard-offset));
       z-index: 16;
       display: none;
       gap: 7px;
@@ -633,10 +688,10 @@
       position: absolute;
       left: 18px;
       right: 18px;
-      bottom: calc(var(--nav-height) + 12px);
+      bottom: calc(var(--nav-height) + 12px + var(--keyboard-offset));
       z-index: 18;
       display: none;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr;
       gap: 10px;
       align-items: center;
       padding: 10px;
@@ -690,6 +745,12 @@
       display: flex;
       gap: 7px;
       overflow-x: auto;
+    }
+
+    .selection-actions .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
     }
 
     .nav {
@@ -842,6 +903,44 @@
     .modal-action.primary {
       color: #fff;
       background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+    }
+
+    .size-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .size-option {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      font-weight: 900;
+    }
+
+    .size-option span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .view-field {
+      width: 100%;
+      min-height: 260px;
+      max-height: min(54dvh, 430px);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 16px;
+      outline: none;
+      resize: none;
+      padding: 14px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      line-height: 1.45;
     }
 
     .option-grid {
@@ -1056,15 +1155,17 @@
     <div class="selection-bar" id="selectionBar">
       <div class="selection-text">
         <strong id="selectionTitle">1 selected</strong>
-        <span>Tap text to keep editing, or use actions.</span>
+        <span>Drag selected blocks to reorder.</span>
       </div>
       <div class="selection-actions">
-        <button class="icon-btn block-tool" type="button" data-command="add-bullet" aria-label="Make bullet list"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
-        <button class="icon-btn block-tool" type="button" data-command="add-number" aria-label="Make numbered list"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
-        <button class="icon-btn block-tool" type="button" data-command="add-task" aria-label="Make checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
-        <button class="icon-btn" type="button" data-command="move-up" aria-label="Move up"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
-        <button class="icon-btn" type="button" data-command="move-down" aria-label="Move down"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
-        <button class="icon-btn" type="button" data-command="duplicate-selected" aria-label="Duplicate"><i class="fa-solid fa-clone" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="undo-action" aria-label="Undo"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="redo-action" aria-label="Redo"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="group-selected" aria-label="Group"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="cut-selected" aria-label="Cut"><i class="fa-solid fa-scissors" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="copy-selected" aria-label="Copy"><i class="fa-solid fa-copy" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="paste-blocks" aria-label="Paste"><i class="fa-solid fa-paste" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="open-size-menu" aria-label="Text size"><strong aria-hidden="true">aA</strong></button>
+        <button class="icon-btn block-tool" type="button" data-command="open-view-text" aria-label="View text"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
         <button class="icon-btn danger" type="button" data-command="delete-selected" aria-label="Delete"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
         <button class="icon-btn" type="button" data-command="done-selection" aria-label="Done"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
       </div>
@@ -1148,6 +1249,42 @@
       </section>
     </div>
 
+    <div class="modal" id="sizeModal" aria-hidden="true">
+      <section class="sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="sizeTitle">
+        <div class="grabber"></div>
+        <div class="sheet-head">
+          <h2 id="sizeTitle">Text size</h2>
+          <button class="icon-btn" type="button" data-command="close-size-menu" aria-label="Close text size">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="size-list">
+          <button class="size-option" type="button" data-command="set-block-size" data-size="title">Title <span>Largest</span></button>
+          <button class="size-option" type="button" data-command="set-block-size" data-size="heading">Heading <span>Section</span></button>
+          <button class="size-option" type="button" data-command="set-block-size" data-size="subtitle">Subtitle <span>Medium</span></button>
+          <button class="size-option" type="button" data-command="set-block-size" data-size="text">Text <span>Normal</span></button>
+          <button class="size-option" type="button" data-command="set-block-size" data-size="subtext">Subtext <span>Small</span></button>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal" id="viewTextModal" aria-hidden="true">
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="viewTextTitle">
+        <div class="grabber"></div>
+        <div class="sheet-head">
+          <h2 id="viewTextTitle">View text</h2>
+          <button class="icon-btn" type="button" data-command="close-view-text" aria-label="Close view text">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        <textarea class="view-field" id="viewTextField" spellcheck="true"></textarea>
+        <div class="modal-actions">
+          <button class="modal-action" type="button" data-command="close-view-text">Cancel</button>
+          <button class="modal-action primary" type="button" data-command="save-view-text">Save</button>
+        </div>
+      </section>
+    </div>
+
     <div class="image-viewer" id="imageViewer" aria-hidden="true">
       <img id="imageViewerImg" alt="Full note image" />
       <button class="icon-btn image-close" type="button" data-command="close-image" aria-label="Close image">
@@ -1226,6 +1363,9 @@
     const titleInput = document.getElementById("titleInput");
     const noteModal = document.getElementById("noteModal");
     const insertModal = document.getElementById("insertModal");
+    const sizeModal = document.getElementById("sizeModal");
+    const viewTextModal = document.getElementById("viewTextModal");
+    const viewTextField = document.getElementById("viewTextField");
     const noteModalTitle = document.getElementById("noteModalTitle");
     const noteTitleField = document.getElementById("noteTitleField");
     const colorChoices = document.getElementById("colorChoices");
@@ -1235,10 +1375,16 @@
     const imageViewerImg = document.getElementById("imageViewerImg");
     const toast = document.getElementById("toast");
     const toastText = document.getElementById("toastText");
+    const selectionBar = document.getElementById("selectionBar");
     const selectionTitle = document.getElementById("selectionTitle");
     const toolbar = document.getElementById("toolbar");
     let noteDraft = null;
     let imageControlsTimer = null;
+    let blockClipboard = [];
+    let historyPast = [];
+    let historyFuture = [];
+    let viewTextBlockId = null;
+    let dragState = null;
 
     function uid() {
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
@@ -1258,6 +1404,35 @@
       localStorage.setItem(storageKey, JSON.stringify(state));
     }
 
+    function snapshotState() {
+      return JSON.stringify(state);
+    }
+
+    function remember() {
+      historyPast.push(snapshotState());
+      if (historyPast.length > 80) historyPast.shift();
+      historyFuture = [];
+    }
+
+    function restoreSnapshot(snapshot) {
+      state = JSON.parse(snapshot);
+      saveState();
+      closeSelection();
+      renderAll();
+    }
+
+    function undoAction() {
+      if (!historyPast.length) return;
+      historyFuture.push(snapshotState());
+      restoreSnapshot(historyPast.pop());
+    }
+
+    function redoAction() {
+      if (!historyFuture.length) return;
+      historyPast.push(snapshotState());
+      restoreSnapshot(historyFuture.pop());
+    }
+
     function activeNote() {
       return state.notes.find(note => note.id === state.activeNoteId) || state.notes[0];
     }
@@ -1274,7 +1449,7 @@
     }
 
     function preview(note) {
-      return note.blocks.map(block => stripHtml(block.text || block.caption || "")).filter(Boolean).join(" ").slice(0, 120);
+      return note.blocks.map(block => block.type === "image" ? "" : stripHtml(block.text || "")).filter(Boolean).join(" ").slice(0, 120);
     }
 
     function escapeHtml(value) {
@@ -1353,12 +1528,11 @@
     function renderBlock(block, index, accent) {
       if (block.type === "image") {
         return `
-          <article class="block ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+          <article class="block image ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
             <div class="image-block">
               <button class="image-open" type="button" data-command="open-image" data-id="${block.id}" aria-label="Open image">
                 ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Photo</span></div>`}
               </button>
-              <div class="image-caption" contenteditable="true" data-id="${block.id}" data-field="caption" data-placeholder="Caption">${escapeHtml(block.caption || "")}</div>
             </div>
           </article>
         `;
@@ -1372,13 +1546,17 @@
             ? `<button class="task-check ${block.checked ? "checked" : ""}" type="button" data-command="toggle-task" data-id="${block.id}" aria-label="Toggle task">${block.checked ? '<i class="fa-solid fa-check" aria-hidden="true"></i>' : ""}</button>`
             : "";
       return `
-        <article class="block ${block.type} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+        <article class="block ${block.type} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
           <div class="block-line">
             ${marker}
             <div class="editable" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write">${sanitizeHtml(block.text || "")}</div>
           </div>
         </article>
       `;
+    }
+
+    function sizeForType(type) {
+      return type === "heading" ? "heading" : "text";
     }
 
     function numberFor(index) {
@@ -1456,6 +1634,7 @@
 
     function addBlock(type = "paragraph", afterId = focusedBlockId) {
       ensureNote();
+      remember();
       const blocks = activeBlocks();
       const index = afterId ? blocks.findIndex(block => block.id === afterId) : -1;
       const block = createBlock(type);
@@ -1472,7 +1651,7 @@
       if (type === "number") return { id: uid(), type, text: "" };
       if (type === "heading") return { id: uid(), type, text: "", children: [] };
       if (type === "card") return { id: uid(), type, text: "" };
-      if (type === "image") return { id: uid(), type, src: "", caption: "" };
+      if (type === "image") return { id: uid(), type, src: "" };
       return { id: uid(), type: "paragraph", text: "" };
     }
 
@@ -1609,7 +1788,7 @@
     function wireSwipeTargets(elements) {
       elements.forEach(element => {
         element.addEventListener("pointerdown", event => {
-          if (event.target.closest("[contenteditable='true'], input, textarea, .action-btn, .task-check")) return;
+          if (event.target.closest("[contenteditable='true'], input, textarea, .action-btn, .task-check, .image-open")) return;
           touch = { x: event.clientX, y: event.clientY, id: element.dataset.id, kind: element.dataset.kind, element };
         });
         element.addEventListener("pointerup", event => {
@@ -1617,9 +1796,11 @@
           const dx = event.clientX - touch.x;
           const dy = Math.abs(event.clientY - touch.y);
           if (Math.abs(dx) > swipeMin && dy < 42) {
-            if (dx > 0) {
+            if (touch.kind === "block" && dx < 0) {
               toggleSelection(touch.kind, touch.id);
-            } else {
+            } else if (touch.kind === "note" && dx > 0) {
+              toggleSelection(touch.kind, touch.id);
+            } else if (touch.kind === "note" && dx < 0) {
               revealDelete(touch.kind, touch.id, element);
             }
           }
@@ -1640,10 +1821,11 @@
     }
 
     function openActions(kind, id) {
-      showToast(kind === "note" ? "Use the card buttons below" : "Swipe right to select this line", "fa-hand-pointer");
+      showToast(kind === "note" ? "Use the card buttons below" : "Drag left to select this block", "fa-hand-pointer");
     }
 
     function deleteBySwipe(kind, id) {
+      remember();
       if (kind === "note") {
         undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
         state.notes = state.notes.filter(note => note.id !== id);
@@ -1662,28 +1844,69 @@
     function wireDragging(elements, kind) {
       elements.forEach(element => {
         element.addEventListener("dragstart", event => {
+          if (kind === "block" && selection.kind === "block" && selection.ids.has(element.dataset.id)) {
+            dragState = { kind, ids: [...selection.ids] };
+          } else {
+            dragState = { kind, ids: [element.dataset.id] };
+          }
           element.classList.add("dragging");
-          event.dataTransfer.setData("text/plain", JSON.stringify({ kind, id: element.dataset.id }));
+          event.dataTransfer.setData("text/plain", JSON.stringify({ kind, id: element.dataset.id, ids: dragState.ids }));
         });
-        element.addEventListener("dragend", () => element.classList.remove("dragging"));
-        element.addEventListener("dragover", event => event.preventDefault());
+        element.addEventListener("dragend", () => {
+          element.classList.remove("dragging");
+          clearDropIndicators();
+          dragState = null;
+        });
+        element.addEventListener("dragover", event => {
+          event.preventDefault();
+          if (kind === "block") showDropIndicator(element, event);
+        });
+        element.addEventListener("dragleave", () => {
+          element.classList.remove("drop-before", "drop-after");
+        });
         element.addEventListener("drop", event => {
           event.preventDefault();
+          clearDropIndicators();
           const payload = JSON.parse(event.dataTransfer.getData("text/plain") || "{}");
           if (payload.kind !== kind) return;
-          moveTo(payload.id, element.dataset.id, kind);
+          const after = kind === "block" && event.offsetY > element.getBoundingClientRect().height / 2;
+          moveTo(payload.id, element.dataset.id, kind, payload.ids, after);
         });
       });
     }
 
-    function moveTo(sourceId, targetId, kind) {
+    function showDropIndicator(element, event) {
+      clearDropIndicators();
+      const after = event.offsetY > element.getBoundingClientRect().height / 2;
+      element.classList.add(after ? "drop-after" : "drop-before");
+    }
+
+    function clearDropIndicators() {
+      document.querySelectorAll(".drop-before, .drop-after").forEach(item => item.classList.remove("drop-before", "drop-after"));
+    }
+
+    function moveTo(sourceId, targetId, kind, ids = [sourceId], after = false) {
       const list = kind === "block" ? activeBlocks() : state.notes;
+      remember();
+      if (kind === "block" && ids.length > 1) {
+        const movingIds = new Set(ids);
+        const moving = list.filter(item => movingIds.has(item.id));
+        let targetIndex = list.findIndex(item => item.id === targetId);
+        if (targetIndex < 0 || movingIds.has(targetId)) return;
+        const remaining = list.filter(item => !movingIds.has(item.id));
+        targetIndex = remaining.findIndex(item => item.id === targetId);
+        remaining.splice(targetIndex + (after ? 1 : 0), 0, ...moving);
+        activeNote().blocks = remaining;
+        saveState();
+        renderAll();
+        return;
+      }
       const sourceIndex = list.findIndex(item => item.id === sourceId);
       const targetIndex = list.findIndex(item => item.id === targetId);
       if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
       if (kind === "note" && list[sourceIndex].pinned !== list[targetIndex].pinned) return;
       const [item] = list.splice(sourceIndex, 1);
-      list.splice(targetIndex, 0, item);
+      list.splice(targetIndex + (after && sourceIndex > targetIndex ? 1 : 0), 0, item);
       reindex();
       saveState();
       renderAll();
@@ -1697,6 +1920,7 @@
       const target = index + direction;
       if (index < 0 || target < 0 || target >= list.length) return;
       if (selection.kind === "note" && list[index].pinned !== list[target].pinned) return;
+      remember();
       [list[index], list[target]] = [list[target], list[index]];
       reindex();
       saveState();
@@ -1705,6 +1929,7 @@
 
     function duplicateSelected() {
       if (!selection.kind || !selection.ids.size) return;
+      remember();
       [...selection.ids].forEach(id => {
         if (selection.kind === "note") duplicateNote(id);
         if (selection.kind === "block") duplicateBlock(id);
@@ -1716,6 +1941,7 @@
 
     function deleteSelected() {
       if (!selection.kind || !selection.ids.size) return;
+      remember();
       if (selection.kind === "note") {
         undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
         state.notes = state.notes.filter(note => !selection.ids.has(note.id));
@@ -1730,6 +1956,127 @@
       saveState();
       renderAll();
       showUndo();
+    }
+
+    function selectedBlockIds() {
+      if (selection.kind === "block" && selection.ids.size) return [...selection.ids];
+      return focusedBlockId ? [focusedBlockId] : [];
+    }
+
+    function selectedBlocks() {
+      const ids = new Set(selectedBlockIds());
+      return activeBlocks().filter(block => ids.has(block.id));
+    }
+
+    function copySelectedBlocks(show = true) {
+      const blocks = selectedBlocks();
+      if (!blocks.length) return;
+      blockClipboard = JSON.parse(JSON.stringify(blocks));
+      if (show) showToast(`${blocks.length} copied`, "fa-copy");
+    }
+
+    function cutSelectedBlocks() {
+      const ids = selectedBlockIds();
+      if (!ids.length) return;
+      copySelectedBlocks(false);
+      remember();
+      const idSet = new Set(ids);
+      activeNote().blocks = activeBlocks().filter(block => !idSet.has(block.id));
+      if (!activeNote().blocks.length) activeNote().blocks.push(createBlock("paragraph"));
+      closeSelection();
+      saveState();
+      renderEditor();
+      showToast("Cut", "fa-scissors");
+    }
+
+    function pasteBlocks() {
+      if (!blockClipboard.length) return;
+      remember();
+      const blocks = activeBlocks();
+      const afterId = selectedBlockIds().at(-1) || focusedBlockId;
+      const index = afterId ? blocks.findIndex(block => block.id === afterId) : blocks.length - 1;
+      const copies = JSON.parse(JSON.stringify(blockClipboard)).map(block => ({ ...block, id: uid() }));
+      blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, ...copies);
+      selection.kind = "block";
+      selection.ids = new Set(copies.map(block => block.id));
+      focusedBlockId = copies.at(-1)?.id || focusedBlockId;
+      saveState();
+      renderEditor();
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function groupSelectedBlocks() {
+      const ids = selectedBlockIds();
+      if (ids.length < 2) return;
+      remember();
+      const groupId = uid();
+      const idSet = new Set(ids);
+      activeBlocks().forEach(block => {
+        if (idSet.has(block.id)) block.groupId = groupId;
+      });
+      saveState();
+      renderEditor();
+      refreshSelectionClasses();
+    }
+
+    function setSelectedSize(size) {
+      const ids = selectedBlockIds();
+      if (!ids.length) return;
+      remember();
+      const idSet = new Set(ids);
+      activeBlocks().forEach(block => {
+        if (!idSet.has(block.id) || block.type === "image") return;
+        block.size = size;
+        if (size === "heading" || size === "title") {
+          block.type = "heading";
+          block.children = block.children || [];
+        } else if (block.type === "heading") {
+          block.type = "paragraph";
+          delete block.children;
+        }
+      });
+      closeSizeMenu();
+      saveState();
+      renderEditor();
+      refreshSelectionClasses();
+    }
+
+    function openSizeMenu() {
+      sizeModal.classList.add("open");
+      sizeModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeSizeMenu() {
+      sizeModal.classList.remove("open");
+      sizeModal.setAttribute("aria-hidden", "true");
+    }
+
+    function openViewText() {
+      const block = selectedBlocks().find(item => item.type !== "image");
+      if (!block) return;
+      viewTextBlockId = block.id;
+      viewTextField.value = stripHtml(block.text || "");
+      viewTextModal.classList.add("open");
+      viewTextModal.setAttribute("aria-hidden", "false");
+      setTimeout(() => viewTextField.focus(), 30);
+    }
+
+    function closeViewText() {
+      viewTextModal.classList.remove("open");
+      viewTextModal.setAttribute("aria-hidden", "true");
+      viewTextBlockId = null;
+    }
+
+    function saveViewText() {
+      const block = activeBlocks().find(item => item.id === viewTextBlockId);
+      if (!block) return;
+      remember();
+      block.text = escapeHtml(viewTextField.value).replace(/\n/g, "<br>");
+      saveState();
+      closeViewText();
+      renderEditor();
+      focusBlock(block.id);
     }
 
     function showUndo() {
@@ -1802,6 +2149,7 @@
     function toggleTask(id) {
       const block = activeBlocks().find(item => item.id === id);
       if (!block) return;
+      remember();
       block.checked = !block.checked;
       saveState();
       renderEditor();
@@ -1818,6 +2166,7 @@
         addBlock(type);
         return;
       }
+      remember();
       activeBlocks().forEach(block => {
         if (!ids.includes(block.id) || block.type === "image") return;
         block.type = type;
@@ -1926,7 +2275,8 @@
       [...files].filter(file => file.type.startsWith("image/")).forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
-          const block = { id: uid(), type: "image", src: reader.result, caption: file.name.replace(/\.[^.]+$/, "") };
+          remember();
+          const block = { id: uid(), type: "image", src: reader.result };
           const blocks = activeBlocks();
           const index = focusedBlockId ? blocks.findIndex(item => item.id === focusedBlockId) : -1;
           blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
@@ -2032,6 +2382,18 @@
       if (name === "move-down") moveSelected(1);
       if (name === "duplicate-selected") duplicateSelected();
       if (name === "delete-selected") deleteSelected();
+      if (name === "group-selected") groupSelectedBlocks();
+      if (name === "cut-selected") cutSelectedBlocks();
+      if (name === "copy-selected") copySelectedBlocks();
+      if (name === "paste-blocks") pasteBlocks();
+      if (name === "open-size-menu") openSizeMenu();
+      if (name === "close-size-menu") closeSizeMenu();
+      if (name === "set-block-size") setSelectedSize(element.dataset.size);
+      if (name === "open-view-text") openViewText();
+      if (name === "close-view-text") closeViewText();
+      if (name === "save-view-text") saveViewText();
+      if (name === "undo-action") undoAction();
+      if (name === "redo-action") redoAction();
       if (name === "done-selection") closeSelection();
       if (name === "close-note-modal") closeNoteModal();
       if (name === "save-note-modal") saveNoteModal();
@@ -2080,6 +2442,8 @@
         closeSelection();
         closeNoteModal();
         closeInsert();
+        closeSizeMenu();
+        closeViewText();
         closeImage();
       }
       if (event.key === "Enter" && event.target === titleInput) {
@@ -2107,11 +2471,28 @@
     insertModal.addEventListener("click", event => {
       if (event.target === insertModal) closeInsert();
     });
+    sizeModal.addEventListener("click", event => {
+      if (event.target === sizeModal) closeSizeMenu();
+    });
+    viewTextModal.addEventListener("click", event => {
+      if (event.target === viewTextModal) closeViewText();
+    });
     imageViewer.addEventListener("click", event => {
       if (event.target.closest(".image-close")) return;
       revealImageControls();
     });
     toolbar.addEventListener("mousedown", event => event.preventDefault());
+    selectionBar.addEventListener("mousedown", event => event.preventDefault());
+
+    function updateKeyboardOffset() {
+      if (!window.visualViewport) return;
+      const offset = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
+      document.documentElement.style.setProperty("--keyboard-offset", `${offset}px`);
+    }
+
+    window.visualViewport?.addEventListener("resize", updateKeyboardOffset);
+    window.visualViewport?.addEventListener("scroll", updateKeyboardOffset);
+    updateKeyboardOffset();
 
     searchInput.addEventListener("input", renderNotes);
     noteTitleField.addEventListener("keydown", event => {
