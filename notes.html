@@ -1999,12 +1999,14 @@ function toggleSelection(kind, id) {
   refreshSelectionClasses();
 }
 
-    function closeSelection() {
-      selection.kind = null;
-      selection.ids = new Set();
-      updateSelectionUi();
-      refreshSelectionClasses();
-    }
+function closeSelection() {
+  blockNextClick = false;
+  selection.kind = null;
+  selection.ids = new Set();
+  phone.classList.remove("notes-tools-open");
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
 
     function updateSelectionUi() {
       const active = Boolean(selection.kind && selection.ids.size);
@@ -2704,16 +2706,14 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
       setView("editor");
     }
 function moveNoteCard(id, direction) {
-  const notes = sortedNotes();
+  const current = state.notes.find(note => note.id === id);
+  if (!current) return;
+
+  const notes = sortedNotes().filter(note => note.pinned === current.pinned);
   const index = notes.findIndex(note => note.id === id);
   const targetIndex = index + direction;
 
   if (index < 0 || targetIndex < 0 || targetIndex >= notes.length) return;
-
-  const current = notes[index];
-  const target = notes[targetIndex];
-
-  if (current.pinned !== target.pinned) return;
 
   notes.splice(index, 1);
   notes.splice(targetIndex, 0, current);
@@ -2724,6 +2724,8 @@ function moveNoteCard(id, direction) {
 
   saveState();
   renderNotes();
+  updateSelectionUi();
+  refreshSelectionClasses();
 }
 function selectedNoteId() {
   if (selection.kind !== "note") return null;
@@ -2768,42 +2770,56 @@ if (name === "close-toast") {
   }
 
 if (name === "pin-selected-note") {
-  if (selection.kind !== "note" || !selection.ids.size) return;
+  const id = selectedNoteId();
+  if (!id) return;
 
-  selection.ids.forEach(id => {
-    const note = state.notes.find(item => item.id === id);
-    if (note) note.pinned = !note.pinned;
-  });
+  const note = state.notes.find(item => item.id === id);
+  if (!note) return;
 
+  note.pinned = !note.pinned;
   reindex();
   saveState();
   renderNotes();
   updateSelectionUi();
   refreshSelectionClasses();
+  return;
 }
 
 if (name === "move-selected-note-up") {
   const id = selectedNoteId();
   if (!id) return;
+
   moveNoteCard(id, -1);
+  return;
 }
 
 if (name === "move-selected-note-down") {
   const id = selectedNoteId();
   if (!id) return;
+
   moveNoteCard(id, 1);
+  return;
 }
 
 if (name === "edit-selected-note") {
   const id = selectedNoteId();
   if (!id) return;
+
   openNoteModal(id);
+  return;
 }
 
 if (name === "delete-selected-note") {
   const id = selectedNoteId();
   if (!id) return;
+
   deleteNote(id);
+  return;
+}
+
+if (name === "done-selection") {
+  closeSelection();
+  return;
 }
   if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
@@ -2816,6 +2832,7 @@ if (name === "open-note") {
   state.activeNoteId = element.dataset.id;
   saveState();
   setView("editor");
+  return;
 }
       if (name === "back" || name === "notes") setView("notes");
       if (name === "home") showToast("Home is index.html", "fa-house");
