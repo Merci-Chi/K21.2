@@ -1120,7 +1120,21 @@
     .toast.show {
       display: flex;
     }
+.toast-close {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
+  flex: 0 0 auto;
+}
 
+.toast-close:active {
+  transform: scale(0.94);
+}
  #editorView {
   padding-top: 0;
   padding-left: 0;
@@ -1147,10 +1161,14 @@
 </head>
 <body>
   <main class="phone" id="phone">
-    <div class="toast" id="toast">
-      <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-      <span id="toastText">Saved</span>
-    </div>
+ <div class="toast" id="toast">
+  <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+  <span id="toastText">Saved</span>
+
+  <button class="toast-close" type="button" data-command="close-toast" aria-label="Close message">
+    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+  </button>
+</div>
 
     <section class="app view active" id="notesView">
       <header class="topbar">
@@ -2502,6 +2520,11 @@ function selectedNoteId() {
   return [...selection.ids][0] || null;
 }
 function command(name, element) {
+if (name === "close-toast") {
+  toast.classList.remove("show");
+  clearTimeout(showToast.timer);
+  return;
+}
   if (name === "toggle-note-tools") {
     phone.classList.toggle("notes-tools-open");
     return;
