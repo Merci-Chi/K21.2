@@ -192,7 +192,7 @@
 
     .search {
       position: relative;
-      margin-bottom: 16px;
+      margin-bottom: 26px;
     }
 
     .search i {
@@ -224,7 +224,8 @@
 
     .note-list {
       display: grid;
-      gap: 12px;
+      gap: 16px;
+      padding-top: 2px;
     }
 
     .note-card {
@@ -312,6 +313,16 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      overflow-x: auto;
+    }
+
+    .empty-state {
+      min-height: 230px;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.64);
+      font-size: 22px;
+      font-weight: 900;
     }
 
     .action-btn {
@@ -426,6 +437,15 @@
       font-style: italic;
     }
 
+    .card .editable {
+      padding: 15px;
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+        rgba(12, 17, 28, 0.72);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
     .bullet .block-line,
     .number .block-line,
     .task .block-line {
@@ -473,10 +493,19 @@
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.085);
     }
 
+    .image-open {
+      width: 100%;
+      display: block;
+      padding: 0;
+      text-align: left;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
     .image-block img {
       display: block;
       width: 100%;
-      max-height: 260px;
+      height: 184px;
       object-fit: cover;
     }
 
@@ -562,6 +591,44 @@
       background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
     }
 
+    .insert-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .insert-option {
+      min-height: 74px;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      text-align: left;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+    }
+
+    .insert-option i {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .insert-option span {
+      min-width: 0;
+      font-size: 14px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
     .selection-bar {
       position: absolute;
       left: 18px;
@@ -583,6 +650,14 @@
     }
 
     .selection-active .selection-bar {
+      display: grid;
+    }
+
+    .selection-bar .block-tool {
+      display: none;
+    }
+
+    .block-selection .selection-bar .block-tool {
       display: grid;
     }
 
@@ -614,6 +689,7 @@
     .selection-actions {
       display: flex;
       gap: 7px;
+      overflow-x: auto;
     }
 
     .nav {
@@ -638,7 +714,7 @@
     }
 
     .nav-item,
-    .add {
+    .nav-add {
       min-width: 0;
       display: grid;
       place-items: center;
@@ -656,7 +732,7 @@
       color: var(--text);
     }
 
-    .add {
+    .nav-add {
       width: 60px;
       height: 60px;
       border-radius: 22px;
@@ -717,6 +793,57 @@
       font-weight: 900;
     }
 
+    .compact-sheet {
+      max-height: calc(100dvh - 118px);
+      overflow: hidden;
+    }
+
+    .note-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      outline: none;
+      padding: 0 13px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .modal-action {
+      min-height: 44px;
+      border-radius: 14px;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-action.primary {
+      color: #fff;
+      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+    }
+
     .option-grid {
       display: grid;
       gap: 10px;
@@ -742,8 +869,13 @@
       place-items: center;
       border-radius: 50%;
       color: #fff;
-      background: var(--accent, var(--blue));
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+      background: rgba(255, 255, 255, 0.075);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.11);
+    }
+
+    .circle i {
+      display: block;
+      line-height: 1;
     }
 
     .option-row strong {
@@ -788,6 +920,39 @@
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
         rgba(255, 255, 255, 0.06);
+    }
+
+    .image-viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      place-items: center;
+      background: #000;
+    }
+
+    .image-viewer.open {
+      display: grid;
+    }
+
+    .image-viewer img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .image-close {
+      position: absolute;
+      top: calc(18px + env(safe-area-inset-top));
+      right: 18px;
+      z-index: 2;
+      opacity: 1;
+      transition: opacity 260ms ease;
+    }
+
+    .image-viewer.controls-hidden .image-close {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .toast {
@@ -843,7 +1008,6 @@
     <section class="app view active" id="notesView">
       <header class="topbar">
         <div class="title-stack">
-          <p class="kicker"><i class="fa-solid fa-note-sticky" aria-hidden="true"></i> Clean notes</p>
           <h1>Notes</h1>
         </div>
         <button class="icon-btn primary" type="button" data-command="new-note" aria-label="Create new note">
@@ -867,9 +1031,6 @@
         <div class="title-stack">
           <p class="kicker"><i class="fa-solid fa-pen" aria-hidden="true"></i> Editing</p>
         </div>
-        <button class="icon-btn" type="button" data-command="options" aria-label="Note options">
-          <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
-        </button>
       </header>
 
       <textarea class="editor-title" id="titleInput" rows="1" placeholder="Untitled note"></textarea>
@@ -883,6 +1044,7 @@
     <nav class="toolbar" id="toolbar" aria-label="Formatting and insert toolbar">
       <button type="button" data-command="format-bold" aria-label="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
       <button type="button" data-command="format-italic" aria-label="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
+      <button type="button" data-command="format-underline" aria-label="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
       <button type="button" data-command="add-bullet" aria-label="Add bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
       <button type="button" data-command="add-number" aria-label="Add numbered item"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
       <button type="button" data-command="add-task" aria-label="Add checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
@@ -897,6 +1059,9 @@
         <span>Tap text to keep editing, or use actions.</span>
       </div>
       <div class="selection-actions">
+        <button class="icon-btn block-tool" type="button" data-command="add-bullet" aria-label="Make bullet list"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="add-number" aria-label="Make numbered list"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="add-task" aria-label="Make checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
         <button class="icon-btn" type="button" data-command="move-up" aria-label="Move up"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
         <button class="icon-btn" type="button" data-command="move-down" aria-label="Move down"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
         <button class="icon-btn" type="button" data-command="duplicate-selected" aria-label="Duplicate"><i class="fa-solid fa-clone" aria-hidden="true"></i></button>
@@ -905,58 +1070,43 @@
       </div>
     </div>
 
-<nav class="nav" aria-label="Primary navigation">
-  <button class="nav-item" type="button">
-    <i class="fa-solid fa-house" aria-hidden="true"></i>
-    Home
-  </button>
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="nav-item" type="button" data-command="home">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+        Home
+      </button>
+      <button class="nav-item" type="button" data-command="habits">
+        <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+        Habits
+      </button>
+      <button class="nav-add" type="button" data-command="smart-add" aria-label="Add">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      </button>
+      <button class="nav-item active" type="button" data-command="notes">
+        <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
+        Notes
+      </button>
+      <button class="nav-item" type="button" data-command="photo">
+        <i class="fa-solid fa-image" aria-hidden="true"></i>
+        Photo
+      </button>
+    </nav>
 
-  <button class="nav-item" type="button">
-    <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
-    Habits
-  </button>
-
-  <button class="add" type="button" aria-label="Add">
-    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-  </button>
-
-  <button class="nav-item" type="button">
-    <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
-    Notes
-  </button>
-
-  <button class="nav-item" type="button">
-    <i class="fa-solid fa-image" aria-hidden="true"></i>
-    Photo
-  </button>
-</nav>
-
-    <div class="modal" id="optionsModal" aria-hidden="true">
-      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
+    <div class="modal" id="noteModal" aria-hidden="true">
+      <section class="sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
         <div class="grabber"></div>
         <div class="sheet-head">
-          <h2 id="optionsTitle">Note options</h2>
-          <button class="icon-btn" type="button" data-command="close-options" aria-label="Close options">
+          <h2 id="noteModalTitle">New note</h2>
+          <button class="icon-btn" type="button" data-command="close-note-modal" aria-label="Cancel">
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
           </button>
         </div>
 
-        <div class="option-grid">
-          <button class="option-row" type="button" data-command="pin-active">
-            <span class="circle" style="--accent: var(--yellow)"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i></span>
-            <span><strong id="pinLabel">Pin note</strong><span>Keep this note at the top.</span></span>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </button>
-          <button class="option-row" type="button" data-command="duplicate-active">
-            <span class="circle" style="--accent: var(--purple)"><i class="fa-solid fa-clone" aria-hidden="true"></i></span>
-            <span><strong>Duplicate note</strong><span>Make a complete copy.</span></span>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </button>
-          <button class="option-row" type="button" data-command="delete-active">
-            <span class="circle" style="--accent: var(--red)"><i class="fa-solid fa-trash" aria-hidden="true"></i></span>
-            <span><strong>Delete note</strong><span>Remove this note.</span></span>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </button>
+        <div class="note-form">
+          <label class="field">
+            <span>Title</span>
+            <input id="noteTitleField" type="text" placeholder="Title" autocomplete="off" />
+          </label>
 
           <div>
             <p class="kicker"><i class="fa-solid fa-palette" aria-hidden="true"></i> Color</p>
@@ -967,8 +1117,42 @@
             <p class="kicker"><i class="fa-solid fa-icons" aria-hidden="true"></i> Icon</p>
             <div class="icon-row" id="iconChoices"></div>
           </div>
+
+          <div class="modal-actions">
+            <button class="modal-action" type="button" data-command="close-note-modal">Cancel</button>
+            <button class="modal-action primary" type="button" data-command="save-note-modal">Save</button>
+          </div>
         </div>
       </section>
+    </div>
+
+    <div class="modal" id="insertModal" aria-hidden="true">
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="insertTitle">
+        <div class="grabber"></div>
+        <div class="sheet-head">
+          <h2 id="insertTitle">Add</h2>
+          <button class="icon-btn" type="button" data-command="close-insert" aria-label="Close add menu">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div class="insert-list">
+          <button class="insert-option" type="button" data-command="insert-block" data-type="paragraph"><i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Text</span></button>
+          <button class="insert-option" type="button" data-command="insert-block" data-type="card"><i class="fa-solid fa-note-sticky" aria-hidden="true"></i><span>Card</span></button>
+          <button class="insert-option" type="button" data-command="insert-block" data-type="heading"><i class="fa-solid fa-heading" aria-hidden="true"></i><span>Heading</span></button>
+          <button class="insert-option" type="button" data-command="insert-block" data-type="image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Image</span></button>
+          <button class="insert-option" type="button" data-command="insert-block" data-type="number"><i class="fa-solid fa-list-ol" aria-hidden="true"></i><span>Number</span></button>
+          <button class="insert-option" type="button" data-command="insert-block" data-type="bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i><span>Bullet</span></button>
+          <button class="insert-option" type="button" data-command="insert-block" data-type="task"><i class="fa-solid fa-square-check" aria-hidden="true"></i><span>Checkmark</span></button>
+        </div>
+      </section>
+    </div>
+
+    <div class="image-viewer" id="imageViewer" aria-hidden="true">
+      <img id="imageViewerImg" alt="Full note image" />
+      <button class="icon-btn image-close" type="button" data-command="close-image" aria-label="Close image">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
     </div>
   </main>
 
@@ -1040,14 +1224,21 @@
     const blocksEl = document.getElementById("blocks");
     const searchInput = document.getElementById("searchInput");
     const titleInput = document.getElementById("titleInput");
-    const optionsModal = document.getElementById("optionsModal");
+    const noteModal = document.getElementById("noteModal");
+    const insertModal = document.getElementById("insertModal");
+    const noteModalTitle = document.getElementById("noteModalTitle");
+    const noteTitleField = document.getElementById("noteTitleField");
     const colorChoices = document.getElementById("colorChoices");
     const iconChoices = document.getElementById("iconChoices");
     const photoInput = document.getElementById("photoInput");
+    const imageViewer = document.getElementById("imageViewer");
+    const imageViewerImg = document.getElementById("imageViewerImg");
     const toast = document.getElementById("toast");
     const toastText = document.getElementById("toastText");
     const selectionTitle = document.getElementById("selectionTitle");
-    const pinLabel = document.getElementById("pinLabel");
+    const toolbar = document.getElementById("toolbar");
+    let noteDraft = null;
+    let imageControlsTimer = null;
 
     function uid() {
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
@@ -1056,7 +1247,7 @@
     function loadState() {
       try {
         const saved = JSON.parse(localStorage.getItem(storageKey));
-        if (saved?.notes?.length) return saved;
+        if (Array.isArray(saved?.notes)) return saved;
       } catch (error) {
         console.warn(error);
       }
@@ -1083,7 +1274,7 @@
     }
 
     function preview(note) {
-      return note.blocks.map(block => block.text || block.caption || "").filter(Boolean).join(" ").slice(0, 120);
+      return note.blocks.map(block => stripHtml(block.text || block.caption || "")).filter(Boolean).join(" ").slice(0, 120);
     }
 
     function escapeHtml(value) {
@@ -1096,9 +1287,33 @@
       }[char]));
     }
 
+    function sanitizeHtml(value) {
+      const template = document.createElement("template");
+      template.innerHTML = String(value ?? "");
+      const allowed = new Set(["B", "STRONG", "I", "EM", "U", "BR", "DIV"]);
+      template.content.querySelectorAll("*").forEach(node => {
+        if (!allowed.has(node.tagName)) {
+          node.replaceWith(document.createTextNode(node.textContent || ""));
+          return;
+        }
+        [...node.attributes].forEach(attr => node.removeAttribute(attr.name));
+      });
+      return template.innerHTML;
+    }
+
+    function stripHtml(value) {
+      const template = document.createElement("template");
+      template.innerHTML = String(value ?? "");
+      return (template.content.textContent || "").trim();
+    }
+
     function renderNotes() {
       const query = searchInput.value.trim().toLowerCase();
       const notes = sortedNotes().filter(note => `${note.title} ${preview(note)}`.toLowerCase().includes(query));
+      if (!state.notes.length) {
+        noteList.innerHTML = `<div class="empty-state">Empty</div>`;
+        return;
+      }
       noteList.innerHTML = notes.map(note => `
         <article class="note-card ${selection.ids.has(note.id) ? "selected" : ""}" draggable="true" data-kind="note" data-id="${note.id}" style="--accent:${note.accent}">
           <button class="note-main" type="button" data-command="open-note" data-id="${note.id}" aria-label="Open ${escapeHtml(note.title)}">
@@ -1112,18 +1327,22 @@
             <button class="action-btn pin ${note.pinned ? "active" : ""}" type="button" data-command="pin-note" data-id="${note.id}" aria-label="Pin note"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i></button>
             <button class="action-btn" type="button" data-command="move-note-up" data-id="${note.id}" aria-label="Move note up"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
             <button class="action-btn" type="button" data-command="move-note-down" data-id="${note.id}" aria-label="Move note down"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
+            <button class="action-btn" type="button" data-command="edit-note" data-id="${note.id}" aria-label="Edit note"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
             <button class="action-btn" type="button" data-command="duplicate-note" data-id="${note.id}" aria-label="Duplicate note"><i class="fa-solid fa-clone" aria-hidden="true"></i></button>
             <button class="action-btn delete" type="button" data-command="delete-note" data-id="${note.id}" aria-label="Delete note"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
           </div>
         </article>
-      `).join("") || `<div class="note-card"><p class="note-title">No notes found</p><p class="note-preview">Tap + to create one.</p></div>`;
+      `).join("") || `<div class="note-card"><p class="note-title">No notes found</p></div>`;
       wireSwipeTargets(noteList.querySelectorAll(".note-card"));
       wireDragging(noteList.querySelectorAll(".note-card"), "note");
     }
 
     function renderEditor() {
       const note = activeNote();
-      if (!note) return;
+      if (!note) {
+        setView("notes");
+        return;
+      }
       if (document.activeElement !== titleInput) titleInput.value = note.title || "";
       blocksEl.innerHTML = note.blocks.map((block, index) => renderBlock(block, index, note.accent)).join("");
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
@@ -1136,7 +1355,9 @@
         return `
           <article class="block ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
             <div class="image-block">
-              ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Photo</span></div>`}
+              <button class="image-open" type="button" data-command="open-image" data-id="${block.id}" aria-label="Open image">
+                ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Photo</span></div>`}
+              </button>
               <div class="image-caption" contenteditable="true" data-id="${block.id}" data-field="caption" data-placeholder="Caption">${escapeHtml(block.caption || "")}</div>
             </div>
           </article>
@@ -1154,7 +1375,7 @@
         <article class="block ${block.type} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
           <div class="block-line">
             ${marker}
-            <div class="editable" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write">${escapeHtml(block.text || "")}</div>
+            <div class="editable" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write">${sanitizeHtml(block.text || "")}</div>
           </div>
         </article>
       `;
@@ -1195,10 +1416,10 @@
     function newNote() {
       const note = {
         id: uid(),
-        title: "",
+        title: noteDraft?.title || "",
         pinned: false,
-        accent: colors[0],
-        icon: icons[0],
+        accent: noteDraft?.accent || colors[0],
+        icon: noteDraft?.icon || icons[0],
         order: state.notes.length,
         blocks: [{ id: uid(), type: "paragraph", text: "" }]
       };
@@ -1210,7 +1431,31 @@
       setTimeout(() => titleInput.focus(), 30);
     }
 
+    function noteById(id) {
+      return state.notes.find(note => note.id === id);
+    }
+
+    function ensureNote() {
+      let note = activeNote();
+      if (note) return note;
+      note = {
+        id: uid(),
+        title: "",
+        pinned: false,
+        accent: colors[0],
+        icon: icons[0],
+        order: state.notes.length,
+        blocks: []
+      };
+      state.notes.unshift(note);
+      state.activeNoteId = note.id;
+      reindex();
+      saveState();
+      return note;
+    }
+
     function addBlock(type = "paragraph", afterId = focusedBlockId) {
+      ensureNote();
       const blocks = activeBlocks();
       const index = afterId ? blocks.findIndex(block => block.id === afterId) : -1;
       const block = createBlock(type);
@@ -1226,6 +1471,7 @@
       if (type === "bullet") return { id: uid(), type, text: "" };
       if (type === "number") return { id: uid(), type, text: "" };
       if (type === "heading") return { id: uid(), type, text: "", children: [] };
+      if (type === "card") return { id: uid(), type, text: "" };
       if (type === "image") return { id: uid(), type, src: "", caption: "" };
       return { id: uid(), type: "paragraph", text: "" };
     }
@@ -1245,9 +1491,30 @@
     function updateBlockField(target) {
       const block = activeBlocks().find(item => item.id === target.dataset.id);
       if (!block) return;
-      block[target.dataset.field] = target.textContent;
+      block[target.dataset.field] = target.dataset.field === "text" ? sanitizeHtml(target.innerHTML) : target.textContent;
       focusedBlockId = block.id;
       saveState();
+    }
+
+    function editableSplitHtml(editable) {
+      const selection = window.getSelection();
+      if (!selection?.rangeCount) return { before: sanitizeHtml(editable.innerHTML), after: "" };
+      const range = selection.getRangeAt(0);
+      if (!editable.contains(range.commonAncestorContainer)) return { before: sanitizeHtml(editable.innerHTML), after: "" };
+      const beforeRange = document.createRange();
+      beforeRange.selectNodeContents(editable);
+      beforeRange.setEnd(range.startContainer, range.startOffset);
+      const afterRange = document.createRange();
+      afterRange.selectNodeContents(editable);
+      afterRange.setStart(range.endContainer, range.endOffset);
+      const beforeBox = document.createElement("div");
+      const afterBox = document.createElement("div");
+      beforeBox.append(beforeRange.cloneContents());
+      afterBox.append(afterRange.cloneContents());
+      return {
+        before: sanitizeHtml(beforeBox.innerHTML),
+        after: sanitizeHtml(afterBox.innerHTML)
+      };
     }
 
     function handleEnter(event) {
@@ -1255,22 +1522,48 @@
       if (!editable || editable.dataset.field !== "text") return;
       const block = activeBlocks().find(item => item.id === editable.dataset.id);
       if (!block) return;
-      if (!["bullet", "number", "task"].includes(block.type)) return;
+      if (event.key !== "Enter") return;
       event.preventDefault();
-      updateBlockField(editable);
-      if (!block.text.trim()) {
+      if (event.shiftKey) {
+        document.execCommand("insertLineBreak", false, null);
+        setTimeout(() => updateBlockField(editable), 0);
+        return;
+      }
+      const split = editableSplitHtml(editable);
+      block.text = split.before;
+      if (["bullet", "number", "task"].includes(block.type) && !stripHtml(block.text)) {
         block.type = "paragraph";
         renderEditor();
         focusBlock(block.id);
         return;
       }
-      const next = createBlock(block.type);
+      const next = createBlock(block.type === "heading" ? "paragraph" : block.type);
+      next.text = split.after;
       const index = activeBlocks().findIndex(item => item.id === block.id);
       activeBlocks().splice(index + 1, 0, next);
       focusedBlockId = next.id;
       saveState();
       renderEditor();
       setTimeout(() => focusBlock(next.id), 30);
+    }
+
+    function handleBeforeInput(event) {
+      const editable = event.target.closest("[contenteditable='true']");
+      if (!editable || editable.dataset.field !== "text") return;
+      if (event.inputType === "insertLineBreak") {
+        event.preventDefault();
+        document.execCommand("insertLineBreak", false, null);
+        setTimeout(() => updateBlockField(editable), 0);
+        return;
+      }
+      if (event.inputType !== "insertParagraph") return;
+      event.preventDefault();
+      handleEnter({
+        key: "Enter",
+        shiftKey: false,
+        target: editable,
+        preventDefault() {}
+      });
     }
 
     function enterSelection(kind, id) {
@@ -1302,6 +1595,8 @@
     function updateSelectionUi() {
       const active = Boolean(selection.kind && selection.ids.size);
       phone.classList.toggle("selection-active", active);
+      phone.classList.toggle("block-selection", active && selection.kind === "block");
+      phone.classList.toggle("note-selection", active && selection.kind === "note");
       selectionTitle.textContent = `${selection.ids.size || 0} ${selection.kind || "item"}${selection.ids.size === 1 ? "" : "s"} selected`;
     }
 
@@ -1352,18 +1647,7 @@
       if (kind === "note") {
         undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
         state.notes = state.notes.filter(note => note.id !== id);
-        if (!state.notes.length) {
-          state.notes.push({
-            id: uid(),
-            title: "",
-            pinned: false,
-            accent: colors[0],
-            icon: icons[0],
-            order: 0,
-            blocks: [{ id: uid(), type: "paragraph", text: "" }]
-          });
-        }
-        state.activeNoteId = state.notes[0].id;
+        state.activeNoteId = state.notes[0]?.id || null;
       }
       if (kind === "block") {
         undo = { kind: "block", noteId: activeNote().id, blocks: JSON.parse(JSON.stringify(activeBlocks())) };
@@ -1435,8 +1719,7 @@
       if (selection.kind === "note") {
         undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
         state.notes = state.notes.filter(note => !selection.ids.has(note.id));
-        if (!state.notes.length) newNote();
-        state.activeNoteId = state.notes[0]?.id;
+        state.activeNoteId = state.notes[0]?.id || null;
       }
       if (selection.kind === "block") {
         undo = { kind: "block", noteId: activeNote().id, blocks: JSON.parse(JSON.stringify(activeBlocks())) };
@@ -1499,7 +1782,7 @@
     function deleteActiveNote() {
       enterSelection("note", activeNote().id);
       deleteSelected();
-      closeOptions();
+      closeNoteModal();
       setView("notes");
     }
 
@@ -1513,7 +1796,7 @@
       note.pinned = !note.pinned;
       reindex();
       saveState();
-      renderAll();
+      renderNotes();
     }
 
     function toggleTask(id) {
@@ -1522,26 +1805,115 @@
       block.checked = !block.checked;
       saveState();
       renderEditor();
+      setTimeout(() => focusBlock(id), 20);
     }
 
-    function openOptions() {
-      const note = activeNote();
-      pinLabel.textContent = note.pinned ? "Unpin note" : "Pin note";
+    function convertBlocks(type) {
+      const ids = selection.kind === "block" && selection.ids.size
+        ? [...selection.ids]
+        : focusedBlockId
+          ? [focusedBlockId]
+          : [];
+      if (!ids.length) {
+        addBlock(type);
+        return;
+      }
+      activeBlocks().forEach(block => {
+        if (!ids.includes(block.id) || block.type === "image") return;
+        block.type = type;
+        if (type === "task") block.checked = Boolean(block.checked);
+        else delete block.checked;
+        if (type === "heading") block.children = block.children || [];
+        else delete block.children;
+      });
+      closeSelection();
+      saveState();
+      renderEditor();
+      setTimeout(() => focusBlock(ids[ids.length - 1]), 20);
+    }
+
+    function openInsert() {
+      insertModal.classList.add("open");
+      insertModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeInsert() {
+      insertModal.classList.remove("open");
+      insertModal.setAttribute("aria-hidden", "true");
+    }
+
+    function applyInlineFormat(format) {
+      const editable = document.activeElement?.closest?.("[contenteditable='true']")
+        || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+      if (editable) editable.focus();
+      document.execCommand(format, false, null);
+      if (editable) updateBlockField(editable);
+    }
+
+    function insertBlock(type) {
+      closeInsert();
+      if (type === "image") {
+        ensureNote();
+        if (currentView !== "editor") setView("editor");
+        photoInput.click();
+        return;
+      }
+      if (currentView !== "editor") {
+        ensureNote();
+        setView("editor");
+      }
+      addBlock(type);
+    }
+
+    function openNoteModal(id = null) {
+      const note = id ? noteById(id) : null;
+      noteDraft = {
+        id,
+        title: note?.title || "",
+        accent: note?.accent || colors[0],
+        icon: note?.icon || icons[0]
+      };
+      noteModalTitle.textContent = id ? "Edit note" : "New note";
+      noteTitleField.value = noteDraft.title;
+      renderNoteModalChoices();
+      noteModal.classList.add("open");
+      noteModal.setAttribute("aria-hidden", "false");
+      setTimeout(() => noteTitleField.focus(), 30);
+    }
+
+    function renderNoteModalChoices() {
       colorChoices.innerHTML = colors.map(color => `
-        <button class="swatch ${note.accent === color ? "active" : ""}" type="button" data-command="set-color" data-color="${color}" style="--accent:${color}" aria-label="Set note color"></button>
+        <button class="swatch ${noteDraft.accent === color ? "active" : ""}" type="button" data-command="draft-color" data-color="${color}" style="--accent:${color}" aria-label="Set note color"></button>
       `).join("");
       iconChoices.innerHTML = icons.map(icon => `
-        <button class="icon-choice ${note.icon === icon ? "active" : ""}" type="button" data-command="set-icon" data-icon="${icon}" style="--accent:${note.accent}" aria-label="Set note icon">
+        <button class="icon-choice ${noteDraft.icon === icon ? "active" : ""}" type="button" data-command="draft-icon" data-icon="${icon}" style="--accent:${noteDraft.accent}" aria-label="Set note icon">
           <i class="fa-solid ${icon}" aria-hidden="true"></i>
         </button>
       `).join("");
-      optionsModal.classList.add("open");
-      optionsModal.setAttribute("aria-hidden", "false");
     }
 
-    function closeOptions() {
-      optionsModal.classList.remove("open");
-      optionsModal.setAttribute("aria-hidden", "true");
+    function closeNoteModal() {
+      noteModal.classList.remove("open");
+      noteModal.setAttribute("aria-hidden", "true");
+      noteDraft = null;
+    }
+
+    function saveNoteModal() {
+      if (!noteDraft) return;
+      noteDraft.title = noteTitleField.value.trim();
+      if (noteDraft.id) {
+        const note = noteById(noteDraft.id);
+        if (!note) return;
+        note.title = noteDraft.title;
+        note.accent = noteDraft.accent;
+        note.icon = noteDraft.icon;
+        saveState();
+        closeNoteModal();
+        renderAll();
+        return;
+      }
+      newNote();
+      closeNoteModal();
     }
 
     function autoSizeTitle() {
@@ -1550,11 +1922,14 @@
     }
 
     function handlePhoto(files) {
+      ensureNote();
       [...files].filter(file => file.type.startsWith("image/")).forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
           const block = { id: uid(), type: "image", src: reader.result, caption: file.name.replace(/\.[^.]+$/, "") };
-          activeBlocks().push(block);
+          const blocks = activeBlocks();
+          const index = focusedBlockId ? blocks.findIndex(item => item.id === focusedBlockId) : -1;
+          blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
           focusedBlockId = block.id;
           saveState();
           if (currentView !== "editor") setView("editor");
@@ -1564,6 +1939,34 @@
         reader.readAsDataURL(file);
       });
       photoInput.value = "";
+    }
+
+    function openImage(id) {
+      const block = activeBlocks().find(item => item.id === id);
+      if (!block?.src) return;
+      imageViewerImg.src = block.src;
+      imageViewer.classList.add("open");
+      imageViewer.classList.remove("controls-hidden");
+      imageViewer.setAttribute("aria-hidden", "false");
+      scheduleImageControlsHide();
+    }
+
+    function closeImage() {
+      imageViewer.classList.remove("open", "controls-hidden");
+      imageViewer.setAttribute("aria-hidden", "true");
+      imageViewerImg.removeAttribute("src");
+      clearTimeout(imageControlsTimer);
+    }
+
+    function scheduleImageControlsHide() {
+      clearTimeout(imageControlsTimer);
+      imageControlsTimer = setTimeout(() => imageViewer.classList.add("controls-hidden"), 1400);
+    }
+
+    function revealImageControls() {
+      if (!imageViewer.classList.contains("open")) return;
+      imageViewer.classList.remove("controls-hidden");
+      scheduleImageControlsHide();
     }
 
     function openInteriorNote(blockId) {
@@ -1588,13 +1991,17 @@
     }
 
     function command(name, element) {
-      if (name === "new-note" || name === "smart-add") newNote();
+      if (name === "new-note") openNoteModal();
+      if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
       if (name === "open-note") {
         state.activeNoteId = element.dataset.id;
         setView("editor");
       }
       if (name === "back" || name === "notes") setView("notes");
+      if (name === "home") showToast("Home is index.html", "fa-house");
+      if (name === "habits") showToast("Habits is habits.html", "fa-bullseye");
       if (name === "pin-note") togglePin(element.dataset.id);
+      if (name === "edit-note") openNoteModal(element.dataset.id);
       if (name === "move-note-up") {
         enterSelection("note", element.dataset.id);
         moveSelected(-1);
@@ -1609,44 +2016,34 @@
         renderAll();
       }
       if (name === "delete-note") deleteNote(element.dataset.id);
-      if (name === "add-text") addBlock("paragraph");
-      if (name === "add-bullet") addBlock("bullet");
-      if (name === "add-number") addBlock("number");
-      if (name === "add-task") addBlock("task");
-      if (name === "add-heading") addBlock("heading");
+      if (name === "add-text") openInsert();
+      if (name === "add-bullet") convertBlocks("bullet");
+      if (name === "add-number") convertBlocks("number");
+      if (name === "add-task") convertBlocks("task");
+      if (name === "add-heading") convertBlocks("heading");
       if (name === "photo") photoInput.click();
       if (name === "toggle-task") toggleTask(element.dataset.id);
-      if (name === "format-bold") document.execCommand("bold", false, null);
-      if (name === "format-italic") document.execCommand("italic", false, null);
+      if (name === "open-image") openImage(element.dataset.id);
+      if (name === "close-image") closeImage();
+      if (name === "format-bold") applyInlineFormat("bold");
+      if (name === "format-italic") applyInlineFormat("italic");
+      if (name === "format-underline") applyInlineFormat("underline");
       if (name === "move-up") moveSelected(-1);
       if (name === "move-down") moveSelected(1);
       if (name === "duplicate-selected") duplicateSelected();
       if (name === "delete-selected") deleteSelected();
       if (name === "done-selection") closeSelection();
-      if (name === "options") openOptions();
-      if (name === "close-options") closeOptions();
-      if (name === "pin-active") {
-        togglePin(activeNote().id);
-        openOptions();
+      if (name === "close-note-modal") closeNoteModal();
+      if (name === "save-note-modal") saveNoteModal();
+      if (name === "close-insert") closeInsert();
+      if (name === "insert-block") insertBlock(element.dataset.type);
+      if (name === "draft-color" && noteDraft) {
+        noteDraft.accent = element.dataset.color;
+        renderNoteModalChoices();
       }
-      if (name === "duplicate-active") {
-        duplicateNote(activeNote().id);
-        saveState();
-        closeOptions();
-        renderAll();
-      }
-      if (name === "delete-active") deleteActiveNote();
-      if (name === "set-color") {
-        activeNote().accent = element.dataset.color;
-        saveState();
-        openOptions();
-        renderAll();
-      }
-      if (name === "set-icon") {
-        activeNote().icon = element.dataset.icon;
-        saveState();
-        openOptions();
-        renderAll();
+      if (name === "draft-icon" && noteDraft) {
+        noteDraft.icon = element.dataset.icon;
+        renderNoteModalChoices();
       }
     }
 
@@ -1681,7 +2078,9 @@
       handleEnter(event);
       if (event.key === "Escape") {
         closeSelection();
-        closeOptions();
+        closeNoteModal();
+        closeInsert();
+        closeImage();
       }
       if (event.key === "Enter" && event.target === titleInput) {
         event.preventDefault();
@@ -1689,6 +2088,8 @@
         else focusBlock(activeBlocks()[0].id);
       }
     });
+
+    document.addEventListener("beforeinput", handleBeforeInput);
 
     document.addEventListener("focusin", event => {
       const block = event.target.closest(".block");
@@ -1700,20 +2101,28 @@
       if (block) openInteriorNote(block.dataset.id);
     });
 
-    optionsModal.addEventListener("click", event => {
-      if (event.target === optionsModal) closeOptions();
+    noteModal.addEventListener("click", event => {
+      if (event.target === noteModal) closeNoteModal();
     });
+    insertModal.addEventListener("click", event => {
+      if (event.target === insertModal) closeInsert();
+    });
+    imageViewer.addEventListener("click", event => {
+      if (event.target.closest(".image-close")) return;
+      revealImageControls();
+    });
+    toolbar.addEventListener("mousedown", event => event.preventDefault());
 
     searchInput.addEventListener("input", renderNotes);
+    noteTitleField.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        saveNoteModal();
+      }
+    });
     photoInput.addEventListener("change", event => handlePhoto(event.target.files));
 
-    window.addEventListener("openNotesComposer", () => {
-      newNote();
-  });
-
-renderAll();
+    renderAll();
   </script>
-
-  <script src="bottom-bar.js"></script>
 </body>
 </html>
