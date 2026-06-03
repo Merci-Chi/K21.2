@@ -1594,8 +1594,6 @@
         setView("editor");
       }
       if (name === "back" || name === "notes") setView("notes");
-      if (name === "home") showToast("Home is index.html", "fa-house");
-      if (name === "habits") showToast("Habits is habits.html", "fa-bullseye");
       if (name === "pin-note") togglePin(element.dataset.id);
       if (name === "move-note-up") {
         enterSelection("note", element.dataset.id);
@@ -1707,11 +1705,11 @@
     });
 
     searchInput.addEventListener("input", renderNotes);
-photoInput.addEventListener("change", event => handlePhoto(event.target.files));
+    photoInput.addEventListener("change", event => handlePhoto(event.target.files));
 
-window.addEventListener("openNotesComposer", () => {
-  newNote();
-});
+    window.addEventListener("openNotesComposer", () => {
+      newNote();
+  });
 
 renderAll();
   </script>
