@@ -1195,14 +1195,25 @@
     </section>
 
     <section class="app view" id="editorView">
-      <header class="topbar center">
-        <button class="icon-btn" type="button" data-command="back" aria-label="Back to notes">
-          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-        </button>
-        <div class="title-stack">
-          <p class="kicker"><i class="fa-solid fa-pen" aria-hidden="true"></i> Editing</p>
-        </div>
-      </header>
+  <header class="topbar center">
+  <button class="icon-btn" type="button" data-command="back" aria-label="Back to notes">
+    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+  </button>
+
+  <div class="title-stack">
+    <p class="kicker"><i class="fa-solid fa-pen" aria-hidden="true"></i> Editing</p>
+  </div>
+
+  <div class="top-actions">
+    <button class="icon-btn" type="button" data-command="undo-action" aria-label="Undo">
+      <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+    </button>
+
+    <button class="icon-btn" type="button" data-command="redo-action" aria-label="Redo">
+      <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+    </button>
+  </div>
+</header>
 
       <textarea class="editor-title" id="titleInput" rows="1" placeholder="Untitled note"></textarea>
       <div class="blocks" id="blocks"></div>
@@ -1230,9 +1241,7 @@
         <span>Drag selected blocks to reorder.</span>
       </div>
       <div class="selection-actions">
-        <button class="icon-btn block-tool" type="button" data-command="undo-action" aria-label="Undo"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
-        <button class="icon-btn block-tool" type="button" data-command="redo-action" aria-label="Redo"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
-        <button class="icon-btn block-tool" type="button" data-command="group-selected" aria-label="Group"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></button>
+   		<button class="icon-btn block-tool" type="button" data-command="group-selected" aria-label="Group"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="cut-selected" aria-label="Cut"><i class="fa-solid fa-scissors" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="copy-selected" aria-label="Copy"><i class="fa-solid fa-copy" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="paste-blocks" aria-label="Paste"><i class="fa-solid fa-paste" aria-hidden="true"></i></button>
