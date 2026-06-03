@@ -1656,18 +1656,28 @@ function activeParentBlock() {
 }
 
 function openInteriorNote(blockId) {
+  closeSelection();
+
   const block = activeBlocks().find(item => item.id === blockId);
   if (!block) return;
 
   if (!Array.isArray(block.children)) {
-    block.children = [];
+    block.children = [{ id: uid(), type: "paragraph", text: "", children: [] }];
+  }
+
+  if (!block.children.length) {
+    block.children.push({ id: uid(), type: "paragraph", text: "", children: [] });
   }
 
   blockPath.push(blockId);
-  focusedBlockId = null;
-  closeSelection();
+  focusedBlockId = block.children[0].id;
+
   saveState();
   renderEditor();
+
+  setTimeout(() => {
+    focusBlock(focusedBlockId);
+  }, 50);
 }
 
 function goBackOneLevel() {
@@ -1915,19 +1925,24 @@ function renderBlocksHtml(blocks, accent) {
       return note;
     }
 
-    function addBlock(type = "paragraph", afterId = focusedBlockId) {
-      ensureNote();
-      remember();
-      const blocks = activeBlocks();
-      const index = afterId ? blocks.findIndex(block => block.id === afterId) : -1;
-      const block = createBlock(type);
-      blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
-      focusedBlockId = block.id;
-      saveState();
-      renderEditor();
-      setTimeout(() => focusBlock(block.id), 30);
-    }
+  function addBlock(type = "paragraph", afterId = focusedBlockId) {
+  closeSelection();
+  ensureNote();
+  remember();
 
+  const blocks = activeBlocks();
+  const index = afterId ? blocks.findIndex(block => block.id === afterId) : -1;
+  const block = createBlock(type);
+
+  blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
+
+  focusedBlockId = block.id;
+
+  saveState();
+  renderEditor();
+
+  setTimeout(() => focusBlock(block.id), 50);
+}
   function createBlock(type) {
   const base = {
     id: uid(),
@@ -2659,21 +2674,11 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
       document.execCommand(format, false, null);
       if (editable) updateBlockField(editable);
     }
-
-    function insertBlock(type) {
-      closeInsert();
-      if (type === "image") {
-        ensureNote();
-        if (currentView !== "editor") setView("editor");
-        photoInput.click();
-        return;
-      }
-      if (currentView !== "editor") {
-        ensureNote();
-        setView("editor");
-      }
-      addBlock(type);
-    }
+function insertBlock(type) {
+  closeSelection();
+  closeInsert();
+  addBlock(type);
+}
 
     function openNoteModal(id = null) {
       const note = id ? noteById(id) : null;
@@ -2780,26 +2785,46 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
       scheduleImageControlsHide();
     }
 
-    function openInteriorNote(blockId) {
-      const block = activeBlocks().find(item => item.id === blockId);
-      if (!block) return;
-      block.children = block.children || [{ id: uid(), type: "paragraph", text: "" }];
-      const note = {
-        id: `interior-${block.id}`,
-        title: block.text || "Interior note",
-        pinned: false,
-        accent: activeNote().accent,
-        icon: activeNote().icon,
-        order: state.notes.length,
-        blocks: block.children
-      };
-      const existing = state.notes.find(item => item.id === note.id);
-      if (!existing) state.notes.push(note);
-      else existing.title = note.title;
-      state.activeNoteId = note.id;
-      saveState();
-      setView("editor");
-    }
+  function openInteriorNote(blockId) {
+  closeSelection();
+
+  const block = activeBlocks().find(item => item.id === blockId);
+  if (!block) return;
+
+  if (!Array.isArray(block.children)) {
+    block.children = [{ id: uid(), type: "paragraph", text: "" }];
+  }
+
+  const note = {
+    id: `interior-${block.id}`,
+    title: stripHtml(block.text || "Interior note"),
+    pinned: false,
+    accent: activeNote().accent,
+    icon: activeNote().icon,
+    order: state.notes.length,
+    blocks: block.children
+  };
+
+  const existing = state.notes.find(item => item.id === note.id);
+
+  if (!existing) {
+    state.notes.push(note);
+  } else {
+    existing.title = note.title;
+    existing.blocks = block.children;
+  }
+
+  state.activeNoteId = note.id;
+  focusedBlockId = null;
+
+  saveState();
+  setView("editor");
+
+  setTimeout(() => {
+    const firstEditable = blocksEl.querySelector("[contenteditable='true']");
+    if (firstEditable) firstEditable.focus();
+  }, 50);
+}
 function moveNoteCard(id, direction) {
   const current = state.notes.find(note => note.id === id);
   if (!current) return;
@@ -3086,6 +3111,12 @@ if (event.target === titleInput) {
 
   const block = event.target.closest(".block");
   if (!block) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  openInteriorNote(block.dataset.id);
+});
 
   event.preventDefault();
   event.stopPropagation();
