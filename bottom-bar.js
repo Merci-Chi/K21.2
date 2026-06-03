@@ -158,7 +158,8 @@ document.querySelectorAll(".nav-item").forEach((item) => {
   const page = window.location.pathname.split("/").pop() || "index.html";
   item.classList.toggle("active",
     (label === "Home" && page === "index.html") ||
-    (label === "Habits" && page === "habits.html")
+    (label === "Habits" && page === "habits.html") ||
+    (label === "Notes" && page === "notes.html")
   );
 
   item.addEventListener("click", () => {
@@ -168,6 +169,10 @@ document.querySelectorAll(".nav-item").forEach((item) => {
     }
     if (label === "Habits") {
       window.location.href = "habits.html";
+      return;
+    }
+    if (label === "Notes") {
+      window.location.href = "notes.html";
       return;
     }
     document.querySelectorAll(".nav-item").forEach((navItem) => {
@@ -184,7 +189,23 @@ if (nav && addButton) {
   const quickAddMenu = document.createElement("div");
   quickAddMenu.className = "quick-add-menu";
   quickAddMenu.setAttribute("aria-hidden", "true");
-  quickAddMenu.innerHTML = `
+  const page = window.location.pathname.split("/").pop() || "index.html";
+  quickAddMenu.innerHTML = page === "notes.html" ? `
+    <button class="quick-add-option task" type="button" data-add-kind="note-page">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" />
+        <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" />
+      </svg>
+      <span>Page</span>
+    </button>
+    <button class="quick-add-option habit" type="button" data-add-kind="note-card">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-linejoin="round" />
+        <path d="M8 10h8M8 14h5" stroke="currentColor" stroke-linecap="round" />
+      </svg>
+      <span>Card</span>
+    </button>
+  ` : `
     <button class="quick-add-option task" type="button" data-add-kind="task">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
@@ -217,8 +238,11 @@ if (nav && addButton) {
   quickAddMenu.addEventListener("click", (event) => {
     const option = event.target.closest("[data-add-kind]");
     if (!option) return;
-    const page = window.location.pathname.split("/").pop() || "index.html";
     closeQuickAdd();
+    if (option.dataset.addKind === "note-page" || option.dataset.addKind === "note-card") {
+      window.dispatchEvent(new CustomEvent("openNotesComposer", { detail: { kind: option.dataset.addKind } }));
+      return;
+    }
     if (option.dataset.addKind === "task") {
       if (page === "index.html") {
         window.dispatchEvent(new CustomEvent("openTaskComposer"));
