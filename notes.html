@@ -1547,25 +1547,27 @@
     </div>
   </section>
 </div>
-      <section class="sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="sizeTitle">
-        <div class="grabber"></div>
-        <div class="sheet-head">
-          <h2 id="sizeTitle">Text size</h2>
-          <button class="icon-btn" type="button" data-command="close-size-menu" aria-label="Close text size">
-            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-          </button>
-        </div>
-        <div class="size-list">
-          <button class="size-option" type="button" data-command="set-block-size" data-size="title">Title <span>Largest</span></button>
-          <button class="size-option" type="button" data-command="set-block-size" data-size="heading">Heading <span>Section</span></button>
-          <button class="size-option" type="button" data-command="set-block-size" data-size="subtitle">Subtitle <span>Medium</span></button>
-          <button class="size-option" type="button" data-command="set-block-size" data-size="text">Text <span>Normal</span></button>
-          <button class="size-option" type="button" data-command="set-block-size" data-size="subtext">Subtext <span>Small</span></button>
-        </div>
-      </section>
+
+<div class="modal" id="sizeModal" aria-hidden="true">
+  <section class="sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="sizeTitle">
+    <div class="grabber"></div>
+
+    <div class="sheet-head">
+      <h2 id="sizeTitle">Text size</h2>
+      <button class="icon-btn" type="button" data-command="close-size-menu" aria-label="Close text size">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
     </div>
 
-    <div class="modal" id="viewTextModal" aria-hidden="true">
+    <div class="size-list">
+      <button class="size-option" type="button" data-command="set-block-size" data-size="title">Title <span>Largest</span></button>
+      <button class="size-option" type="button" data-command="set-block-size" data-size="heading">Heading <span>Section</span></button>
+      <button class="size-option" type="button" data-command="set-block-size" data-size="subtitle">Subtitle <span>Medium</span></button>
+      <button class="size-option" type="button" data-command="set-block-size" data-size="text">Text <span>Normal</span></button>
+      <button class="size-option" type="button" data-command="set-block-size" data-size="subtext">Subtext <span>Small</span></button>
+    </div>
+  </section>
+</div>
       <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="viewTextTitle">
         <div class="grabber"></div>
         <div class="sheet-head">
