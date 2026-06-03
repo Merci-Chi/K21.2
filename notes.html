@@ -688,32 +688,34 @@
     }
     .block-insert-row {
   width: 100%;
-  min-height: 46px;
+  min-height: 34px;
   display: grid;
-  grid-template-columns: 1fr 42px;
+  grid-template-columns: 1fr 32px;
   align-items: center;
-  gap: 10px;
-  margin: 4px 0;
-  padding: 6px 6px 6px 14px;
-  border-radius: 16px;
-  color: rgba(255, 255, 255, 0.48);
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 4px 5px 4px 12px;
+  border-radius: 13px;
+  color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px dashed rgba(255, 255, 255, 0.09);
 }
 
 .block-insert-row span {
-  font-size: 14px;
-  font-weight: 750;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .block-insert-row button {
-  width: 38px;
-  height: 38px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
-  border-radius: 13px;
+  border-radius: 10px;
   color: #fff;
-  background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: none;
 }
 
 .card-square {
@@ -1912,10 +1914,7 @@ blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
 function renderBlocksHtml(blocks, accent) {
   let html = "";
   let index = 0;
-
-  if (!blocks.length) {
-    return renderInsertRow("");
-  }
+  let lastBlockId = "";
 
   while (index < blocks.length) {
     const block = blocks[index];
@@ -1934,6 +1933,7 @@ function renderBlocksHtml(blocks, accent) {
 
       const groupSelected = groupItems.some(item => selection.ids.has(item.block.id));
       const lastGroupBlock = groupItems[groupItems.length - 1]?.block;
+      lastBlockId = lastGroupBlock?.id || lastBlockId;
 
       html += `
         <div class="block-group ${groupSelected ? "selected" : ""}" style="--accent:${accent}">
@@ -1941,15 +1941,15 @@ function renderBlocksHtml(blocks, accent) {
         </div>
       `;
 
-      html += renderInsertRow(lastGroupBlock?.id || "");
       continue;
     }
 
     html += renderBlock(block, index, accent);
-    html += renderInsertRow(block.id);
-
+    lastBlockId = block.id;
     index += 1;
   }
+
+  html += renderInsertRow(lastBlockId);
 
   return html;
 }
