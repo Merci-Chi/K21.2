@@ -349,11 +349,17 @@
   overflow-x: auto;
 }
 
-.notes-tools-open .note-actions,
-.note-card.selected .note-actions {
-  display: flex;
+.notes-tools-open .note-actions {
+  display: none;
 }
 
+.selection-bar .note-tool {
+  display: none;
+}
+
+.note-selection .selection-bar .note-tool {
+  display: grid;
+}
     .empty-state {
       min-height: 230px;
       display: grid;
@@ -1214,9 +1220,33 @@
         <button class="icon-btn block-tool" type="button" data-command="paste-blocks" aria-label="Paste"><i class="fa-solid fa-paste" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="open-size-menu" aria-label="Text size"><strong aria-hidden="true">aA</strong></button>
         <button class="icon-btn block-tool" type="button" data-command="open-view-text" aria-label="View text"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
-        <button class="icon-btn danger" type="button" data-command="delete-selected" aria-label="Delete"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
-        <button class="icon-btn" type="button" data-command="done-selection" aria-label="Done"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-      </div>
+<button class="icon-btn note-tool" type="button" data-command="pin-selected-note" aria-label="Pin note">
+  <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
+</button>
+
+<button class="icon-btn note-tool" type="button" data-command="move-selected-note-up" aria-label="Move note up">
+  <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+</button>
+
+<button class="icon-btn note-tool" type="button" data-command="move-selected-note-down" aria-label="Move note down">
+  <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+</button>
+
+<button class="icon-btn note-tool" type="button" data-command="edit-selected-note" aria-label="Edit note">
+  <i class="fa-solid fa-pen" aria-hidden="true"></i>
+</button>
+
+<button class="icon-btn danger note-tool" type="button" data-command="delete-selected-note" aria-label="Delete note">
+  <i class="fa-solid fa-trash" aria-hidden="true"></i>
+</button>
+
+<button class="icon-btn danger block-tool" type="button" data-command="delete-selected" aria-label="Delete">
+  <i class="fa-solid fa-trash" aria-hidden="true"></i>
+</button>
+
+<button class="icon-btn" type="button" data-command="done-selection" aria-label="Done">
+  <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+</button>      </div>
     </div>
 
     <nav class="nav" aria-label="Primary navigation">
@@ -1825,6 +1855,13 @@
       phone.classList.toggle("block-selection", active && selection.kind === "block");
       phone.classList.toggle("note-selection", active && selection.kind === "note");
       selectionTitle.textContent = `${selection.ids.size || 0} ${selection.kind || "item"}${selection.ids.size === 1 ? "" : "s"} selected`;
+
+const selectionHint = selectionBar.querySelector(".selection-text span");
+if (selectionHint) {
+  selectionHint.textContent = selection.kind === "note"
+    ? "Drag selected notes to reorder."
+    : "Drag selected blocks to reorder.";
+}
     }
 
     function refreshSelectionClasses() {
@@ -2460,12 +2497,45 @@ function moveNoteCard(id, direction) {
   saveState();
   renderNotes();
 }
+function selectedNoteId() {
+  if (selection.kind !== "note") return null;
+  return [...selection.ids][0] || null;
+}
 function command(name, element) {
   if (name === "toggle-note-tools") {
     phone.classList.toggle("notes-tools-open");
     return;
   }
 
+if (name === "pin-selected-note") {
+  const id = selectedNoteId();
+  if (!id) return;
+  togglePin(id);
+}
+
+if (name === "move-selected-note-up") {
+  const id = selectedNoteId();
+  if (!id) return;
+  moveNoteCard(id, -1);
+}
+
+if (name === "move-selected-note-down") {
+  const id = selectedNoteId();
+  if (!id) return;
+  moveNoteCard(id, 1);
+}
+
+if (name === "edit-selected-note") {
+  const id = selectedNoteId();
+  if (!id) return;
+  openNoteModal(id);
+}
+
+if (name === "delete-selected-note") {
+  const id = selectedNoteId();
+  if (!id) return;
+  deleteNote(id);
+}
   if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
       if (name === "open-note") {
