@@ -8,19 +8,23 @@
   <style>
     :root {
       --bg: #000;
-      --surface: rgba(13, 17, 27, 0.96);
-      --surface-2: rgba(255, 255, 255, 0.055);
+      --panel: rgba(20, 27, 42, 0.84);
+      --panel-strong: rgba(25, 33, 50, 0.96);
       --line: rgba(255, 255, 255, 0.11);
+      --line-strong: rgba(255, 255, 255, 0.2);
       --text: #f7f8ff;
       --muted: #a5adbd;
       --blue: #5a8cff;
-      --pink: #ff74ba;
-      --yellow: #ffd33d;
       --green: #46d29c;
+      --orange: #ff9a52;
+      --yellow: #ffd33d;
+      --pink: #ff74ba;
       --teal: #46d7c5;
       --purple: #9d70ff;
+      --red: #ff7276;
       --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
       --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+      --nav-height: 94px;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -32,14 +36,12 @@
 
     *::-webkit-scrollbar {
       display: none;
-      width: 0;
-      height: 0;
     }
 
     html {
       height: 100%;
-      overflow: hidden;
       background: #000;
+      overflow: hidden;
       touch-action: manipulation;
     }
 
@@ -55,7 +57,9 @@
       overscroll-behavior: none;
     }
 
-    button, input, textarea {
+    button,
+    input,
+    textarea {
       font: inherit;
       color: inherit;
     }
@@ -67,15 +71,21 @@
       touch-action: manipulation;
     }
 
+    input,
+    textarea,
+    [contenteditable="true"] {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
     .phone {
       position: relative;
-      width: min(100%, 1120px);
+      width: min(100%, 430px);
       height: min(932px, calc(100dvh - 44px));
-      min-height: 0;
       max-height: 100dvh;
       overflow: hidden;
-      border-radius: 34px;
       border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 34px;
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 28%),
         linear-gradient(180deg, #04060c 0%, #000 42%, #000 100%);
@@ -92,7 +102,7 @@
         linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
       background-size: 46px 46px;
       mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%);
-      opacity: 0.2;
+      opacity: 0.22;
     }
 
     .app {
@@ -100,1377 +110,1602 @@
       z-index: 1;
       height: 100%;
       min-height: 0;
-      display: grid;
-      grid-template-columns: 236px 1fr;
-      overflow: hidden;
+      overflow-y: auto;
+      padding: 52px 22px 120px;
       overscroll-behavior: contain;
     }
 
-    .sidebar {
-      min-height: 0;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 14px;
-      padding: 28px 16px 112px;
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.025);
+    .view {
+      display: none;
     }
 
-    .brand {
+    .view.active {
+      display: block;
+    }
+
+    .topbar {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
+      margin-bottom: 20px;
     }
 
-    .brand h1 {
+    .topbar.center {
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .title-stack {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    h1 {
       margin: 0;
-      font-size: 30px;
-      line-height: 1;
+      font-size: clamp(34px, 9vw, 44px);
+      line-height: 1.04;
       letter-spacing: 0;
     }
 
     .icon-btn {
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
       display: grid;
       place-items: center;
-      border-radius: 13px;
-      color: rgba(255, 255, 255, 0.78);
-      background: rgba(255, 255, 255, 0.065);
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.84);
+      background: rgba(255, 255, 255, 0.06);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: transform 150ms ease, background 150ms ease;
+    }
+
+    .icon-btn:active,
+    .note-card:active,
+    .action-btn:active,
+    .toolbar button:active {
+      transform: scale(0.96);
+    }
+
+    .icon-btn.primary {
+      color: #fff;
+      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+      box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
     }
 
     .icon-btn.danger {
-      color: #ff7b7d;
+      color: #fff;
+      background: color-mix(in srgb, var(--red) 30%, rgba(255, 255, 255, 0.06));
     }
 
-    .page-list {
-      display: grid;
-      align-content: start;
-      gap: 8px;
-      min-height: 0;
-      overflow-y: auto;
+    .search {
+      position: relative;
+      margin-bottom: 16px;
     }
 
-    .page-tab {
-      min-height: 42px;
-      display: grid;
-      grid-template-columns: 28px 1fr;
-      align-items: center;
-      gap: 9px;
-      padding: 0 11px;
-      border-radius: 14px;
-      color: rgba(255, 255, 255, 0.68);
-      font-size: 13px;
-      font-weight: 850;
-      text-align: left;
-      background: rgba(255, 255, 255, 0.045);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+    .search i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.48);
+      font-size: 14px;
     }
 
-    .page-tab.active {
-      color: white;
-      background: color-mix(in srgb, var(--blue) 25%, rgba(255, 255, 255, 0.06));
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 54%, rgba(255, 255, 255, 0.1));
-    }
-
-    .shortcut-note {
-      margin: 0;
-      color: rgba(255, 255, 255, 0.46);
-      font-size: 11px;
-      font-weight: 750;
-      line-height: 1.35;
-    }
-
-    .workspace {
-      min-height: 0;
-      overflow-y: auto;
-      padding: 42px clamp(20px, 5vw, 54px) 126px;
-    }
-
-    .doc-head {
-      display: grid;
-      gap: 12px;
-      margin: 0 auto 18px;
-      max-width: 780px;
-    }
-
-    .doc-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .doc-title {
-      min-height: 54px;
-      margin: 0;
-      color: var(--text);
-      font-size: clamp(38px, 7vw, 64px);
-      line-height: 0.96;
-      font-weight: 920;
-      letter-spacing: 0;
-      outline: none;
-      -webkit-user-select: text;
-      user-select: text;
-    }
-
-    .doc-title:empty::before,
-    .editable:empty::before {
-      content: attr(data-placeholder);
-      color: rgba(255, 255, 255, 0.35);
-    }
-
-    .mobile-pages {
-      display: none;
-      gap: 8px;
-      overflow-x: auto;
-      margin: 4px 0 16px;
-    }
-
-    .action-row,
-    .format-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .format-bar {
-      position: sticky;
-      top: 0;
-      z-index: 8;
-      margin: 0 auto 16px;
-      max-width: 780px;
-      padding: 9px;
-      border-radius: 18px;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
-        rgba(13, 18, 29, 0.9);
+    .search input {
+      width: 100%;
+      min-height: 48px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(18px);
-      box-shadow: var(--soft-shadow);
-    }
-
-    .tool,
-    .choice-pill {
-      min-height: 34px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 0 10px;
-      border-radius: 12px;
-      color: rgba(255, 255, 255, 0.72);
-      font-size: 12px;
-      font-weight: 900;
-      background: rgba(255, 255, 255, 0.06);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
-    }
-
-    .tool.active,
-    .choice-pill.active {
-      color: white;
-      background: color-mix(in srgb, var(--blue) 26%, rgba(255, 255, 255, 0.06));
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 55%, rgba(255, 255, 255, 0.1));
-    }
-
-    .color-dot {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: var(--dot);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-    }
-
-    .color-dot.active {
-      outline: 2px solid white;
-      outline-offset: 3px;
-    }
-
-    .selection-bar {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      margin: 0 auto 14px;
-      max-width: 780px;
-      padding: 9px;
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.06);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      outline: none;
+      color: var(--text);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025)),
+        rgba(12, 17, 28, 0.86);
+      padding: 0 14px 0 41px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
-    .selection-bar.active {
-      display: flex;
+    .search input::placeholder {
+      color: rgba(255, 255, 255, 0.42);
     }
 
-    .selection-label {
-      flex: 1;
-      color: rgba(255, 255, 255, 0.72);
-      font-size: 12px;
-      font-weight: 850;
-    }
-
-    .canvas {
-      max-width: 780px;
-      margin: 0 auto;
+    .note-list {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
-      align-items: start;
     }
 
     .note-card {
       --accent: var(--blue);
       position: relative;
-      min-height: 158px;
+      width: 100%;
+      min-width: 0;
       display: grid;
-      align-content: start;
-      gap: 10px;
-      padding: 14px;
-      border-radius: 18px;
+      gap: 12px;
+      padding: 16px;
+      text-align: left;
+      border-radius: 20px;
       color: var(--text);
       background:
-        linear-gradient(145deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 46%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.024)),
-        var(--surface);
+        linear-gradient(95deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 52%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+        rgba(12, 17, 28, 0.94);
       border: 1px solid var(--line);
-      border-top: 3px solid var(--accent);
+      border-left: 3px solid var(--accent);
       box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
       overflow: hidden;
-      touch-action: manipulation;
+      transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
     }
 
-    .note-card.wide,
-    .note-card.tall,
-    .note-card.group {
-      grid-column: 1 / -1;
-    }
-
-    .note-card.tall {
-      min-height: 288px;
-    }
-
-    .note-card.selected {
+    .note-card.selected,
+    .block.selected {
+      border-color: color-mix(in srgb, var(--accent) 68%, rgba(255, 255, 255, 0.24));
       box-shadow:
-        0 0 0 2px color-mix(in srgb, var(--accent) 72%, white),
-        var(--soft-shadow),
+        0 0 0 2px color-mix(in srgb, var(--accent) 48%, transparent),
+        0 18px 42px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
-    .note-card.focused {
-      background:
-        linear-gradient(145deg, color-mix(in srgb, var(--accent) 18%, transparent), transparent 52%),
-        rgba(22, 28, 42, 0.98);
+    .note-card.reveal-delete,
+    .block.reveal-delete {
+      border-color: color-mix(in srgb, var(--red) 70%, rgba(255, 255, 255, 0.2));
     }
 
-    .drag-handle {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 28px;
-      height: 28px;
+    .note-main {
       display: grid;
-      place-items: center;
-      border-radius: 10px;
-      color: rgba(255, 255, 255, 0.45);
-      background: rgba(255, 255, 255, 0.04);
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: start;
+      min-width: 0;
     }
 
-    .card-edit {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 31px;
-      height: 31px;
+    .note-icon {
+      width: 42px;
+      height: 42px;
       display: grid;
       place-items: center;
       border-radius: 50%;
-      color: rgba(255, 255, 255, 0.82);
-      background: rgba(255, 255, 255, 0.07);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      color: var(--accent);
+      background:
+        radial-gradient(circle at 36% 28%, color-mix(in srgb, var(--accent) 44%, white), transparent 34%),
+        rgba(255, 255, 255, 0.065);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 34%, rgba(255, 255, 255, 0.08));
     }
 
-    .card-title {
-      margin: 0;
-      padding: 28px 34px 0 0;
-      font-size: 18px;
-      line-height: 1.15;
-      font-weight: 900;
-      outline: none;
-      -webkit-user-select: text;
-      user-select: text;
-    }
-
-    .note-blocks {
+    .note-copy {
+      min-width: 0;
       display: grid;
       gap: 7px;
-      color: rgba(238, 243, 255, 0.82);
-      font-size: 14px;
-      line-height: 1.42;
     }
 
-    .note-block {
-      min-height: 20px;
-      border-radius: 8px;
-      outline: none;
-      word-break: break-word;
-      -webkit-user-select: text;
-      user-select: text;
+    .note-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.18;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
     }
 
-    .note-block:focus,
-    .card-title:focus,
-    .doc-title:focus {
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--blue)) 42%, transparent);
+    .note-preview {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.36;
+      overflow-wrap: anywhere;
     }
 
-    .note-block.title { font-size: 24px; font-weight: 920; line-height: 1.05; }
-    .note-block.header { font-size: 18px; font-weight: 880; }
-    .note-block.subtitle { color: rgba(255, 255, 255, 0.64); font-size: 14px; font-weight: 760; }
-    .note-block.highlight { padding: 3px 6px; background: rgba(255, 211, 61, 0.18); }
-    .note-block.code { padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); }
-    .note-block.block { border-left: 3px solid var(--accent); padding-left: 9px; }
-    .note-block.checkbox::before { content: "□ "; color: var(--accent); font-weight: 900; }
-    .note-block.bullet::before { content: "• "; color: var(--accent); font-weight: 900; }
-    .note-block.numbered::before { content: attr(data-index) ". "; color: var(--accent); font-weight: 900; }
-    .note-block.checked::before { content: "☑ "; }
-
-    .bold { font-weight: 900; }
-    .italic { font-style: italic; }
-    .underline { text-decoration: underline; text-decoration-thickness: 1.5px; }
-
-    .card-image {
-      width: 100%;
-      max-height: 210px;
-      object-fit: cover;
-      border-radius: 14px;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    .note-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .group-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .group-grid .note-card {
-      grid-column: auto;
-      min-height: 120px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
-
-    .empty-state {
-      grid-column: 1 / -1;
-      min-height: 220px;
+    .action-btn {
+      width: 36px;
+      height: 36px;
       display: grid;
       place-items: center;
-      padding: 26px;
-      border-radius: 22px;
-      color: rgba(255, 255, 255, 0.58);
-      text-align: center;
-      font-size: 14px;
-      font-weight: 780;
-      background: rgba(255, 255, 255, 0.045);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: transform 150ms ease;
     }
 
-    .modal-backdrop {
+    .action-btn.pin.active {
+      color: #06101d;
+      background: var(--yellow);
+    }
+
+    .action-btn.delete,
+    .delete-reveal {
+      color: #fff;
+      background: color-mix(in srgb, var(--red) 30%, rgba(255, 255, 255, 0.06));
+    }
+
+    .dragging {
+      opacity: 0.58;
+      transform: scale(0.985);
+    }
+
+    .editor-title {
+      width: 100%;
+      min-height: 44px;
+      margin: 0 0 12px;
+      border: 0;
+      outline: none;
+      color: var(--text);
+      background: transparent;
+      font-size: 34px;
+      font-weight: 920;
+      line-height: 1.07;
+      letter-spacing: 0;
+      resize: none;
+      overflow: hidden;
+    }
+
+    .editor-title::placeholder {
+      color: rgba(255, 255, 255, 0.34);
+    }
+
+    .blocks {
+      display: grid;
+      gap: 3px;
+      padding-bottom: 18px;
+    }
+
+    .block {
+      --accent: var(--blue);
+      position: relative;
+      min-width: 0;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      background: transparent;
+      transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+
+    .block:focus-within {
+      background: rgba(255, 255, 255, 0.035);
+      border-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .block.selected {
+      background:
+        linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
+        rgba(255, 255, 255, 0.035);
+    }
+
+    .block-line {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .editable {
+      min-width: 0;
+      min-height: 27px;
+      outline: none;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .editable:empty::before {
+      content: attr(data-placeholder);
+      color: rgba(255, 255, 255, 0.34);
+    }
+
+    .heading .editable {
+      font-size: 24px;
+      font-weight: 920;
+      line-height: 1.12;
+    }
+
+    .quote .editable {
+      padding-left: 13px;
+      border-left: 3px solid var(--accent);
+      color: rgba(255, 255, 255, 0.82);
+      font-style: italic;
+    }
+
+    .bullet .block-line,
+    .number .block-line,
+    .task .block-line {
+      grid-template-columns: auto 1fr;
+      align-items: start;
+    }
+
+    .marker {
+      min-width: 24px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 850;
+    }
+
+    .task-check {
+      width: 24px;
+      height: 24px;
+      margin-top: 1px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #06101d;
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .task-check.checked {
+      background: var(--green);
+      box-shadow: 0 0 18px rgba(70, 210, 156, 0.28);
+    }
+
+    .task.done .editable {
+      color: rgba(255, 255, 255, 0.44);
+      text-decoration: line-through;
+    }
+
+    .image-block {
+      overflow: hidden;
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+        rgba(12, 17, 28, 0.84);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.085);
+    }
+
+    .image-block img {
+      display: block;
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+    }
+
+    .image-caption {
+      padding: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      outline: none;
+    }
+
+    .empty-image {
+      min-height: 150px;
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      color: var(--pink);
+      background:
+        radial-gradient(circle at 35% 28%, rgba(255, 116, 186, 0.32), transparent 28%),
+        linear-gradient(135deg, rgba(90, 140, 255, 0.22), rgba(157, 112, 255, 0.16), rgba(70, 215, 197, 0.16));
+    }
+
+    .empty-image i {
+      font-size: 32px;
+    }
+
+    .add-line {
+      width: 100%;
+      min-height: 112px;
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      padding: 20px;
+      text-align: center;
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.52);
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+    }
+
+    .add-line i {
+      color: var(--blue);
+      font-size: 22px;
+    }
+
+    .toolbar {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: calc(var(--nav-height) + 12px);
+      z-index: 16;
+      display: none;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 9px;
+      border-radius: 22px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.038)),
+        rgba(17, 23, 35, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .editor-active .toolbar {
+      display: flex;
+    }
+
+    .toolbar button {
+      min-width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.065);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: transform 150ms ease;
+    }
+
+    .toolbar .primary {
+      color: #fff;
+      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+    }
+
+    .selection-bar {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: calc(var(--nav-height) + 12px);
+      z-index: 18;
+      display: none;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 22px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045)),
+        rgba(17, 23, 35, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .selection-active .selection-bar {
+      display: grid;
+    }
+
+    .selection-active.editor-active .toolbar {
+      display: none;
+    }
+
+    .selection-text {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+      padding-left: 4px;
+    }
+
+    .selection-text strong {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .selection-text span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 760;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .selection-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .nav {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 20;
+      height: 78px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 64px 1fr 1fr;
+      align-items: center;
+      gap: 7px;
+      padding: 9px;
+      border-radius: 26px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.038)),
+        rgba(17, 23, 35, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-item,
+    .nav-add {
+      min-width: 0;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      color: rgba(255, 255, 255, 0.58);
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .nav-item i {
+      font-size: 17px;
+    }
+
+    .nav-item.active {
+      color: var(--text);
+    }
+
+    .nav-add {
+      width: 60px;
+      height: 60px;
+      border-radius: 22px;
+      color: #fff;
+      font-size: 22px;
+      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+      box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
+    }
+
+    .modal {
       position: fixed;
       inset: 0;
       z-index: 50;
       display: none;
-      justify-content: center;
       align-items: flex-end;
+      justify-content: center;
       padding: 14px 18px calc(98px + env(safe-area-inset-bottom));
-      background: rgba(2, 6, 14, 0.68);
+      background: rgba(2, 6, 14, 0.58);
       backdrop-filter: blur(12px);
-      overflow: hidden;
     }
 
-    .modal-backdrop.open {
+    .modal.open {
       display: flex;
     }
 
     .sheet {
       width: min(100%, 430px);
-      max-height: min(84dvh, 780px);
-      display: grid;
-      gap: 10px;
+      max-height: min(78dvh, 760px);
       overflow-y: auto;
-      padding: 15px;
       border-radius: 24px;
+      padding: 16px;
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
-        rgba(17, 23, 35, 0.98);
+        rgba(17, 23, 35, 0.96);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .grabber {
+      width: 42px;
+      height: 5px;
+      margin: 0 auto 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
     }
 
     .sheet-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
+      margin-bottom: 12px;
     }
 
-    .sheet-title {
+    .sheet-head h2 {
       margin: 0;
       font-size: 21px;
       font-weight: 900;
     }
 
-    .field {
+    .option-grid {
       display: grid;
-      gap: 7px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
-      font-weight: 850;
+      gap: 10px;
     }
 
-    .field input,
-    .field textarea {
-      width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 13px;
-      padding: 11px 12px;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.06);
-      font: inherit;
-      font-size: 16px;
-      outline: none;
-      -webkit-user-select: text;
-      user-select: text;
-    }
-
-    .field textarea {
-      min-height: 132px;
-      resize: vertical;
-      line-height: 1.45;
-    }
-
-    .image-preview {
-      width: 100%;
-      max-height: 180px;
-      object-fit: cover;
-      display: none;
-      border-radius: 14px;
-    }
-
-    .image-preview.active {
-      display: block;
-    }
-
-    .form-submit {
-      min-height: 48px;
-      border-radius: 15px;
-      color: white;
-      font-weight: 900;
-      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
-      box-shadow: 0 14px 32px rgba(98, 119, 255, 0.34);
-    }
-
-    .history-list {
+    .option-row {
       display: grid;
-      gap: 9px;
-    }
-
-    .history-item {
-      display: grid;
-      gap: 5px;
-      padding: 12px;
-      border-radius: 15px;
-      color: rgba(255, 255, 255, 0.78);
+      grid-template-columns: 44px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 62px;
+      padding: 10px;
       text-align: left;
-      background: rgba(255, 255, 255, 0.06);
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.055);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
     }
 
-    .history-item strong {
-      color: white;
-      font-size: 13px;
+    .circle {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent, var(--blue));
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
     }
 
-    .history-item span {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    .option-row strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .option-row span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
       font-size: 12px;
+      line-height: 1.25;
     }
 
-    @media (max-width: 760px) {
+    .color-row,
+    .icon-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .swatch,
+    .icon-choice {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .swatch.active,
+    .icon-choice.active {
+      box-shadow: inset 0 0 0 3px #fff, 0 0 0 2px var(--accent), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .icon-choice {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+        rgba(255, 255, 255, 0.06);
+    }
+
+    .toast {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      top: 18px;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 17px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 850;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+        rgba(17, 23, 35, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    @media (max-width: 460px) {
       body {
-        display: block;
         padding: 0;
       }
 
       .phone {
         width: 100%;
         height: 100dvh;
-        max-height: 100dvh;
         border: 0;
         border-radius: 0;
       }
 
       .app {
-        display: block;
-        overflow-y: auto;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .workspace {
-        min-height: 100%;
-        padding: 46px 20px 126px;
-      }
-
-      .mobile-pages {
-        display: flex;
-      }
-
-      .format-bar {
-        top: 0;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-      }
-
-      .canvas {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 380px) {
-      .workspace {
-        padding-inline: 16px;
-      }
-
-      .canvas,
-      .group-grid {
-        gap: 10px;
-      }
-
-      .note-card {
-        padding: 12px;
+        padding-inline: 18px;
       }
     }
   </style>
 </head>
 <body>
-  <main class="phone" aria-label="Notes workspace">
-    <div class="app">
-      <aside class="sidebar">
-        <div class="brand">
+  <main class="phone" id="phone">
+    <div class="toast" id="toast">
+      <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+      <span id="toastText">Saved</span>
+    </div>
+
+    <section class="app view active" id="notesView">
+      <header class="topbar">
+        <div class="title-stack">
+          <p class="kicker"><i class="fa-solid fa-note-sticky" aria-hidden="true"></i> Clean notes</p>
           <h1>Notes</h1>
-          <button class="icon-btn add-page" type="button" aria-label="Add page"><i class="fa-solid fa-plus"></i></button>
         </div>
-        <div class="page-list" aria-label="Pages"></div>
-        <p class="shortcut-note">Shortcuts: Cmd/Ctrl C X V Z A G. Shift+V opens clipboard history. Shift+G ungroups.</p>
-      </aside>
+        <button class="icon-btn primary" type="button" data-command="new-note" aria-label="Create new note">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        </button>
+      </header>
 
-      <section class="workspace">
-        <div class="mobile-pages" aria-label="Pages"></div>
-        <header class="doc-head">
-          <span class="doc-kicker"><i class="fa-regular fa-note-sticky"></i> Craft-style workspace</span>
-          <h1 class="doc-title editable" contenteditable="true" spellcheck="true" data-placeholder="Untitled page"></h1>
-          <div class="action-row">
-            <button class="tool add-card-top" type="button"><i class="fa-solid fa-plus"></i> Card</button>
-            <button class="tool add-page-mobile" type="button"><i class="fa-regular fa-file"></i> Page</button>
-            <button class="tool show-clipboard" type="button"><i class="fa-regular fa-clipboard"></i> Clipboard</button>
-          </div>
-        </header>
+      <label class="search">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input id="searchInput" type="search" placeholder="Search notes" autocomplete="off" />
+      </label>
 
-        <div class="format-bar" aria-label="Formatting">
-          <button class="tool" type="button" data-tool="bold"><b>B</b></button>
-          <button class="tool" type="button" data-tool="underline"><u>U</u></button>
-          <button class="tool" type="button" data-tool="italic"><i>I</i></button>
-          <button class="tool" type="button" data-tool="highlight">Highlight</button>
-          <button class="tool" type="button" data-tool="code">&lt;/&gt;</button>
-          <button class="tool" type="button" data-tool="block">Block</button>
-          <button class="tool" type="button" data-tool="focus">Focus</button>
-          <button class="choice-pill" type="button" data-type="body">Body</button>
-          <button class="choice-pill" type="button" data-type="title">Title</button>
-          <button class="choice-pill" type="button" data-type="header">Header</button>
-          <button class="choice-pill" type="button" data-type="subtitle">Subtitle</button>
-          <button class="choice-pill" type="button" data-list="none">None</button>
-          <button class="choice-pill" type="button" data-list="bullet">Bullets</button>
-          <button class="choice-pill" type="button" data-list="numbered">Numbered</button>
-          <button class="choice-pill" type="button" data-list="checkbox">Checks</button>
-          <button class="color-dot" type="button" data-color="#f7f8ff" style="--dot:#f7f8ff" aria-label="White"></button>
-          <button class="color-dot" type="button" data-color="#ff74ba" style="--dot:#ff74ba" aria-label="Pink"></button>
-          <button class="color-dot" type="button" data-color="#ffd33d" style="--dot:#ffd33d" aria-label="Yellow"></button>
-          <button class="color-dot" type="button" data-color="#46d29c" style="--dot:#46d29c" aria-label="Green"></button>
-          <button class="color-dot" type="button" data-color="#46d7c5" style="--dot:#46d7c5" aria-label="Teal"></button>
-          <button class="color-dot" type="button" data-color="#5a8cff" style="--dot:#5a8cff" aria-label="Blue"></button>
-          <button class="color-dot" type="button" data-color="#9d70ff" style="--dot:#9d70ff" aria-label="Purple"></button>
+      <div class="note-list" id="noteList"></div>
+    </section>
+
+    <section class="app view" id="editorView">
+      <header class="topbar center">
+        <button class="icon-btn" type="button" data-command="back" aria-label="Back to notes">
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <div class="title-stack">
+          <p class="kicker"><i class="fa-solid fa-pen" aria-hidden="true"></i> Editing</p>
         </div>
+        <button class="icon-btn" type="button" data-command="options" aria-label="Note options">
+          <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+        </button>
+      </header>
 
-        <div class="selection-bar">
-          <span class="selection-label">0 selected</span>
-          <button class="icon-btn move-left" type="button" aria-label="Move selected left"><i class="fa-solid fa-arrow-left"></i></button>
-          <button class="icon-btn move-right" type="button" aria-label="Move selected right"><i class="fa-solid fa-arrow-right"></i></button>
-          <button class="icon-btn group-selected" type="button" aria-label="Group selected"><i class="fa-solid fa-layer-group"></i></button>
-          <button class="icon-btn ungroup-selected" type="button" aria-label="Ungroup selected"><i class="fa-solid fa-object-ungroup"></i></button>
-          <button class="icon-btn danger delete-selected" type="button" aria-label="Delete selected"><i class="fa-solid fa-trash"></i></button>
-          <button class="icon-btn clear-selected" type="button" aria-label="Clear selection"><i class="fa-solid fa-minus"></i></button>
-        </div>
+      <textarea class="editor-title" id="titleInput" rows="1" placeholder="Untitled note"></textarea>
+      <div class="blocks" id="blocks"></div>
+      <button class="add-line" type="button" data-command="add-text" aria-label="Add text below">
+        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+        <span>Tap below the note to add a new text box</span>
+      </button>
+    </section>
 
-        <section class="canvas" aria-label="Note cards"></section>
-      </section>
+    <nav class="toolbar" id="toolbar" aria-label="Formatting and insert toolbar">
+      <button type="button" data-command="format-bold" aria-label="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
+      <button type="button" data-command="format-italic" aria-label="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
+      <button type="button" data-command="add-bullet" aria-label="Add bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
+      <button type="button" data-command="add-number" aria-label="Add numbered item"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
+      <button type="button" data-command="add-task" aria-label="Add checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
+      <button type="button" data-command="add-heading" aria-label="Add heading"><i class="fa-solid fa-heading" aria-hidden="true"></i></button>
+      <button type="button" data-command="photo" aria-label="Add photo"><i class="fa-solid fa-image" aria-hidden="true"></i></button>
+      <button class="primary" type="button" data-command="add-text" aria-label="Add text"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+    </nav>
+
+    <div class="selection-bar" id="selectionBar">
+      <div class="selection-text">
+        <strong id="selectionTitle">1 selected</strong>
+        <span>Tap text to keep editing, or use actions.</span>
+      </div>
+      <div class="selection-actions">
+        <button class="icon-btn" type="button" data-command="move-up" aria-label="Move up"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+        <button class="icon-btn" type="button" data-command="move-down" aria-label="Move down"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
+        <button class="icon-btn" type="button" data-command="duplicate-selected" aria-label="Duplicate"><i class="fa-solid fa-clone" aria-hidden="true"></i></button>
+        <button class="icon-btn danger" type="button" data-command="delete-selected" aria-label="Delete"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+        <button class="icon-btn" type="button" data-command="done-selection" aria-label="Done"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
     </div>
 
     <nav class="nav" aria-label="Primary navigation">
-      <button class="nav-item">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M3 10.7 12 3l9 7.7V20a1 1 0 0 1-1 1h-5.2v-6.6H9.2V21H4a1 1 0 0 1-1-1v-9.3Z" />
-        </svg>
+      <button class="nav-item" type="button" data-command="home">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
         Home
       </button>
-      <button class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="8" stroke="currentColor" />
-          <circle cx="12" cy="12" r="3" stroke="currentColor" />
-        </svg>
+      <button class="nav-item" type="button" data-command="habits">
+        <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
         Habits
       </button>
-      <button class="add" aria-label="Add note item">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-linecap="round" />
-        </svg>
+      <button class="nav-add" type="button" data-command="smart-add" aria-label="Add">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
       </button>
-      <button class="nav-item active">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" />
-          <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" />
-        </svg>
+      <button class="nav-item active" type="button" data-command="notes">
+        <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
         Notes
       </button>
-      <button class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="8" r="4" stroke="currentColor" />
-          <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-linecap="round" />
-        </svg>
-        Profile
+      <button class="nav-item" type="button" data-command="photo">
+        <i class="fa-solid fa-image" aria-hidden="true"></i>
+        Photo
       </button>
     </nav>
 
-    <div class="modal-backdrop" id="cardModal" aria-hidden="true">
-      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cardModalTitle">
+    <div class="modal" id="optionsModal" aria-hidden="true">
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
+        <div class="grabber"></div>
         <div class="sheet-head">
-          <h2 class="sheet-title" id="cardModalTitle">Add card</h2>
-          <button class="icon-btn close-card" type="button" aria-label="Close card editor">x</button>
+          <h2 id="optionsTitle">Note options</h2>
+          <button class="icon-btn" type="button" data-command="close-options" aria-label="Close options">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
         </div>
-        <label class="field">
-          Card title
-          <input name="cardTitle" type="text" placeholder="Title" />
-        </label>
-        <div class="action-row size-picker">
-          <button class="choice-pill active" type="button" data-size="square">Square</button>
-          <button class="choice-pill" type="button" data-size="wide">Page width</button>
-          <button class="choice-pill" type="button" data-size="tall">Tall</button>
-        </div>
-        <label class="field">
-          Notes
-          <textarea name="cardBody" placeholder="Write one block per line"></textarea>
-        </label>
-        <label class="field">
-          Image
-          <input name="cardImage" type="file" accept="image/*" />
-          <img class="image-preview" alt="" />
-        </label>
-        <button class="form-submit save-card" type="button">Save card</button>
-      </section>
-    </div>
 
-    <div class="modal-backdrop" id="clipboardModal" aria-hidden="true">
-      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="clipboardTitle">
-        <div class="sheet-head">
-          <h2 class="sheet-title" id="clipboardTitle">Clipboard history</h2>
-          <button class="icon-btn close-clipboard" type="button" aria-label="Close clipboard history">x</button>
+        <div class="option-grid">
+          <button class="option-row" type="button" data-command="pin-active">
+            <span class="circle" style="--accent: var(--yellow)"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i></span>
+            <span><strong id="pinLabel">Pin note</strong><span>Keep this note at the top.</span></span>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          </button>
+          <button class="option-row" type="button" data-command="duplicate-active">
+            <span class="circle" style="--accent: var(--purple)"><i class="fa-solid fa-clone" aria-hidden="true"></i></span>
+            <span><strong>Duplicate note</strong><span>Make a complete copy.</span></span>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          </button>
+          <button class="option-row" type="button" data-command="delete-active">
+            <span class="circle" style="--accent: var(--red)"><i class="fa-solid fa-trash" aria-hidden="true"></i></span>
+            <span><strong>Delete note</strong><span>Remove this note.</span></span>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          </button>
+
+          <div>
+            <p class="kicker"><i class="fa-solid fa-palette" aria-hidden="true"></i> Color</p>
+            <div class="color-row" id="colorChoices"></div>
+          </div>
+
+          <div>
+            <p class="kicker"><i class="fa-solid fa-icons" aria-hidden="true"></i> Icon</p>
+            <div class="icon-row" id="iconChoices"></div>
+          </div>
         </div>
-        <div class="history-list"></div>
       </section>
     </div>
   </main>
 
+  <input id="photoInput" type="file" accept="image/*" multiple hidden />
+
   <script>
-    const NOTES_KEY = "routineDashboard.notes.v2";
-    const OLD_NOTES_KEY = "routineDashboard.notes.v1";
-    const CLIPBOARD_KEY = "routineDashboard.notesClipboard.v1";
-    const pageList = document.querySelector(".page-list");
-    const mobilePages = document.querySelector(".mobile-pages");
-    const canvas = document.querySelector(".canvas");
-    const selectionBar = document.querySelector(".selection-bar");
-    const docTitle = document.querySelector(".doc-title");
-    const cardModal = document.querySelector("#cardModal");
-    const clipboardModal = document.querySelector("#clipboardModal");
-    const titleInput = cardModal.querySelector('[name="cardTitle"]');
-    const bodyInput = cardModal.querySelector('[name="cardBody"]');
-    const imageInput = cardModal.querySelector('[name="cardImage"]');
-    const imagePreview = cardModal.querySelector(".image-preview");
-    let activePageId = "";
-    let editingCardId = "";
-    let selectedIds = new Set();
-    let activeCardId = "";
-    let activeBlockIndex = 0;
-    let holdTimer = null;
-    let draftImage = "";
-    let undoStack = [];
-    let redoStack = [];
-    let saveTimer = null;
+    const storageKey = "clean-mobile-notes-v1";
+    const colors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff"];
+    const icons = ["fa-note-sticky", "fa-book-open", "fa-pen", "fa-heart-pulse", "fa-lightbulb", "fa-list-check", "fa-star"];
+    const swipeMin = 54;
 
-    const colors = ["#5a8cff", "#ff74ba", "#ffd33d", "#46d29c", "#46d7c5", "#9d70ff"];
-
-    function uid(prefix) {
-      return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    }
-
-    function starterStore() {
-      const pageId = uid("page");
-      return {
-        activePageId: pageId,
-        pages: [{
-          id: pageId,
-          title: "Today",
-          cards: [{
-            id: uid("card"),
-            title: "Ideas",
-            size: "wide",
-            accent: "#5a8cff",
-            type: "header",
-            list: "bullet",
-            tools: ["highlight"],
-            color: "#f7f8ff",
-            image: "",
-            blocks: ["Plan the day", "Capture quick notes", "Turn ideas into tasks"]
-          }, {
-            id: uid("card"),
-            title: "Quick Tasks",
-            size: "square",
-            accent: "#46d7c5",
-            type: "body",
-            list: "checkbox",
-            tools: [],
-            color: "#f7f8ff",
-            image: "",
-            blocks: ["Clean up dashboard", "Sketch notes flow"]
-          }]
-        }]
-      };
-    }
-
-    function migrateOldStore(oldStore) {
-      if (!oldStore?.pages?.length) return null;
-      return {
-        activePageId: oldStore.activePageId || oldStore.pages[0].id,
-        pages: oldStore.pages.map((page) => ({
-          id: page.id || uid("page"),
-          title: page.title || "Untitled",
-          cards: (page.cards || []).map((card) => ({
-            id: card.id || uid("card"),
-            title: card.title || "Untitled",
-            size: card.size || "wide",
-            accent: card.accent || colors[Math.floor(Math.random() * colors.length)],
-            type: card.type || "body",
-            list: card.list || "none",
-            tools: Array.isArray(card.tools) ? card.tools : [],
-            color: card.color || "#f7f8ff",
-            image: card.image || "",
-            blocks: Array.isArray(card.blocks) ? card.blocks : []
-          }))
-        }))
-      };
-    }
-
-    function loadStore() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(NOTES_KEY));
-        if (saved?.pages?.length) return saved;
-      } catch {}
-      try {
-        const migrated = migrateOldStore(JSON.parse(localStorage.getItem(OLD_NOTES_KEY)));
-        if (migrated) return migrated;
-      } catch {}
-      return starterStore();
-    }
-
-    function saveStore(store, pushHistory = true) {
-      store.activePageId = activePageId;
-      localStorage.setItem(NOTES_KEY, JSON.stringify(store));
-      if (pushHistory) queueHistorySnapshot(store);
-    }
-
-    function queueHistorySnapshot(store) {
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(() => {
-        const snapshot = JSON.stringify(store);
-        if (undoStack[undoStack.length - 1] !== snapshot) {
-          undoStack.push(snapshot);
-          if (undoStack.length > 60) undoStack.shift();
-          redoStack = [];
+    const initialState = {
+      activeNoteId: "daily-reset",
+      notes: [
+        {
+          id: "daily-reset",
+          title: "Daily reset",
+          pinned: true,
+          accent: "#46d29c",
+          icon: "fa-book-open",
+          order: 0,
+          blocks: [
+            { id: uid(), type: "heading", text: "Morning Routine", children: [{ id: uid(), type: "task", text: "Drink water", checked: false }] },
+            { id: uid(), type: "task", text: "Drink water and take vitamins", checked: true },
+            { id: uid(), type: "task", text: "Review today's top three", checked: false },
+            { id: uid(), type: "paragraph", text: "Keep capture easy. Organization can happen later." }
+          ]
+        },
+        {
+          id: "health-dashboard",
+          title: "Health dashboard",
+          pinned: false,
+          accent: "#ff74ba",
+          icon: "fa-heart-pulse",
+          order: 1,
+          blocks: [
+            { id: uid(), type: "heading", text: "Health dashboard", children: [] },
+            { id: uid(), type: "bullet", text: "Sleep, mood, cycle notes, symptoms, meals, and supplements." },
+            { id: uid(), type: "paragraph", text: "Tap into any line to edit it normally." }
+          ]
+        },
+        {
+          id: "project-launch",
+          title: "Project launch",
+          pinned: false,
+          accent: "#9d70ff",
+          icon: "fa-lightbulb",
+          order: 2,
+          blocks: [
+            { id: uid(), type: "heading", text: "Launch plan", children: [] },
+            { id: uid(), type: "number", text: "Confirm scope" },
+            { id: uid(), type: "number", text: "Send final draft" }
+          ]
         }
-      }, 140);
+      ]
+    };
+
+    let state = loadState();
+    let currentView = "notes";
+    let selection = { kind: null, ids: new Set() };
+    let touch = null;
+    let focusedBlockId = null;
+    let undo = null;
+
+    const phone = document.getElementById("phone");
+    const notesView = document.getElementById("notesView");
+    const editorView = document.getElementById("editorView");
+    const noteList = document.getElementById("noteList");
+    const blocksEl = document.getElementById("blocks");
+    const searchInput = document.getElementById("searchInput");
+    const titleInput = document.getElementById("titleInput");
+    const optionsModal = document.getElementById("optionsModal");
+    const colorChoices = document.getElementById("colorChoices");
+    const iconChoices = document.getElementById("iconChoices");
+    const photoInput = document.getElementById("photoInput");
+    const toast = document.getElementById("toast");
+    const toastText = document.getElementById("toastText");
+    const selectionTitle = document.getElementById("selectionTitle");
+    const pinLabel = document.getElementById("pinLabel");
+
+    function uid() {
+      return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
     }
 
-    function currentPage(store) {
-      return store.pages.find((page) => page.id === activePageId) || store.pages[0];
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        if (saved?.notes?.length) return saved;
+      } catch (error) {
+        console.warn(error);
+      }
+      return JSON.parse(JSON.stringify(initialState));
     }
 
-    function getCard(store, id = activeCardId) {
-      const page = currentPage(store);
-      return page.cards.find((card) => card.id === id);
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
     }
 
-    function escapeHtml(value) {
-      return String(value || "").replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[char]));
+    function activeNote() {
+      return state.notes.find(note => note.id === state.activeNoteId) || state.notes[0];
     }
 
-    function textFromHtml(element) {
-      return element.innerText.replace(/\u00a0/g, " ").trim();
+    function activeBlocks() {
+      return activeNote()?.blocks || [];
     }
 
-    function render() {
-      const store = loadStore();
-      activePageId = store.activePageId || store.pages[0].id;
-      const page = currentPage(store);
-      activePageId = page.id;
-      docTitle.textContent = page.title || "";
-      renderPages(store);
-      canvas.innerHTML = page.cards.length ? page.cards.map((card) => cardHtml(card)).join("") : '<div class="empty-state">Tap + to add a page or a card. Cards can be edited right here.</div>';
-      updateSelection();
-      bindCards();
-      bindEditable();
-      syncFormatBar();
-    }
-
-    function renderPages(store) {
-      const html = store.pages.map((page) => `
-        <button class="page-tab ${page.id === activePageId ? "active" : ""}" type="button" data-page="${page.id}">
-          <i class="fa-regular fa-note-sticky" aria-hidden="true"></i><span>${escapeHtml(page.title || "Untitled")}</span>
-        </button>
-      `).join("");
-      pageList.innerHTML = html;
-      mobilePages.innerHTML = html;
-      document.querySelectorAll(".page-tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
-          activePageId = tab.dataset.page;
-          selectedIds.clear();
-          const store = loadStore();
-          saveStore(store, false);
-          render();
-        });
+    function sortedNotes() {
+      return [...state.notes].sort((a, b) => {
+        if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+        return (a.order || 0) - (b.order || 0);
       });
     }
 
-    function blockHtml(text, card, index) {
-      const classes = ["note-block", card.type, card.list, ...card.tools].filter(Boolean).join(" ");
-      return `<div class="${classes}" contenteditable="true" spellcheck="true" data-card="${card.id}" data-block="${index}" data-index="${index + 1}" data-placeholder="Add block" style="color:${card.color || "#f7f8ff"}">${escapeHtml(text)}</div>`;
+    function preview(note) {
+      return note.blocks.map(block => block.text || block.caption || "").filter(Boolean).join(" ").slice(0, 120);
     }
 
-    function cardHtml(card, nested = false) {
-      const selected = selectedIds.has(card.id) ? "selected" : "";
-      const focused = card.tools?.includes("focus") ? "focused" : "";
-      if (card.kind === "group") {
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function renderNotes() {
+      const query = searchInput.value.trim().toLowerCase();
+      const notes = sortedNotes().filter(note => `${note.title} ${preview(note)}`.toLowerCase().includes(query));
+      noteList.innerHTML = notes.map(note => `
+        <article class="note-card ${selection.ids.has(note.id) ? "selected" : ""}" draggable="true" data-kind="note" data-id="${note.id}" style="--accent:${note.accent}">
+          <button class="note-main" type="button" data-command="open-note" data-id="${note.id}" aria-label="Open ${escapeHtml(note.title)}">
+            <span class="note-icon"><i class="fa-solid ${note.icon}" aria-hidden="true"></i></span>
+            <span class="note-copy">
+              <span class="note-title">${escapeHtml(note.title || "Untitled note")}</span>
+              ${preview(note) ? `<span class="note-preview">${escapeHtml(preview(note))}</span>` : ""}
+            </span>
+          </button>
+          <div class="note-actions">
+            <button class="action-btn pin ${note.pinned ? "active" : ""}" type="button" data-command="pin-note" data-id="${note.id}" aria-label="Pin note"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i></button>
+            <button class="action-btn" type="button" data-command="move-note-up" data-id="${note.id}" aria-label="Move note up"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+            <button class="action-btn" type="button" data-command="move-note-down" data-id="${note.id}" aria-label="Move note down"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button>
+            <button class="action-btn" type="button" data-command="duplicate-note" data-id="${note.id}" aria-label="Duplicate note"><i class="fa-solid fa-clone" aria-hidden="true"></i></button>
+            <button class="action-btn delete" type="button" data-command="delete-note" data-id="${note.id}" aria-label="Delete note"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+          </div>
+        </article>
+      `).join("") || `<div class="note-card"><p class="note-title">No notes found</p><p class="note-preview">Tap + to create one.</p></div>`;
+      wireSwipeTargets(noteList.querySelectorAll(".note-card"));
+      wireDragging(noteList.querySelectorAll(".note-card"), "note");
+    }
+
+    function renderEditor() {
+      const note = activeNote();
+      if (!note) return;
+      if (document.activeElement !== titleInput) titleInput.value = note.title || "";
+      blocksEl.innerHTML = note.blocks.map((block, index) => renderBlock(block, index, note.accent)).join("");
+      wireSwipeTargets(blocksEl.querySelectorAll(".block"));
+      wireDragging(blocksEl.querySelectorAll(".block"), "block");
+      autoSizeTitle();
+    }
+
+    function renderBlock(block, index, accent) {
+      if (block.type === "image") {
         return `
-          <article class="note-card group ${selected} ${focused}" data-card="${card.id}" style="--accent:${card.accent || "#9d70ff"}">
-            <span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>
-            <button class="card-edit" type="button" aria-label="Edit ${escapeHtml(card.title)}"><i class="fa-solid fa-pencil"></i></button>
-            <h2 class="card-title editable" contenteditable="true" spellcheck="true" data-card="${card.id}" data-field="title" data-placeholder="Group title">${escapeHtml(card.title || "Group")}</h2>
-            <div class="group-grid">${(card.children || []).map((child) => cardHtml(child, true)).join("")}</div>
+          <article class="block ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+            <div class="image-block">
+              ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Photo</span></div>`}
+              <div class="image-caption" contenteditable="true" data-id="${block.id}" data-field="caption" data-placeholder="Caption">${escapeHtml(block.caption || "")}</div>
+            </div>
           </article>
         `;
       }
+
+      const marker = block.type === "bullet"
+        ? `<span class="marker">•</span>`
+        : block.type === "number"
+          ? `<span class="marker">${numberFor(index)}.</span>`
+          : block.type === "task"
+            ? `<button class="task-check ${block.checked ? "checked" : ""}" type="button" data-command="toggle-task" data-id="${block.id}" aria-label="Toggle task">${block.checked ? '<i class="fa-solid fa-check" aria-hidden="true"></i>' : ""}</button>`
+            : "";
       return `
-        <article class="note-card ${card.size || "square"} ${selected} ${focused}" data-card="${card.id}" style="--accent:${card.accent || "#5a8cff"}">
-          ${nested ? "" : '<span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>'}
-          <button class="card-edit" type="button" aria-label="Edit ${escapeHtml(card.title)}"><i class="fa-solid fa-pencil"></i></button>
-          <h2 class="card-title editable" contenteditable="true" spellcheck="true" data-card="${card.id}" data-field="title" data-placeholder="Card title">${escapeHtml(card.title || "")}</h2>
-          ${card.image ? `<img class="card-image" src="${card.image}" alt="">` : ""}
-          <div class="note-blocks">${(card.blocks || [""]).map((block, index) => blockHtml(block, card, index)).join("")}</div>
+        <article class="block ${block.type} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+          <div class="block-line">
+            ${marker}
+            <div class="editable" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write">${escapeHtml(block.text || "")}</div>
+          </div>
         </article>
       `;
     }
 
-    function bindCards() {
-      canvas.querySelectorAll(".note-card").forEach((card) => {
-        card.addEventListener("pointerdown", (event) => {
-          if (event.target.closest("[contenteditable], .card-edit")) return;
-          holdTimer = setTimeout(() => toggleSelect(card.dataset.card), 320);
-        });
-        card.addEventListener("pointerup", () => clearTimeout(holdTimer));
-        card.addEventListener("pointerleave", () => clearTimeout(holdTimer));
-        card.addEventListener("click", (event) => {
-          if (event.target.closest(".card-edit")) {
-            openCardModal(card.dataset.card);
-            return;
-          }
-          if (!event.target.closest("[contenteditable]") && selectedIds.size) toggleSelect(card.dataset.card);
-        });
+    function numberFor(index) {
+      let count = 0;
+      activeBlocks().slice(0, index + 1).forEach(block => {
+        if (block.type === "number") count += 1;
       });
+      return count;
     }
 
-    function bindEditable() {
-      docTitle.addEventListener("input", updatePageTitle);
-      canvas.querySelectorAll("[contenteditable]").forEach((editable) => {
-        editable.addEventListener("focus", () => {
-          activeCardId = editable.dataset.card || "";
-          activeBlockIndex = Number(editable.dataset.block || 0);
-          syncFormatBar();
-        });
-        editable.addEventListener("input", () => {
-          if (editable.dataset.field === "title") updateCardTitle(editable);
-          else updateBlock(editable);
-        });
-        editable.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" && editable.classList.contains("note-block") && !event.shiftKey) {
-            event.preventDefault();
-            insertBlockAfter(editable);
-          }
-        });
-      });
+    function setView(view) {
+      currentView = view;
+      notesView.classList.toggle("active", view === "notes");
+      editorView.classList.toggle("active", view === "editor");
+      phone.classList.toggle("editor-active", view === "editor");
+      closeSelection();
+      if (view === "notes") renderNotes();
+      if (view === "editor") renderEditor();
     }
 
-    function updatePageTitle() {
-      const store = loadStore();
-      currentPage(store).title = textFromHtml(docTitle) || "Untitled";
-      saveStore(store);
-      renderPages(store);
+    function renderAll() {
+      renderNotes();
+      if (currentView === "editor") renderEditor();
+      updateSelectionUi();
     }
 
-    function updateCardTitle(editable) {
-      const store = loadStore();
-      const card = findCardDeep(currentPage(store).cards, editable.dataset.card);
-      if (card) card.title = textFromHtml(editable);
-      saveStore(store);
+    function showToast(message, icon = "fa-circle-check") {
+      toast.querySelector("i").className = `fa-solid ${icon}`;
+      toastText.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
     }
 
-    function updateBlock(editable) {
-      const store = loadStore();
-      const card = findCardDeep(currentPage(store).cards, editable.dataset.card);
-      if (card) card.blocks[Number(editable.dataset.block)] = textFromHtml(editable);
-      saveStore(store);
-    }
-
-    function insertBlockAfter(editable) {
-      const store = loadStore();
-      const card = findCardDeep(currentPage(store).cards, editable.dataset.card);
-      const index = Number(editable.dataset.block);
-      if (!card) return;
-      card.blocks.splice(index + 1, 0, "");
-      saveStore(store);
-      render();
-      const next = canvas.querySelector(`[data-card="${card.id}"][data-block="${index + 1}"]`);
-      if (next) next.focus();
-    }
-
-    function findCardDeep(cards, id) {
-      for (const card of cards) {
-        if (card.id === id) return card;
-        if (card.children) {
-          const child = findCardDeep(card.children, id);
-          if (child) return child;
-        }
-      }
-      return null;
-    }
-
-    function toggleSelect(id) {
-      if (selectedIds.has(id)) selectedIds.delete(id);
-      else selectedIds.add(id);
-      render();
-    }
-
-    function updateSelection() {
-      selectionBar.classList.toggle("active", selectedIds.size > 0);
-      selectionBar.querySelector(".selection-label").textContent = `${selectedIds.size} selected`;
-    }
-
-    function activeCards() {
-      const page = currentPage(loadStore());
-      return page.cards.filter((card) => selectedIds.has(card.id));
-    }
-
-    function applyToTargets(mutator) {
-      const store = loadStore();
-      const page = currentPage(store);
-      const targets = selectedIds.size ? page.cards.filter((card) => selectedIds.has(card.id)) : [findCardDeep(page.cards, activeCardId)].filter(Boolean);
-      targets.forEach(mutator);
-      saveStore(store);
-      render();
-    }
-
-    function syncFormatBar() {
-      const store = loadStore();
-      const card = findCardDeep(currentPage(store).cards, activeCardId) || activeCards()[0];
-      document.querySelectorAll(".format-bar [data-tool]").forEach((button) => {
-        button.classList.toggle("active", Boolean(card?.tools?.includes(button.dataset.tool)));
-      });
-      document.querySelectorAll(".format-bar [data-type]").forEach((button) => {
-        button.classList.toggle("active", button.dataset.type === (card?.type || "body"));
-      });
-      document.querySelectorAll(".format-bar [data-list]").forEach((button) => {
-        button.classList.toggle("active", button.dataset.list === (card?.list || "none"));
-      });
-      document.querySelectorAll(".format-bar .color-dot").forEach((button) => {
-        button.classList.toggle("active", button.dataset.color === (card?.color || "#f7f8ff"));
-      });
-    }
-
-    function copySelection(shouldCut = false) {
-      const store = loadStore();
-      const page = currentPage(store);
-      const cards = page.cards.filter((card) => selectedIds.has(card.id));
-      if (!cards.length) return false;
-      const payload = JSON.stringify({ type: "cards", cards });
-      addClipboardItem("Cards", cards.map((card) => card.title).join(", "), payload);
-      navigator.clipboard?.writeText(payload).catch(() => {});
-      if (shouldCut) {
-        page.cards = page.cards.filter((card) => !selectedIds.has(card.id));
-        selectedIds.clear();
-        saveStore(store);
-        render();
-      }
-      return true;
-    }
-
-    async function pasteCards() {
-      let text = "";
-      try { text = await navigator.clipboard.readText(); } catch {}
-      const history = loadClipboard();
-      if (!text && history[0]) text = history[0].payload;
-      if (!text) return false;
-      pastePayload(text);
-      return true;
-    }
-
-    function pastePayload(payload) {
-      const store = loadStore();
-      const page = currentPage(store);
-      try {
-        const parsed = JSON.parse(payload);
-        if (parsed.type === "cards" && Array.isArray(parsed.cards)) {
-          page.cards.unshift(...parsed.cards.map(cloneCard));
-        } else {
-          page.cards.unshift(textCard(payload));
-        }
-      } catch {
-        page.cards.unshift(textCard(payload));
-      }
-      saveStore(store);
-      render();
-    }
-
-    function cloneCard(card) {
-      return {
-        ...card,
-        id: uid("card"),
-        children: card.children?.map(cloneCard)
+    function newNote() {
+      const note = {
+        id: uid(),
+        title: "",
+        pinned: false,
+        accent: colors[0],
+        icon: icons[0],
+        order: state.notes.length,
+        blocks: [{ id: uid(), type: "paragraph", text: "" }]
       };
+      state.notes.unshift(note);
+      reindex();
+      state.activeNoteId = note.id;
+      saveState();
+      setView("editor");
+      setTimeout(() => titleInput.focus(), 30);
     }
 
-    function textCard(text) {
-      return {
-        id: uid("card"),
-        title: "Pasted note",
-        size: "wide",
-        accent: colors[Math.floor(Math.random() * colors.length)],
-        type: "body",
-        list: "none",
-        tools: [],
-        color: "#f7f8ff",
-        image: "",
-        blocks: String(text).split(/\n+/).map((line) => line.trim()).filter(Boolean)
-      };
+    function addBlock(type = "paragraph", afterId = focusedBlockId) {
+      const blocks = activeBlocks();
+      const index = afterId ? blocks.findIndex(block => block.id === afterId) : -1;
+      const block = createBlock(type);
+      blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
+      focusedBlockId = block.id;
+      saveState();
+      renderEditor();
+      setTimeout(() => focusBlock(block.id), 30);
     }
 
-    function addClipboardItem(title, preview, payload) {
-      const history = loadClipboard().filter((item) => item.payload !== payload);
-      history.unshift({ id: uid("clip"), title, preview, payload, createdAt: Date.now() });
-      localStorage.setItem(CLIPBOARD_KEY, JSON.stringify(history.slice(0, 12)));
+    function createBlock(type) {
+      if (type === "task") return { id: uid(), type, text: "", checked: false };
+      if (type === "bullet") return { id: uid(), type, text: "" };
+      if (type === "number") return { id: uid(), type, text: "" };
+      if (type === "heading") return { id: uid(), type, text: "", children: [] };
+      if (type === "image") return { id: uid(), type, src: "", caption: "" };
+      return { id: uid(), type: "paragraph", text: "" };
     }
 
-    function loadClipboard() {
-      try { return JSON.parse(localStorage.getItem(CLIPBOARD_KEY)) || []; } catch { return []; }
+    function focusBlock(id) {
+      const editable = blocksEl.querySelector(`[data-id="${CSS.escape(id)}"][contenteditable="true"]`);
+      if (!editable) return;
+      editable.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editable);
+      range.collapse(false);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
     }
 
-    function showClipboard() {
-      const list = clipboardModal.querySelector(".history-list");
-      const history = loadClipboard();
-      list.innerHTML = history.length ? history.map((item) => `
-        <button class="history-item" type="button" data-clip="${item.id}">
-          <strong>${escapeHtml(item.title)}</strong>
-          <span>${escapeHtml(item.preview || "Saved item")}</span>
-        </button>
-      `).join("") : '<div class="empty-state">Copy cards to build clipboard history.</div>';
-      list.querySelectorAll(".history-item").forEach((button) => {
-        button.addEventListener("click", () => {
-          const item = loadClipboard().find((clip) => clip.id === button.dataset.clip);
-          if (item) pastePayload(item.payload);
-          closeClipboard();
+    function updateBlockField(target) {
+      const block = activeBlocks().find(item => item.id === target.dataset.id);
+      if (!block) return;
+      block[target.dataset.field] = target.textContent;
+      focusedBlockId = block.id;
+      saveState();
+    }
+
+    function handleEnter(event) {
+      const editable = event.target.closest("[contenteditable='true']");
+      if (!editable || editable.dataset.field !== "text") return;
+      const block = activeBlocks().find(item => item.id === editable.dataset.id);
+      if (!block) return;
+      if (!["bullet", "number", "task"].includes(block.type)) return;
+      event.preventDefault();
+      updateBlockField(editable);
+      if (!block.text.trim()) {
+        block.type = "paragraph";
+        renderEditor();
+        focusBlock(block.id);
+        return;
+      }
+      const next = createBlock(block.type);
+      const index = activeBlocks().findIndex(item => item.id === block.id);
+      activeBlocks().splice(index + 1, 0, next);
+      focusedBlockId = next.id;
+      saveState();
+      renderEditor();
+      setTimeout(() => focusBlock(next.id), 30);
+    }
+
+    function enterSelection(kind, id) {
+      selection.kind = kind;
+      selection.ids = new Set([id]);
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function toggleSelection(kind, id) {
+      if (selection.kind !== kind) {
+        selection.kind = kind;
+        selection.ids = new Set();
+      }
+      if (selection.ids.has(id)) selection.ids.delete(id);
+      else selection.ids.add(id);
+      if (!selection.ids.size) closeSelection();
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function closeSelection() {
+      selection.kind = null;
+      selection.ids = new Set();
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function updateSelectionUi() {
+      const active = Boolean(selection.kind && selection.ids.size);
+      phone.classList.toggle("selection-active", active);
+      selectionTitle.textContent = `${selection.ids.size || 0} ${selection.kind || "item"}${selection.ids.size === 1 ? "" : "s"} selected`;
+    }
+
+    function refreshSelectionClasses() {
+      document.querySelectorAll("[data-kind][data-id]").forEach(el => {
+        el.classList.toggle("selected", selection.ids.has(el.dataset.id));
+      });
+    }
+
+    function wireSwipeTargets(elements) {
+      elements.forEach(element => {
+        element.addEventListener("pointerdown", event => {
+          if (event.target.closest("[contenteditable='true'], input, textarea, .action-btn, .task-check")) return;
+          touch = { x: event.clientX, y: event.clientY, id: element.dataset.id, kind: element.dataset.kind, element };
+        });
+        element.addEventListener("pointerup", event => {
+          if (!touch || touch.element !== element) return;
+          const dx = event.clientX - touch.x;
+          const dy = Math.abs(event.clientY - touch.y);
+          if (Math.abs(dx) > swipeMin && dy < 42) {
+            if (dx > 0) {
+              toggleSelection(touch.kind, touch.id);
+            } else {
+              revealDelete(touch.kind, touch.id, element);
+            }
+          }
+          touch = null;
+        });
+        element.addEventListener("pointercancel", () => touch = null);
+        element.addEventListener("contextmenu", event => {
+          event.preventDefault();
+          openActions(element.dataset.kind, element.dataset.id);
         });
       });
-      clipboardModal.classList.add("open");
-      clipboardModal.setAttribute("aria-hidden", "false");
     }
 
-    function closeClipboard() {
-      clipboardModal.classList.remove("open");
-      clipboardModal.setAttribute("aria-hidden", "true");
+    function revealDelete(kind, id, element) {
+      element.classList.add("reveal-delete");
+      deleteBySwipe(kind, id);
+      setTimeout(() => element.classList.remove("reveal-delete"), 1800);
     }
 
-    function groupSelected() {
-      if (selectedIds.size < 2) return;
-      const store = loadStore();
-      const page = currentPage(store);
-      const grouped = page.cards.filter((card) => selectedIds.has(card.id));
-      const firstIndex = page.cards.findIndex((card) => selectedIds.has(card.id));
-      page.cards = page.cards.filter((card) => !selectedIds.has(card.id));
-      page.cards.splice(Math.max(firstIndex, 0), 0, {
-        id: uid("group"),
-        kind: "group",
-        title: "Group",
-        size: "wide",
-        accent: "#9d70ff",
-        type: "body",
-        list: "none",
-        tools: ["block"],
-        color: "#f7f8ff",
-        blocks: [],
-        children: grouped
+    function openActions(kind, id) {
+      showToast(kind === "note" ? "Use the card buttons below" : "Swipe right to select this line", "fa-hand-pointer");
+    }
+
+    function deleteBySwipe(kind, id) {
+      if (kind === "note") {
+        undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
+        state.notes = state.notes.filter(note => note.id !== id);
+        if (!state.notes.length) {
+          state.notes.push({
+            id: uid(),
+            title: "",
+            pinned: false,
+            accent: colors[0],
+            icon: icons[0],
+            order: 0,
+            blocks: [{ id: uid(), type: "paragraph", text: "" }]
+          });
+        }
+        state.activeNoteId = state.notes[0].id;
+      }
+      if (kind === "block") {
+        undo = { kind: "block", noteId: activeNote().id, blocks: JSON.parse(JSON.stringify(activeBlocks())) };
+        activeNote().blocks = activeBlocks().filter(block => block.id !== id);
+        if (!activeNote().blocks.length) activeNote().blocks.push(createBlock("paragraph"));
+      }
+      saveState();
+      renderAll();
+      showUndo();
+    }
+
+    function wireDragging(elements, kind) {
+      elements.forEach(element => {
+        element.addEventListener("dragstart", event => {
+          element.classList.add("dragging");
+          event.dataTransfer.setData("text/plain", JSON.stringify({ kind, id: element.dataset.id }));
+        });
+        element.addEventListener("dragend", () => element.classList.remove("dragging"));
+        element.addEventListener("dragover", event => event.preventDefault());
+        element.addEventListener("drop", event => {
+          event.preventDefault();
+          const payload = JSON.parse(event.dataTransfer.getData("text/plain") || "{}");
+          if (payload.kind !== kind) return;
+          moveTo(payload.id, element.dataset.id, kind);
+        });
       });
-      selectedIds.clear();
-      saveStore(store);
-      render();
     }
 
-    function ungroupSelected() {
-      const store = loadStore();
-      const page = currentPage(store);
-      const nextCards = [];
-      page.cards.forEach((card) => {
-        if (selectedIds.has(card.id) && card.kind === "group") nextCards.push(...(card.children || []));
-        else nextCards.push(card);
-      });
-      page.cards = nextCards;
-      selectedIds.clear();
-      saveStore(store);
-      render();
+    function moveTo(sourceId, targetId, kind) {
+      const list = kind === "block" ? activeBlocks() : state.notes;
+      const sourceIndex = list.findIndex(item => item.id === sourceId);
+      const targetIndex = list.findIndex(item => item.id === targetId);
+      if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
+      if (kind === "note" && list[sourceIndex].pinned !== list[targetIndex].pinned) return;
+      const [item] = list.splice(sourceIndex, 1);
+      list.splice(targetIndex, 0, item);
+      reindex();
+      saveState();
+      renderAll();
     }
 
     function moveSelected(direction) {
-      const store = loadStore();
-      const page = currentPage(store);
-      const step = direction === "left" ? -1 : 1;
-      const ids = direction === "left" ? [...selectedIds] : [...selectedIds].reverse();
-      ids.forEach((id) => {
-        const index = page.cards.findIndex((card) => card.id === id);
-        const next = index + step;
-        if (index >= 0 && next >= 0 && next < page.cards.length) {
-          [page.cards[index], page.cards[next]] = [page.cards[next], page.cards[index]];
-        }
+      if (!selection.kind || selection.ids.size !== 1) return;
+      const id = [...selection.ids][0];
+      const list = selection.kind === "block" ? activeBlocks() : state.notes;
+      const index = list.findIndex(item => item.id === id);
+      const target = index + direction;
+      if (index < 0 || target < 0 || target >= list.length) return;
+      if (selection.kind === "note" && list[index].pinned !== list[target].pinned) return;
+      [list[index], list[target]] = [list[target], list[index]];
+      reindex();
+      saveState();
+      renderAll();
+    }
+
+    function duplicateSelected() {
+      if (!selection.kind || !selection.ids.size) return;
+      [...selection.ids].forEach(id => {
+        if (selection.kind === "note") duplicateNote(id);
+        if (selection.kind === "block") duplicateBlock(id);
       });
-      saveStore(store);
-      render();
+      closeSelection();
+      saveState();
+      renderAll();
     }
 
     function deleteSelected() {
-      const store = loadStore();
-      const page = currentPage(store);
-      page.cards = page.cards.filter((card) => !selectedIds.has(card.id));
-      selectedIds.clear();
-      saveStore(store);
-      render();
+      if (!selection.kind || !selection.ids.size) return;
+      if (selection.kind === "note") {
+        undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
+        state.notes = state.notes.filter(note => !selection.ids.has(note.id));
+        if (!state.notes.length) newNote();
+        state.activeNoteId = state.notes[0]?.id;
+      }
+      if (selection.kind === "block") {
+        undo = { kind: "block", noteId: activeNote().id, blocks: JSON.parse(JSON.stringify(activeBlocks())) };
+        activeNote().blocks = activeBlocks().filter(block => !selection.ids.has(block.id));
+        if (!activeNote().blocks.length) activeNote().blocks.push(createBlock("paragraph"));
+      }
+      closeSelection();
+      saveState();
+      renderAll();
+      showUndo();
     }
 
-    function addPage() {
-      const store = loadStore();
-      const page = { id: uid("page"), title: `Page ${store.pages.length + 1}`, cards: [] };
-      store.pages.push(page);
-      activePageId = page.id;
-      saveStore(store);
-      render();
-    }
-
-    function openCardModal(cardId = "") {
-      const store = loadStore();
-      const card = findCardDeep(currentPage(store).cards, cardId) || {
-        id: "",
-        title: "",
-        size: "wide",
-        image: "",
-        blocks: []
+    function showUndo() {
+      showToast("Deleted. Tap here to undo.", "fa-rotate-left");
+      toast.onclick = () => {
+        if (undo) {
+          if (undo.kind === "note") {
+            state.notes = undo.notes;
+            state.activeNoteId = undo.activeNoteId;
+          }
+          if (undo.kind === "block") {
+            const note = state.notes.find(item => item.id === undo.noteId);
+            if (note) note.blocks = undo.blocks;
+          }
+          undo = null;
+          saveState();
+          renderAll();
+          toast.classList.remove("show");
+        }
       };
-      editingCardId = card.id;
-      draftImage = card.image || "";
-      cardModal.querySelector(".sheet-title").textContent = card.id ? "Edit card" : "Add card";
-      titleInput.value = card.title || "";
-      bodyInput.value = (card.blocks || []).join("\n");
-      imageInput.value = "";
-      imagePreview.src = draftImage;
-      imagePreview.classList.toggle("active", Boolean(draftImage));
-      cardModal.querySelectorAll(".size-picker .choice-pill").forEach((button) => {
-        button.classList.toggle("active", button.dataset.size === (card.size || "wide"));
+    }
+
+    function duplicateNote(id) {
+      const note = state.notes.find(item => item.id === id);
+      if (!note) return;
+      const copy = JSON.parse(JSON.stringify(note));
+      copy.id = uid();
+      copy.title = `${note.title || "Untitled note"} Copy`;
+      copy.pinned = false;
+      copy.order = note.order + 0.5;
+      copy.blocks = copy.blocks.map(block => ({ ...block, id: uid() }));
+      state.notes.splice(state.notes.findIndex(item => item.id === id) + 1, 0, copy);
+      reindex();
+    }
+
+    function duplicateBlock(id) {
+      const blocks = activeBlocks();
+      const index = blocks.findIndex(item => item.id === id);
+      if (index < 0) return;
+      const copy = JSON.parse(JSON.stringify(blocks[index]));
+      copy.id = uid();
+      blocks.splice(index + 1, 0, copy);
+    }
+
+    function deleteNote(id) {
+      enterSelection("note", id);
+      deleteSelected();
+    }
+
+    function deleteActiveNote() {
+      enterSelection("note", activeNote().id);
+      deleteSelected();
+      closeOptions();
+      setView("notes");
+    }
+
+    function reindex() {
+      sortedNotes().forEach((note, index) => note.order = index);
+    }
+
+    function togglePin(id) {
+      const note = state.notes.find(item => item.id === id);
+      if (!note) return;
+      note.pinned = !note.pinned;
+      reindex();
+      saveState();
+      renderAll();
+    }
+
+    function toggleTask(id) {
+      const block = activeBlocks().find(item => item.id === id);
+      if (!block) return;
+      block.checked = !block.checked;
+      saveState();
+      renderEditor();
+    }
+
+    function openOptions() {
+      const note = activeNote();
+      pinLabel.textContent = note.pinned ? "Unpin note" : "Pin note";
+      colorChoices.innerHTML = colors.map(color => `
+        <button class="swatch ${note.accent === color ? "active" : ""}" type="button" data-command="set-color" data-color="${color}" style="--accent:${color}" aria-label="Set note color"></button>
+      `).join("");
+      iconChoices.innerHTML = icons.map(icon => `
+        <button class="icon-choice ${note.icon === icon ? "active" : ""}" type="button" data-command="set-icon" data-icon="${icon}" style="--accent:${note.accent}" aria-label="Set note icon">
+          <i class="fa-solid ${icon}" aria-hidden="true"></i>
+        </button>
+      `).join("");
+      optionsModal.classList.add("open");
+      optionsModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeOptions() {
+      optionsModal.classList.remove("open");
+      optionsModal.setAttribute("aria-hidden", "true");
+    }
+
+    function autoSizeTitle() {
+      titleInput.style.height = "auto";
+      titleInput.style.height = `${titleInput.scrollHeight}px`;
+    }
+
+    function handlePhoto(files) {
+      [...files].filter(file => file.type.startsWith("image/")).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const block = { id: uid(), type: "image", src: reader.result, caption: file.name.replace(/\.[^.]+$/, "") };
+          activeBlocks().push(block);
+          focusedBlockId = block.id;
+          saveState();
+          if (currentView !== "editor") setView("editor");
+          else renderEditor();
+          showToast("Photo added", "fa-image");
+        };
+        reader.readAsDataURL(file);
       });
-      cardModal.classList.add("open");
-      cardModal.setAttribute("aria-hidden", "false");
-      requestAnimationFrame(() => titleInput.focus());
+      photoInput.value = "";
     }
 
-    function closeCardModal() {
-      cardModal.classList.remove("open");
-      cardModal.setAttribute("aria-hidden", "true");
-      editingCardId = "";
-    }
-
-    function saveCardFromModal() {
-      const store = loadStore();
-      const page = currentPage(store);
-      const card = findCardDeep(page.cards, editingCardId) || {
-        id: uid("card"),
-        accent: colors[Math.floor(Math.random() * colors.length)],
-        type: "body",
-        list: "none",
-        tools: [],
-        color: "#f7f8ff"
+    function openInteriorNote(blockId) {
+      const block = activeBlocks().find(item => item.id === blockId);
+      if (!block) return;
+      block.children = block.children || [{ id: uid(), type: "paragraph", text: "" }];
+      const note = {
+        id: `interior-${block.id}`,
+        title: block.text || "Interior note",
+        pinned: false,
+        accent: activeNote().accent,
+        icon: activeNote().icon,
+        order: state.notes.length,
+        blocks: block.children
       };
-      const isNew = !findCardDeep(page.cards, card.id);
-      card.title = titleInput.value.trim() || "Untitled";
-      card.size = cardModal.querySelector(".size-picker .active")?.dataset.size || "wide";
-      card.image = draftImage;
-      card.blocks = bodyInput.value.split("\n").map((line) => line.trim()).filter(Boolean);
-      if (isNew) page.cards.unshift(card);
-      saveStore(store);
-      closeCardModal();
-      render();
+      const existing = state.notes.find(item => item.id === note.id);
+      if (!existing) state.notes.push(note);
+      else existing.title = note.title;
+      state.activeNoteId = note.id;
+      saveState();
+      setView("editor");
     }
 
-    function undo() {
-      if (undoStack.length < 2) return;
-      const current = undoStack.pop();
-      redoStack.push(current);
-      const previous = undoStack[undoStack.length - 1];
-      localStorage.setItem(NOTES_KEY, previous);
-      activePageId = JSON.parse(previous).activePageId;
-      selectedIds.clear();
-      render();
+    function command(name, element) {
+      if (name === "new-note" || name === "smart-add") newNote();
+      if (name === "open-note") {
+        state.activeNoteId = element.dataset.id;
+        setView("editor");
+      }
+      if (name === "back" || name === "notes") setView("notes");
+      if (name === "home") showToast("Home is index.html", "fa-house");
+      if (name === "habits") showToast("Habits is habits.html", "fa-bullseye");
+      if (name === "pin-note") togglePin(element.dataset.id);
+      if (name === "move-note-up") {
+        enterSelection("note", element.dataset.id);
+        moveSelected(-1);
+      }
+      if (name === "move-note-down") {
+        enterSelection("note", element.dataset.id);
+        moveSelected(1);
+      }
+      if (name === "duplicate-note") {
+        duplicateNote(element.dataset.id);
+        saveState();
+        renderAll();
+      }
+      if (name === "delete-note") deleteNote(element.dataset.id);
+      if (name === "add-text") addBlock("paragraph");
+      if (name === "add-bullet") addBlock("bullet");
+      if (name === "add-number") addBlock("number");
+      if (name === "add-task") addBlock("task");
+      if (name === "add-heading") addBlock("heading");
+      if (name === "photo") photoInput.click();
+      if (name === "toggle-task") toggleTask(element.dataset.id);
+      if (name === "format-bold") document.execCommand("bold", false, null);
+      if (name === "format-italic") document.execCommand("italic", false, null);
+      if (name === "move-up") moveSelected(-1);
+      if (name === "move-down") moveSelected(1);
+      if (name === "duplicate-selected") duplicateSelected();
+      if (name === "delete-selected") deleteSelected();
+      if (name === "done-selection") closeSelection();
+      if (name === "options") openOptions();
+      if (name === "close-options") closeOptions();
+      if (name === "pin-active") {
+        togglePin(activeNote().id);
+        openOptions();
+      }
+      if (name === "duplicate-active") {
+        duplicateNote(activeNote().id);
+        saveState();
+        closeOptions();
+        renderAll();
+      }
+      if (name === "delete-active") deleteActiveNote();
+      if (name === "set-color") {
+        activeNote().accent = element.dataset.color;
+        saveState();
+        openOptions();
+        renderAll();
+      }
+      if (name === "set-icon") {
+        activeNote().icon = element.dataset.icon;
+        saveState();
+        openOptions();
+        renderAll();
+      }
     }
 
-    function redo() {
-      const next = redoStack.pop();
-      if (!next) return;
-      undoStack.push(next);
-      localStorage.setItem(NOTES_KEY, next);
-      activePageId = JSON.parse(next).activePageId;
-      selectedIds.clear();
-      render();
-    }
-
-    function selectAllCards() {
-      const page = currentPage(loadStore());
-      selectedIds = new Set(page.cards.map((card) => card.id));
-      render();
-    }
-
-    function isEditingText() {
-      const active = document.activeElement;
-      return active && (active.matches("input, textarea") || active.isContentEditable);
-    }
-
-    document.querySelectorAll(".format-bar [data-tool]").forEach((button) => {
-      button.addEventListener("click", () => {
-        applyToTargets((card) => {
-          card.tools = card.tools || [];
-          if (card.tools.includes(button.dataset.tool)) card.tools = card.tools.filter((tool) => tool !== button.dataset.tool);
-          else card.tools.push(button.dataset.tool);
-        });
-      });
+    document.addEventListener("click", event => {
+      const commandEl = event.target.closest("[data-command]");
+      if (commandEl) {
+        event.stopPropagation();
+        command(commandEl.dataset.command, commandEl);
+        return;
+      }
+      if (selection.kind && event.target.closest("[data-kind]")) {
+        const target = event.target.closest("[data-kind]");
+        if (!event.target.closest("[contenteditable='true']")) toggleSelection(target.dataset.kind, target.dataset.id);
+      }
     });
 
-    document.querySelectorAll(".format-bar [data-type]").forEach((button) => {
-      button.addEventListener("click", () => applyToTargets((card) => { card.type = button.dataset.type; }));
+    document.addEventListener("input", event => {
+      if (event.target === titleInput) {
+        activeNote().title = titleInput.value;
+        autoSizeTitle();
+        saveState();
+        return;
+      }
+      const editable = event.target.closest("[contenteditable='true']");
+      if (editable?.dataset?.id) {
+        focusedBlockId = editable.dataset.id;
+        updateBlockField(editable);
+      }
     });
 
-    document.querySelectorAll(".format-bar [data-list]").forEach((button) => {
-      button.addEventListener("click", () => applyToTargets((card) => { card.list = button.dataset.list; }));
+    document.addEventListener("keydown", event => {
+      handleEnter(event);
+      if (event.key === "Escape") {
+        closeSelection();
+        closeOptions();
+      }
+      if (event.key === "Enter" && event.target === titleInput) {
+        event.preventDefault();
+        if (!activeBlocks().length) addBlock("paragraph", null);
+        else focusBlock(activeBlocks()[0].id);
+      }
     });
 
-    document.querySelectorAll(".format-bar .color-dot").forEach((button) => {
-      button.addEventListener("click", () => applyToTargets((card) => { card.color = button.dataset.color; }));
+    document.addEventListener("focusin", event => {
+      const block = event.target.closest(".block");
+      if (block) focusedBlockId = block.dataset.id;
     });
 
-    cardModal.querySelectorAll(".size-picker .choice-pill").forEach((button) => {
-      button.addEventListener("click", () => {
-        cardModal.querySelectorAll(".size-picker .choice-pill").forEach((item) => item.classList.remove("active"));
-        button.classList.add("active");
-      });
+    document.addEventListener("dblclick", event => {
+      const block = event.target.closest(".heading.block");
+      if (block) openInteriorNote(block.dataset.id);
     });
 
-    imageInput.addEventListener("change", () => {
-      const file = imageInput.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        draftImage = reader.result;
-        imagePreview.src = draftImage;
-        imagePreview.classList.add("active");
-      };
-      reader.readAsDataURL(file);
+    optionsModal.addEventListener("click", event => {
+      if (event.target === optionsModal) closeOptions();
     });
 
-    document.querySelector(".add-page").addEventListener("click", addPage);
-    document.querySelector(".add-page-mobile").addEventListener("click", addPage);
-    document.querySelector(".add-card-top").addEventListener("click", () => openCardModal());
-    document.querySelector(".show-clipboard").addEventListener("click", showClipboard);
-    document.querySelector(".move-left").addEventListener("click", () => moveSelected("left"));
-    document.querySelector(".move-right").addEventListener("click", () => moveSelected("right"));
-    document.querySelector(".group-selected").addEventListener("click", groupSelected);
-    document.querySelector(".ungroup-selected").addEventListener("click", ungroupSelected);
-    document.querySelector(".delete-selected").addEventListener("click", deleteSelected);
-    document.querySelector(".clear-selected").addEventListener("click", () => { selectedIds.clear(); render(); });
-    cardModal.querySelector(".save-card").addEventListener("click", saveCardFromModal);
-    cardModal.querySelector(".close-card").addEventListener("click", closeCardModal);
-    clipboardModal.querySelector(".close-clipboard").addEventListener("click", closeClipboard);
-    cardModal.addEventListener("click", (event) => { if (event.target === cardModal) closeCardModal(); });
-    clipboardModal.addEventListener("click", (event) => { if (event.target === clipboardModal) closeClipboard(); });
+    searchInput.addEventListener("input", renderNotes);
+    photoInput.addEventListener("change", event => handlePhoto(event.target.files));
 
-    document.addEventListener("keydown", async (event) => {
-      const mod = event.metaKey || event.ctrlKey;
-      if (!mod) return;
-      const key = event.key.toLowerCase();
-      if (key === "z" && event.shiftKey) { event.preventDefault(); redo(); return; }
-      if (key === "z") { event.preventDefault(); undo(); return; }
-      if (key === "a" && !isEditingText()) { event.preventDefault(); selectAllCards(); return; }
-      if (key === "g" && event.shiftKey) { event.preventDefault(); ungroupSelected(); return; }
-      if (key === "g") { event.preventDefault(); groupSelected(); return; }
-      if (key === "c" && selectedIds.size) { event.preventDefault(); copySelection(false); return; }
-      if (key === "x" && selectedIds.size) { event.preventDefault(); copySelection(true); return; }
-      if (key === "v" && event.shiftKey) { event.preventDefault(); showClipboard(); return; }
-      if (key === "v" && !isEditingText()) { event.preventDefault(); await pasteCards(); }
-    });
-
-    window.addEventListener("openNotesComposer", (event) => {
-      if (event.detail?.kind === "note-page") addPage();
-      else openCardModal();
-    });
-
-    const initial = loadStore();
-    activePageId = initial.activePageId || initial.pages[0].id;
-    localStorage.setItem(NOTES_KEY, JSON.stringify(initial));
-    undoStack = [JSON.stringify(initial)];
-    render();
+    renderAll();
   </script>
-  <script src="bottom-bar.js"></script>
 </body>
 </html>
