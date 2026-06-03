@@ -1811,35 +1811,47 @@
       });
     }
 
-    function wireSwipeTargets(elements) {
-      elements.forEach(element => {
-        element.addEventListener("pointerdown", event => {
-          if (event.target.closest("[contenteditable='true'], input, textarea, .action-btn, .task-check, .image-open")) return;
-          touch = { x: event.clientX, y: event.clientY, id: element.dataset.id, kind: element.dataset.kind, element };
-        });
-        element.addEventListener("pointerup", event => {
-          if (!touch || touch.element !== element) return;
-          const dx = event.clientX - touch.x;
-          const dy = Math.abs(event.clientY - touch.y);
-          if (Math.abs(dx) > swipeMin && dy < 42) {
-            if (touch.kind === "block" && dx > 0) {
-              toggleSelection(touch.kind, touch.id);
-            } else if (touch.kind === "note" && dx > 0) {
-              toggleSelection(touch.kind, touch.id);
-            } else if (touch.kind === "note" && dx < 0) {
-              revealDelete(touch.kind, touch.id, element);
-            }
-          }
-          touch = null;
-        });
-        element.addEventListener("pointercancel", () => touch = null);
-        element.addEventListener("contextmenu", event => {
-          event.preventDefault();
-          openActions(element.dataset.kind, element.dataset.id);
-        });
-      });
-    }
+  function wireSwipeTargets(elements) {
+  elements.forEach(element => {
+    element.addEventListener("pointerdown", event => {
+      if (event.target.closest("input, textarea, .action-btn, .task-check, .image-open")) return;
 
+      touch = {
+        x: event.clientX,
+        y: event.clientY,
+        id: element.dataset.id,
+        kind: element.dataset.kind,
+        element
+      };
+    });
+
+    element.addEventListener("pointerup", event => {
+      if (!touch || touch.element !== element) return;
+
+      const dx = event.clientX - touch.x;
+      const dy = Math.abs(event.clientY - touch.y);
+
+      if (Math.abs(dx) > swipeMin && dy < 42) {
+        if (touch.kind === "block" && dx > 0) {
+          toggleSelection(touch.kind, touch.id);
+        } else if (touch.kind === "note" && dx > 0) {
+          toggleSelection(touch.kind, touch.id);
+        } else if (touch.kind === "note" && dx < 0) {
+          revealDelete(touch.kind, touch.id, element);
+        }
+      }
+
+      touch = null;
+    });
+
+    element.addEventListener("pointercancel", () => touch = null);
+
+    element.addEventListener("contextmenu", event => {
+      event.preventDefault();
+      openActions(element.dataset.kind, element.dataset.id);
+    });
+  });
+}
     function revealDelete(kind, id, element) {
       element.classList.add("reveal-delete");
       deleteBySwipe(kind, id);
