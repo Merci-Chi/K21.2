@@ -817,7 +817,20 @@
       height: 40px;
       border-radius: 13px;
     }
+.icon-btn.ungroup-mode {
+  position: relative;
+}
 
+.icon-btn.ungroup-mode::after {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 3px;
+  border-radius: 999px;
+  background: #000;
+  transform: rotate(-45deg);
+  pointer-events: none;
+}
     .nav {
       position: absolute;
       left: 14px;
@@ -1947,6 +1960,14 @@ if (selectionHint) {
     ? "Drag selected notes to reorder."
     : "Drag selected blocks to reorder.";
 }
+const groupButton = selectionBar.querySelector('[data-command="group-selected"]');
+
+if (groupButton) {
+  const isGrouped = Boolean(selectedGroupId());
+
+  groupButton.classList.toggle("ungroup-mode", isGrouped);
+  groupButton.setAttribute("aria-label", isGrouped ? "Ungroup" : "Group");
+}
     }
 
     function refreshSelectionClasses() {
@@ -1980,7 +2001,18 @@ noteList.addEventListener("click", handleSelectionModeTap, true);
 
 blocksEl.addEventListener("pointerdown", handleSelectionModeTap, true);
 blocksEl.addEventListener("click", handleSelectionModeTap, true);
+function exitSelectionWhenTappingOutside(event) {
+  const active = Boolean(selection.kind && selection.ids.size);
+  if (!active) return;
 
+  if (event.target.closest("[data-kind][data-id]")) return;
+  if (event.target.closest(".selection-bar, .toolbar, .modal, .toast, .topbar, .nav")) return;
+
+  closeSelection();
+}
+
+notesView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
+editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
  function wireSwipeTargets(elements) {
   elements.forEach(element => {
     let holdTimer = null;
@@ -2609,6 +2641,33 @@ function selectedNoteId() {
   if (selection.kind !== "note") return null;
   return [...selection.ids][0] || null;
 }
+function selectedGroupId() {
+  if (selection.kind !== "block") return null;
+
+  const selectedBlock = activeBlocks().find(block => {
+    return selection.ids.has(block.id) && block.groupId;
+  });
+
+  return selectedBlock?.groupId || null;
+}
+
+function ungroupSelectedBlocks() {
+  const groupId = selectedGroupId();
+  if (!groupId) return;
+
+  remember();
+
+  activeBlocks().forEach(block => {
+    if (block.groupId === groupId) {
+      delete block.groupId;
+    }
+  });
+
+  saveState();
+  renderEditor();
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
 function command(name, element) {
 if (name === "close-toast") {
   toast.classList.remove("show");
@@ -2698,7 +2757,13 @@ if (name === "move-note-down") {
       if (name === "move-down") moveSelected(1);
       if (name === "duplicate-selected") duplicateSelected();
       if (name === "delete-selected") deleteSelected();
-      if (name === "group-selected") groupSelectedBlocks();
+      if (name === "group-selected") {
+  if (selectedGroupId()) {
+    ungroupSelectedBlocks();
+  } else {
+    groupSelectedBlocks();
+  }
+}
       if (name === "cut-selected") cutSelectedBlocks();
       if (name === "copy-selected") copySelectedBlocks();
       if (name === "paste-blocks") pasteBlocks();
