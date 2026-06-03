@@ -1238,27 +1238,27 @@
       pointer-events: none;
     }
 
-    .toast {
-      position: absolute;
-      left: 22px;
-      right: 22px;
-      top: 18px;
-      z-index: 80;
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      border-radius: 17px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 850;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
-        rgba(17, 23, 35, 0.98);
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
-    }
-
+  .toast {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  top: 18px;
+  z-index: 80;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 17px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 850;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.025)),
+    rgba(17, 23, 35, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
+}
     .toast.show {
       display: flex;
     }
@@ -1359,10 +1359,6 @@
 
       <textarea class="editor-title" id="titleInput" rows="1" placeholder="Untitled note"></textarea>
       <div class="blocks" id="blocks"></div>
-      <button class="add-line" type="button" data-command="add-text" aria-label="Add text below">
-        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
-        <span>Tap below the note to add a new text box</span>
-      </button>
     </section>
 
     <nav class="toolbar" id="toolbar" aria-label="Formatting and insert toolbar">
@@ -1688,6 +1684,7 @@ let blockPath = [];
     let dragState = null;
     let blockNextClick = false;
     let pendingInsertAfterId = null;
+    let pendingImageBlockId = null;
 
     function uid() {
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
@@ -1946,8 +1943,9 @@ blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
     }
     function renderInsertRow(afterId = "") {
   return `
-    <div class="block-insert-row">
+    <div class="block-insert-row" data-command="quick-text-block" data-after-id="${afterId}">
       <span>Tap to Write</span>
+
       <button type="button" data-command="open-insert-after" data-after-id="${afterId}" aria-label="Add block here">
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
       </button>
@@ -1998,17 +1996,18 @@ function renderBlocksHtml(blocks, accent) {
 }
     function renderBlock(block, index, accent) {
       if (block.type === "image") {
-        return `
-          <article class="block image ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
-            <div class="image-block">
-              <button class="image-open" type="button" data-command="open-image" data-id="${block.id}" aria-label="Open image">
-                ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Photo</span></div>`}
-              </button>
-            </div>
-          </article>
-        `;
-      }
+  const imageCommand = block.src ? "open-image" : "choose-image-for-block";
 
+  return `
+    <article class="block image ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+      <div class="image-block">
+        <button class="image-open" type="button" data-command="${imageCommand}" data-id="${block.id}" aria-label="Add or open image">
+          ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Tap to add photo</span></div>`}
+        </button>
+      </div>
+    </article>
+  `;
+}
       const marker = block.type === "bullet"
         ? `<span class="marker">•</span>`
         : block.type === "number"
@@ -2197,7 +2196,24 @@ function renderBlocksHtml(blocks, accent) {
       selection.removeAllRanges();
       selection.addRange(range);
     }
+function deleteEmptyBlock(blockId) {
+  const blocks = activeBlocks();
+  const index = blocks.findIndex(block => block.id === blockId);
 
+  if (index < 0) return;
+
+  const block = blocks[index];
+
+  if (block.type === "image") return;
+  if (stripHtml(block.text || "").trim()) return;
+
+  blocks.splice(index, 1);
+
+  focusedBlockId = null;
+
+  saveState();
+  renderEditor();
+}
     function updateBlockField(target) {
       const block = activeBlocks().find(item => item.id === target.dataset.id);
       if (!block) return;
@@ -2791,25 +2807,37 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
       focusBlock(block.id);
     }
 
-    function showUndo() {
-      showToast("Deleted. Tap here to undo.", "fa-rotate-left");
-      toast.onclick = () => {
-        if (undo) {
-          if (undo.kind === "note") {
-            state.notes = undo.notes;
-            state.activeNoteId = undo.activeNoteId;
-          }
-          if (undo.kind === "block") {
-            const note = state.notes.find(item => item.id === undo.noteId);
-            if (note) note.blocks = undo.blocks;
-          }
-          undo = null;
-          saveState();
-          renderAll();
-          toast.classList.remove("show");
-        }
-      };
+  function showUndo() {
+  showToast("Deleted. Tap here to undo.", "fa-rotate-left");
+
+  toast.onclick = event => {
+    if (event.target.closest(".toast-close")) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      toast.classList.remove("show");
+      clearTimeout(showToast.timer);
+      return;
     }
+
+    if (undo) {
+      if (undo.kind === "note") {
+        state.notes = undo.notes;
+        state.activeNoteId = undo.activeNoteId;
+      }
+
+      if (undo.kind === "block") {
+        const note = state.notes.find(item => item.id === undo.noteId);
+        if (note) note.blocks = undo.blocks;
+      }
+
+      undo = null;
+      saveState();
+      renderAll();
+      toast.classList.remove("show");
+    }
+  };
+}
 
     function duplicateNote(id) {
       const note = state.notes.find(item => item.id === id);
@@ -2992,26 +3020,65 @@ function insertBlock(type) {
       titleInput.style.height = `${titleInput.scrollHeight}px`;
     }
 
-    function handlePhoto(files) {
-      ensureNote();
-      [...files].filter(file => file.type.startsWith("image/")).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          remember();
-          const block = { id: uid(), type: "image", src: reader.result };
-          const blocks = activeBlocks();
-          const index = focusedBlockId ? blocks.findIndex(item => item.id === focusedBlockId) : -1;
-          blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
+ function handlePhoto(files) {
+  const imageFiles = [...files].filter(file => file.type.startsWith("image/"));
+  if (!imageFiles.length) return;
+
+  ensureNote();
+
+  imageFiles.forEach(file => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      remember();
+
+      const blocks = activeBlocks();
+
+      if (pendingImageBlockId) {
+        const block = blocks.find(item => item.id === pendingImageBlockId);
+
+        if (block && block.type === "image") {
+          block.src = reader.result;
           focusedBlockId = block.id;
+          pendingImageBlockId = null;
+
           saveState();
-          if (currentView !== "editor") setView("editor");
-          else renderEditor();
+          renderEditor();
           showToast("Photo added", "fa-image");
-        };
-        reader.readAsDataURL(file);
-      });
-      photoInput.value = "";
-    }
+          return;
+        }
+      }
+
+      const block = {
+        id: uid(),
+        type: "image",
+        src: reader.result,
+        children: []
+      };
+
+      const index = focusedBlockId
+        ? blocks.findIndex(item => item.id === focusedBlockId)
+        : -1;
+
+      blocks.splice(index >= 0 ? index + 1 : blocks.length, 0, block);
+      focusedBlockId = block.id;
+
+      saveState();
+
+      if (currentView !== "editor") {
+        setView("editor");
+      } else {
+        renderEditor();
+      }
+
+      showToast("Photo added", "fa-image");
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  photoInput.value = "";
+}
 
     function openImage(id) {
       const block = activeBlocks().find(item => item.id === id);
@@ -3134,10 +3201,34 @@ function ungroupSelectedBlocks() {
   updateSelectionUi();
   refreshSelectionClasses();
 }
+
 function command(name, element) {
 if (name === "close-toast") {
   toast.classList.remove("show");
   clearTimeout(showToast.timer);
+  return;
+}
+if (name === "choose-image-for-block") {
+  pendingImageBlockId = element.dataset.id;
+  photoInput.click();
+  return;
+}
+if (name === "quick-text-block") {
+  addBlock("paragraph", element.dataset.afterId || null);
+  return;
+}
+
+if (name === "open-insert-after") {
+  openInsertAfter(element.dataset.afterId);
+  return;
+}
+if (name === "quick-text-block") {
+  addBlock("paragraph", element.dataset.afterId || null);
+  return;
+}
+
+if (name === "open-insert-after") {
+  openInsertAfter(element.dataset.afterId);
   return;
 }
   if (name === "toggle-note-tools") {
@@ -3378,6 +3469,14 @@ if (event.target === titleInput) {
       const block = event.target.closest(".block");
       if (block) focusedBlockId = block.dataset.id;
     });
+    document.addEventListener("focusout", event => {
+  const editable = event.target.closest("[contenteditable='true']");
+  if (!editable?.dataset?.id) return;
+
+  setTimeout(() => {
+    deleteEmptyBlock(editable.dataset.id);
+  }, 80);
+});
 document.addEventListener("click", event => {
   if (event.target.closest("[data-command]")) return;
   if (selection.kind && selection.ids.size) return;
@@ -3392,25 +3491,42 @@ document.addEventListener("click", event => {
 
   openInteriorNote(block.dataset.id);
 });
-    noteModal.addEventListener("click", event => {
-      if (event.target === noteModal) closeNoteModal();
-    });
-    insertModal.addEventListener("click", event => {
-      if (event.target === insertModal) closeInsert();
-    });
-    cardModal.addEventListener("click", event => {
-  if (event.target === cardModal) closeCardOptions();
-});
-    sizeModal.addEventListener("click", event => {
-      if (event.target === sizeModal) closeSizeMenu();
-    });
-    viewTextModal.addEventListener("click", event => {
-      if (event.target === viewTextModal) closeViewText();
-    });
-    imageViewer.addEventListener("click", event => {
-      if (event.target.closest(".image-close")) return;
-      revealImageControls();
-    });
+    if (noteModal) {
+  noteModal.addEventListener("click", event => {
+    if (event.target === noteModal) closeNoteModal();
+  });
+}
+
+if (insertModal) {
+  insertModal.addEventListener("click", event => {
+    if (event.target === insertModal) closeInsert();
+  });
+}
+
+if (cardModal) {
+  cardModal.addEventListener("click", event => {
+    if (event.target === cardModal) closeCardOptions();
+  });
+}
+
+if (sizeModal) {
+  sizeModal.addEventListener("click", event => {
+    if (event.target === sizeModal) closeSizeMenu();
+  });
+}
+
+if (viewTextModal) {
+  viewTextModal.addEventListener("click", event => {
+    if (event.target === viewTextModal) closeViewText();
+  });
+}
+
+if (imageViewer) {
+  imageViewer.addEventListener("click", event => {
+    if (event.target.closest(".image-close")) return;
+    revealImageControls();
+  });
+}
     toolbar.addEventListener("mousedown", event => {
   if (event.target.closest("[data-command]")) return;
   event.preventDefault();
@@ -3440,7 +3556,25 @@ selectionBar.addEventListener("mousedown", event => {
     });
     photoInput.addEventListener("change", event => handlePhoto(event.target.files));
 
-    renderAll();
-  </script>
+function startApp() {
+  currentView = "notes";
+
+  notesView.classList.add("active");
+  editorView.classList.remove("active");
+  phone.classList.remove("editor-active");
+
+  if (searchInput) searchInput.value = "";
+
+  closeSelection();
+  renderNotes();
+  updateSelectionUi();
+}
+
+startApp();
+
+window.addEventListener("load", () => {
+  startApp();
+});
+</script>
 </body>
 </html>
