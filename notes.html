@@ -438,6 +438,12 @@
         linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
         rgba(255, 255, 255, 0.035);
     }
+    .selection-active [contenteditable="true"] {
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  caret-color: transparent;
+}
 
     .block.drop-before::before,
     .block.drop-after::after {
@@ -1826,6 +1832,32 @@
         el.classList.toggle("selected", selection.ids.has(el.dataset.id));
       });
     }
+    function handleSelectionModeTap(event) {
+  const active = Boolean(selection.kind && selection.ids.size);
+  if (!active) return;
+
+  if (event.target.closest(".action-btn, .selection-bar, .toolbar, .modal")) return;
+
+  const item = event.target.closest("[data-kind][data-id]");
+  if (!item) return;
+
+  if (item.dataset.kind !== selection.kind) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (document.activeElement) document.activeElement.blur();
+
+  if (event.type === "pointerdown") {
+    toggleSelection(item.dataset.kind, item.dataset.id);
+  }
+}
+
+noteList.addEventListener("pointerdown", handleSelectionModeTap, true);
+noteList.addEventListener("click", handleSelectionModeTap, true);
+
+blocksEl.addEventListener("pointerdown", handleSelectionModeTap, true);
+blocksEl.addEventListener("click", handleSelectionModeTap, true);
 
   function wireSwipeTargets(elements) {
   elements.forEach(element => {
