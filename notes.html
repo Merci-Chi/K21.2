@@ -301,7 +301,7 @@
       display: grid;
       gap: 16px;
       padding-top: 25px;
-      margin-bottom: 42px;
+      margin-bottom: 170px;
     }
 
     .note-card {
@@ -852,8 +852,8 @@
 
     .focus .editable {
       padding-left: 13px;
-      border-left: 3px solid var(--accent);
-      color: #fff;
+      border-left: 3px solid var(--focus-color, currentColor);
+      color: inherit;
     }
 
     .dropdown-child-editable {
@@ -1202,7 +1202,7 @@
   position: fixed;
   left: 18px;
   right: 18px;
-  bottom: calc(10px + var(--keyboard-offset));
+  bottom: max(calc(var(--nav-height) + 24px), calc(10px + var(--keyboard-offset)));
   z-index: 30;
   display: none;
   gap: 7px;
@@ -2192,32 +2192,32 @@
     </div>
 
     <nav class="nav" aria-label="Primary navigation">
-      <button class="nav-item" type="button" data-command="home">
+      <button class="nav-item" type="button">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M3 10.7 12 3l9 7.7V20a1 1 0 0 1-1 1h-5.2v-6.6H9.2V21H4a1 1 0 0 1-1-1v-9.3Z" />
         </svg>
         Home
       </button>
-      <button class="nav-item" type="button" data-command="habits">
+      <button class="nav-item" type="button">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="8" stroke="currentColor" />
           <circle cx="12" cy="12" r="3" stroke="currentColor" />
         </svg>
         Habit
       </button>
-      <button class="add" type="button" data-command="smart-add" aria-label="Add">
+      <button class="add" type="button" aria-label="Add task">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-linecap="round" />
         </svg>
       </button>
-      <button class="nav-item active" type="button" data-command="notes">
+      <button class="nav-item active" type="button">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" />
           <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" />
         </svg>
         Notes
       </button>
-      <button class="nav-item" type="button" data-command="profile">
+      <button class="nav-item" type="button">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="8" r="4" stroke="currentColor" />
           <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-linecap="round" />
@@ -2664,6 +2664,7 @@ let blockPath = [];
     let activeBlockIconPage = 0;
     let savedTextRange = null;
     let savedTextEditable = null;
+    let focusColorTargetId = null;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
       { label: "White", color: "#ffffff" },
@@ -3306,7 +3307,7 @@ function safeUrl(value) {
         const kind = block.type.replace("separator-", "");
 
         return `
-    <article class="block separator-block separator-${kind} ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <article class="block separator-block separator-${kind} ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
       <div class="separator-line" aria-hidden="true"></div>
       ${blockEditButtonHtml(block)}
     </article>
@@ -3315,7 +3316,7 @@ function safeUrl(value) {
 
       if (block.type === "page-break") {
         return `
-    <article class="block page-break-block ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <article class="block page-break-block ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
       ${blockEditButtonHtml(block)}
     </article>
   `;
@@ -3325,7 +3326,7 @@ function safeUrl(value) {
   const imageCommand = block.src ? "open-image" : "choose-image-for-block";
 
   return `
-    <article class="block image ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <article class="block image ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
       <div class="image-block">
         <button class="image-open" type="button" data-command="${imageCommand}" data-id="${block.id}" aria-label="Add or open image">
           ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Tap to add photo</span></div>`}
@@ -3339,7 +3340,7 @@ if (block.type === "url") {
   const label = stripHtml(block.text || "").trim() || "Untitled link";
 
   return `
-    <article class="block url ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <article class="block url ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
       <div class="url-card">
         <button class="url-display" type="button" data-command="open-url" data-id="${block.id}">
           ${escapeHtml(label)}
@@ -3364,7 +3365,7 @@ if (block.type === "url") {
               ? `<button class="dropdown-caret" type="button" data-command="toggle-dropdown" data-id="${block.id}" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>`
             : "";
    return `
-  <article class="block ${block.type} ${block.collapsed ? "collapsed" : ""} ${block.icon ? "has-icon" : ""} ${block.type?.startsWith("card-") ? `card ${block.type}` : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+  <article class="block ${block.type} ${block.collapsed ? "collapsed" : ""} ${block.icon ? "has-icon" : ""} ${block.type?.startsWith("card-") ? `card ${block.type}` : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
     <div class="block-line">
       ${marker || blockIconHtml(block)}
       <div class="editable ${block.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write" style="text-align:${escapeHtml(block.align || "left")}; ${block.textGradient ? `--text-gradient:${escapeHtml(block.textGradient)}` : block.textColor ? `color:${escapeHtml(block.textColor)}` : ""}">${sanitizeHtml(block.text || "")}</div>
@@ -3855,6 +3856,24 @@ function refreshSelectionClasses() {
 
   if (item.dataset.kind !== selection.kind) return;
 
+  if (
+    selection.kind === "note" &&
+    event.type === "click" &&
+    event.target.closest(".note-main") &&
+    selection.ids.size <= 1
+  ) {
+    return;
+  }
+
+  if (
+    selection.kind === "note" &&
+    event.type === "pointerdown" &&
+    event.target.closest(".note-main") &&
+    selection.ids.size <= 1
+  ) {
+    return;
+  }
+
   event.preventDefault();
   event.stopPropagation();
 
@@ -4247,6 +4266,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
     }
 
     function renderBlockColorChoices() {
+      document.getElementById("blockColorTitle").textContent = "Icon color";
       const selected = firstSelectedBlock()?.iconColor || "";
       blockColorChoices.innerHTML = blockIconColors.map(color => `
         <button class="preset-color ${selected === color ? "active" : ""}" type="button" data-command="set-block-icon-color" data-color="${color}" style="--preset:${color}" aria-label="Set icon color"></button>
@@ -4273,6 +4293,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
     function closeBlockColorMenu() {
       blockColorModal.classList.remove("open");
       blockColorModal.setAttribute("aria-hidden", "true");
+      focusColorTargetId = null;
     }
 
     function setBlockIconColor(color) {
@@ -4286,6 +4307,40 @@ if (event.target.closest(".image-open") && !selection.kind) {
       closeBlockColorMenu();
       renderEditor();
       updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function renderFocusColorChoices() {
+      const block = findBlockEverywhere(focusColorTargetId);
+      const selected = block?.focusColor || "";
+      blockColorChoices.innerHTML = [
+        `<button class="preset-clear ${!selected ? "active" : ""}" type="button" data-command="set-focus-color" data-color="" aria-label="Auto focus color"></button>`,
+        ...textColorPresets.map(preset => `
+          <button class="preset-color ${selected === preset.color ? "active" : ""}" type="button" data-command="set-focus-color" data-color="${preset.color}" style="--preset:${preset.color}" aria-label="${preset.label} focus color"></button>
+        `)
+      ].join("");
+    }
+
+    function openFocusColorMenu(id = "") {
+      const block = findBlockEverywhere(id || focusedBlockId);
+      if (!block) return;
+      focusColorTargetId = block.id;
+      document.getElementById("blockColorTitle").textContent = "Focus color";
+      renderFocusColorChoices();
+      blockColorModal.classList.add("open");
+      blockColorModal.setAttribute("aria-hidden", "false");
+    }
+
+    function setFocusColor(color) {
+      const block = findBlockEverywhere(focusColorTargetId);
+      if (!block) return;
+      remember();
+      if (color) block.focusColor = color;
+      else delete block.focusColor;
+      saveState();
+      closeBlockColorMenu();
+      closeBlockEditMenu();
+      renderEditor();
       refreshSelectionClasses();
     }
 
@@ -4678,13 +4733,15 @@ if (event.target.closest(".image-open") && !selection.kind) {
         return;
       }
       remember();
+      const targetBlocks = activeBlocks().filter(block => ids.includes(block.id) && block.type !== "image");
+      const nextType = targetBlocks.length && targetBlocks.every(block => block.type === type) ? "paragraph" : type;
       activeBlocks().forEach(block => {
         if (!ids.includes(block.id) || block.type === "image") return;
-        block.type = type;
-        if (type === "task") block.checked = Boolean(block.checked);
+        block.type = nextType;
+        if (nextType === "task") block.checked = Boolean(block.checked);
         else delete block.checked;
-        if (type === "heading") block.children = block.children || [];
-        else if (type === "dropdown") {
+        if (nextType === "heading") block.children = block.children || [];
+        else if (nextType === "dropdown") {
           block.collapsed = block.collapsed !== false;
           block.children = Array.isArray(block.children) && block.children.length
             ? block.children
@@ -4696,7 +4753,10 @@ if (event.target.closest(".image-open") && !selection.kind) {
               children: []
             }];
         }
-        else delete block.children;
+        else {
+          delete block.children;
+          delete block.collapsed;
+        }
       });
       closeSelection();
       saveState();
@@ -4818,16 +4878,18 @@ function convertFocusedChild(type) {
   const child = activeChildBlock(focusedChild.parentId, focusedChild.id);
   if (!child) return false;
   remember();
-  child.type = type;
-  if (type === "task") child.checked = Boolean(child.checked);
+  const nextType = child.type === type ? "paragraph" : type;
+  child.type = nextType;
+  if (nextType === "task") child.checked = Boolean(child.checked);
   else delete child.checked;
-  if (type === "dropdown") {
+  if (nextType === "dropdown") {
     child.collapsed = child.collapsed !== false;
     child.children = Array.isArray(child.children) && child.children.length
       ? child.children
       : [{ id: uid(), type: "paragraph", text: "", size: "subtext", children: [] }];
-  } else if (type !== "heading") {
+  } else if (nextType !== "heading") {
     child.children = Array.isArray(child.children) ? child.children : [];
+    delete child.collapsed;
   }
   child.size = child.size || "subtext";
   saveState();
@@ -5225,6 +5287,7 @@ function renderBlockEditChoices(block) {
     const textTools = `
     <button class="insert-option" type="button" data-command="open-size-menu"><i class="fa-solid fa-text-height" aria-hidden="true"></i><span>Text Size</span></button>
     <button class="insert-option" type="button" data-command="open-text-color-menu"><i class="fa-solid fa-palette" aria-hidden="true"></i><span>Text Color</span></button>
+    ${block.type === "focus" ? `<button class="insert-option" type="button" data-command="open-focus-color-menu" data-id="${block.id}"><i class="fa-solid fa-grip-lines-vertical" aria-hidden="true"></i><span>Focus Color</span></button>` : ""}
     <button class="insert-option" type="button" data-command="set-block-type" data-type="bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i><span>Bullet</span></button>
     <button class="insert-option" type="button" data-command="set-block-type" data-type="number"><i class="fa-solid fa-list-ol" aria-hidden="true"></i><span>Number</span></button>
     <button class="insert-option" type="button" data-command="set-block-type" data-type="task"><i class="fa-solid fa-square-check" aria-hidden="true"></i><span>Checkbox</span></button>
@@ -5287,21 +5350,24 @@ function setBlockType(type) {
   if (!ids.length) return;
   remember();
   const idSet = new Set(ids);
+  const blocksToChange = activeBlocks().filter(block => idSet.has(block.id));
+  const nextType = blocksToChange.length && blocksToChange.every(block => block.type === type) ? "paragraph" : type;
   activeBlocks().forEach(block => {
     if (!idSet.has(block.id)) return;
     const keepText = block.text || "";
     const keepChildren = Array.isArray(block.children) ? block.children : [];
-    block.type = type;
+    block.type = nextType;
     block.text = keepText;
-    if (type === "task") block.checked = Boolean(block.checked);
+    if (nextType === "task") block.checked = Boolean(block.checked);
     else delete block.checked;
-    if (type === "dropdown") {
+    if (nextType === "dropdown") {
       block.collapsed = block.collapsed !== false;
       block.children = keepChildren.length ? keepChildren : [{ id: uid(), type: "paragraph", text: "", size: "subtext", children: [] }];
-    } else if (type === "heading") {
+    } else if (nextType === "heading") {
       block.children = keepChildren;
-    } else if (!type.startsWith("card-")) {
+    } else if (!nextType.startsWith("card-")) {
       block.children = keepChildren;
+      delete block.collapsed;
     }
   });
   closeBlockEditMenu();
@@ -5329,6 +5395,16 @@ if (name === "close-block-edit-menu") {
 
 if (name === "set-block-type") {
   setBlockType(element.dataset.type);
+  return;
+}
+
+if (name === "open-focus-color-menu") {
+  openFocusColorMenu(element.dataset.id);
+  return;
+}
+
+if (name === "set-focus-color") {
+  setFocusColor(element.dataset.color || "");
   return;
 }
 
@@ -5396,19 +5472,20 @@ if (name === "open-insert-after") {
   return;
 }
 if (name === "toggle-note-tools") {
-  if (selection.kind === "note" && selection.ids.size) {
+  if (selection.kind === "note") {
     closeSelection();
     return;
   }
 
-  const firstNote = sortedNotes()[0];
-
-  if (!firstNote) {
+  if (!sortedNotes().length) {
     showToast("No notes to select", "fa-pen");
     return;
   }
 
-  enterSelection("note", firstNote.id);
+  selection.kind = "note";
+  selection.ids = new Set();
+  updateSelectionUi();
+  refreshSelectionClasses();
   phone.classList.add("notes-tools-open");
 
   if (document.activeElement) document.activeElement.blur();
@@ -5417,20 +5494,22 @@ if (name === "toggle-note-tools") {
 }
 
 if (name === "toggle-block-selection-mode") {
-  if (selection.kind === "block" && selection.ids.size) {
+  if (selection.kind === "block") {
     closeSelection();
     return;
   }
 
   const blocks = activeBlocks();
-  const targetId = focusedBlockId || blocks[0]?.id;
 
-  if (!targetId) {
+  if (!blocks.length) {
     showToast("No blocks to select", "fa-pen");
     return;
   }
 
-  enterSelection("block", targetId);
+  selection.kind = "block";
+  selection.ids = new Set();
+  updateSelectionUi();
+  refreshSelectionClasses();
 
   if (document.activeElement) document.activeElement.blur();
 
@@ -5493,7 +5572,7 @@ if (name === "done-selection") {
   if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
 if (name === "open-note") {
-  if (selection.kind === "note" && selection.ids.size) {
+  if (selection.kind === "note" && selection.ids.size > 1) {
     toggleSelection("note", element.dataset.id);
     return;
   }
@@ -5549,9 +5628,6 @@ if (name === "notes") {
   setView("notes");
   return;
 }
-      if (name === "home") showToast("Home is index.html", "fa-house");
-      if (name === "habits") showToast("Habit is habits.html", "fa-bullseye");
-      if (name === "profile") showToast("Profile coming soon", "fa-user");
       if (name === "pin-note") togglePin(element.dataset.id);
       if (name === "edit-note") openNoteModal(element.dataset.id);
 if (name === "move-note-up") {
@@ -5571,11 +5647,7 @@ if (name === "move-note-down") {
       if (name === "add-bullet") convertBlocks("bullet");
       if (name === "add-number") convertBlocks("number");
       if (name === "add-task") convertBlocks("task");
-      if (name === "add-heading") {
-        const block = focusedBlockId ? findBlockEverywhere(focusedBlockId) : null;
-        if (!(selection.kind === "block" && selection.ids.size) && block?.type === "dropdown") toggleDropdown(block.id);
-        else convertBlocks("dropdown");
-      }
+      if (name === "add-heading") convertBlocks("dropdown");
       if (name === "photo") photoInput.click();
       if (name === "toggle-task") toggleTask(element.dataset.id);
       if (name === "toggle-dropdown") toggleDropdown(element.dataset.id);
@@ -5920,9 +5992,19 @@ function startApp() {
 
 startApp();
 
+window.addEventListener("openNotesComposer", () => {
+  openNoteModal();
+});
+
+if (new URLSearchParams(window.location.search).get("add") === "note") {
+  openNoteModal();
+  history.replaceState(null, "", "notes.html");
+}
+
 window.addEventListener("load", () => {
   startApp();
 });
 </script>
+<script src="bottom-bar.js"></script>
 </body>
 </html>
