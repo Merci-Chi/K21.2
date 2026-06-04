@@ -660,6 +660,105 @@
       resize: vertical;
     }
 
+    .description-open {
+      min-height: 48px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      border-radius: 13px;
+      color: rgba(255, 255, 255, 0.72);
+      text-align: left;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .description-open span {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .description-open svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      stroke-width: 2.4;
+    }
+
+    .field textarea.description-hidden {
+      display: none;
+    }
+
+    .description-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      padding: 16px;
+      background: #000;
+    }
+
+    .description-backdrop.open {
+      display: grid;
+    }
+
+    .description-sheet {
+      width: min(100%, 430px);
+      height: calc(100dvh - 32px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 13px;
+      padding: 18px;
+      border-radius: 24px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.028)),
+        rgba(12, 17, 28, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 22px 64px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .description-editor {
+      width: 100%;
+      min-height: 0;
+      resize: none;
+      border: 0;
+      border-radius: 18px;
+      padding: 16px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.065);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      font: inherit;
+      font-size: 17px;
+      line-height: 1.45;
+      outline: none;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .description-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .description-actions button {
+      min-height: 48px;
+      border-radius: 15px;
+      font-weight: 850;
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .description-actions .save-description {
+      color: white;
+      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+    }
+
     .form-panel {
       display: grid;
       gap: 10px;
@@ -1124,9 +1223,10 @@
       </button>
       <button class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 20V11M12 20V4M19 20v-7" stroke="currentColor" stroke-linecap="round" />
+          <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" />
+          <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" />
         </svg>
-        Progress
+        Notes
       </button>
       <button class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1326,10 +1426,33 @@
           </div>
           <label class="field">
             Description
-            <textarea name="description" placeholder="Optional notes"></textarea>
+            <button class="description-open" type="button">
+              <span>Add optional notes</span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M8 5h11M8 12h11M8 19h7M4 5h.01M4 12h.01M4 19h.01" stroke="currentColor" stroke-linecap="round" />
+              </svg>
+            </button>
+            <textarea class="description-hidden" name="description" placeholder="Optional notes"></textarea>
           </label>
           <button class="form-submit" type="submit">Save task</button>
         </form>
+      </section>
+    </div>
+    <div class="description-backdrop" id="descriptionModal" aria-hidden="true">
+      <section class="description-sheet" role="dialog" aria-modal="true" aria-labelledby="descriptionTitle">
+        <div class="modal-head">
+          <h2 class="modal-title" id="descriptionTitle">Edit description</h2>
+          <button class="modal-close close-description" type="button" aria-label="Close description editor">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <textarea class="description-editor" placeholder="Write the full description here"></textarea>
+        <div class="description-actions">
+          <button class="cancel-description" type="button">Cancel</button>
+          <button class="save-description" type="button">Done</button>
+        </div>
       </section>
     </div>
   </main>
@@ -1343,11 +1466,35 @@
     const taskForm = modal.querySelector(".task-form");
     const modalTitle = modal.querySelector(".modal-title");
     const otherCategoryField = taskForm.querySelector(".other-category-field");
+    const descriptionModal = document.querySelector("#descriptionModal");
+    const descriptionEditor = descriptionModal.querySelector(".description-editor");
+    const descriptionPreview = taskForm.querySelector(".description-open span");
     let editingTask = null;
 
     const field = (name) => taskForm.querySelector(`[name="${name}"]`);
     const repeatField = field("repeat");
     const scheduleAheadField = field("scheduleAhead");
+
+    function updateDescriptionPreview() {
+      const value = field("description").value.trim();
+      descriptionPreview.textContent = value || "Add optional notes";
+    }
+
+    function openDescriptionEditor() {
+      descriptionEditor.value = field("description").value;
+      descriptionModal.classList.add("open");
+      descriptionModal.setAttribute("aria-hidden", "false");
+      requestAnimationFrame(() => descriptionEditor.focus());
+    }
+
+    function closeDescriptionEditor(shouldSave = false) {
+      if (shouldSave) {
+        field("description").value = descriptionEditor.value;
+        updateDescriptionPreview();
+      }
+      descriptionModal.classList.remove("open");
+      descriptionModal.setAttribute("aria-hidden", "true");
+    }
     const allowedColors = ["#ff74ba", "#ffd33d", "#46d29c", "#46d7c5", "#5a8cff", "#9d70ff"];
     const HABIT_STORAGE_KEY = "routineDashboard.habits.v1";
     const DELETED_HABITS_KEY = "routineDashboard.deletedHabits.v1";
@@ -2235,6 +2382,7 @@
       selectSchedule(data.scheduleAhead || "no");
       field("scheduleDate").value = data.scheduleDate || "";
       field("description").value = data.description;
+      updateDescriptionPreview();
       updateFormConditionals();
       activeIconCategory = "recents";
       activeIconPage = 0;
@@ -2261,6 +2409,14 @@
         onComplete: cycleHabitCompletion,
         instant: true
       });
+    });
+
+    taskForm.querySelector(".description-open").addEventListener("click", openDescriptionEditor);
+    descriptionModal.querySelector(".save-description").addEventListener("click", () => closeDescriptionEditor(true));
+    descriptionModal.querySelector(".cancel-description").addEventListener("click", () => closeDescriptionEditor(false));
+    descriptionModal.querySelector(".close-description").addEventListener("click", () => closeDescriptionEditor(false));
+    descriptionModal.addEventListener("click", (event) => {
+      if (event.target === descriptionModal) closeDescriptionEditor(false);
     });
 
     loadTasks();
