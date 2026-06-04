@@ -1420,7 +1420,8 @@
   left: 18px;
   right: 18px;
   bottom: calc(var(--nav-height) + 12px);
-  z-index: 30;
+  transform: translateY(0);
+  z-index: 9999;
   display: none;
   gap: 7px;
   overflow-x: auto;
@@ -1436,6 +1437,11 @@
 
 .editor-active .toolbar {
   display: flex;
+}
+html.toolbar-keyboard-locked .toolbar {
+  bottom: auto;
+  top: var(--locked-toolbar-top);
+  transform: none;
 }
 
 @media (min-width: 461px) {
