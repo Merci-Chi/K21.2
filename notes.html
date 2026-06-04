@@ -252,6 +252,11 @@
       color: #fff;
       background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
       box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
+      #editorView.page-light .icon-btn.primary {
+  color: rgba(17, 24, 39, 0.82);
+  background: rgba(17, 24, 39, 0.055);
+  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.1);
+}
     }
 
     .icon-btn.active {
@@ -327,15 +332,28 @@
     }
 
  .selection-active .note-card.selected {
-  border-color: rgba(125, 122, 255, 0.9);
-  box-shadow:
-    0 0 0 2px rgba(90, 140, 255, 0.55),
-    0 0 24px rgba(157, 112, 255, 0.35),
-    0 18px 42px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.selection-active .note-card.selected::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 20px;
+  padding: 4px;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 .block-group {
+  position: relative;
   display: grid;
   gap: 3px;
   padding: 0;
@@ -344,13 +362,25 @@
 }
 
 .selection-active .block-group.selected {
-  border-color: rgba(125, 122, 255, 0.9);
-  box-shadow:
-    0 0 0 2px rgba(90, 140, 255, 0.55),
-    0 0 24px rgba(157, 112, 255, 0.35),
-    0 18px 42px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: transparent;
+  box-shadow: none;
   background: transparent;
+}
+
+.selection-active .block-group.selected::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 .selection-active .block-group.selected .block {
   border-color: transparent !important;
@@ -504,7 +534,7 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      background: rgba(12, 17, 28, 0.92);
+      background: #141414;
       border: 1px solid rgba(255, 255, 255, 0.11);
       border-radius: 22px;
       padding: 16px 14px;
@@ -546,23 +576,6 @@
       color: rgba(17, 24, 39, 0.38);
     }
 
-    .page-break-block {
-      min-height: 0;
-      height: 24px;
-      margin: -21px 0;
-      padding: 0;
-      opacity: 0;
-      overflow: hidden;
-    }
-
-    .selection-active .page-break-block.selected {
-      height: 24px;
-      margin: -21px 0;
-      opacity: 1;
-      border-color: rgba(90, 140, 255, 0.45);
-      background: rgba(90, 140, 255, 0.12);
-    }
-
     .block {
       --accent: var(--blue);
       position: relative;
@@ -579,13 +592,26 @@
       border-color: rgba(255, 255, 255, 0.07);
     }
 
-.selection-active .blocks > .block.selected {
-  border-color: rgba(125, 122, 255, 0.9);
-  box-shadow:
-    0 0 0 2px rgba(90, 140, 255, 0.55),
-    0 0 24px rgba(157, 112, 255, 0.35),
-    0 18px 42px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+.selection-active .note-page .block.selected {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.selection-active .note-page .block.selected::after,
+.selection-active .block-group .block.selected::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 18px;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 .selection-active .block-group.selected .block.selected {
@@ -670,10 +696,22 @@
       line-height: 1.08;
     }
 
+    .size-title .marker,
+    .size-title .task-check,
+    .size-title .dropdown-caret {
+      font-size: 31px;
+    }
+
     .size-heading .editable {
       font-size: 24px;
       font-weight: 920;
       line-height: 1.12;
+    }
+
+    .size-heading .marker,
+    .size-heading .task-check,
+    .size-heading .dropdown-caret {
+      font-size: 24px;
     }
 
     .size-subtitle .editable {
@@ -683,15 +721,33 @@
       color: #fff;
     }
 
+    .size-subtitle .marker,
+    .size-subtitle .task-check,
+    .size-subtitle .dropdown-caret {
+      font-size: 20px;
+    }
+
     .size-text .editable {
       font-size: 16px;
       font-weight: 500;
+    }
+
+    .size-text .marker,
+    .size-text .task-check,
+    .size-text .dropdown-caret {
+      font-size: 16px;
     }
 
     .size-subtext .editable {
       font-size: 13px;
       line-height: 1.38;
       color: #fff;
+    }
+
+    .size-subtext .marker,
+    .size-subtext .task-check,
+    .size-subtext .dropdown-caret {
+      font-size: 13px;
     }
 
     .quote .editable {
@@ -758,18 +814,22 @@
       place-items: center;
       color: rgba(255, 255, 255, 0.8);
       font-weight: 850;
+      font-size: 1em;
+      line-height: 1;
     }
 
     .task-check {
-      width: 24px;
-      height: 24px;
+      width: 1.35em;
+      height: 1.35em;
+      min-width: 1.35em;
       margin-top: 1px;
       display: grid;
       place-items: center;
-      border-radius: 8px;
+      border-radius: 0.42em;
       color: #06101d;
       background: rgba(255, 255, 255, 0.05);
       box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+      font-size: 1em;
     }
 
     .task-check.checked {
@@ -789,6 +849,7 @@
       display: grid;
       place-items: center;
       color: #fff;
+      font-size: 1em;
     }
 
     .dropdown-caret i {
@@ -836,7 +897,7 @@
       display: grid;
       place-items: center;
       color: rgba(255, 255, 255, 0.82);
-      font-size: 12px;
+      font-size: inherit;
       font-weight: 850;
     }
 
@@ -956,83 +1017,232 @@
   box-shadow: none;
 }
 
-.card-square .editable {
+.card-square {
+  height: 100%;
+  min-height: 0;
+}
+
+.card-square .block-line {
   aspect-ratio: 1 / 1;
   min-height: 0;
+}
+
+.card-horizontal .block-line,
+.card-short .block-line,
+.card-half .block-line {
+  height: 82px;
+  min-height: 82px;
+}
+
+.card-tall .block-line,
+.card-long .block-line,
+.card-immersive .block-line {
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+}
+
+.card-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  gap: 8px;
+  padding: 16px;
   overflow: hidden;
 }
 
-.card-short .editable,
-.card-half .editable {
-  min-height: 72px;
-  display: grid;
-  align-content: center;
+.card-face::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
 }
 
-.card-tall .editable,
-.card-long .editable {
-  min-height: 280px;
-  height: auto;
-  overflow: visible;
+.card-square .card-face::after,
+.card-tall .card-face::after,
+.card-long .card-face::after,
+.card-immersive .card-face::after {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  background: linear-gradient(to bottom, transparent, rgba(12, 17, 28, 0.96));
 }
 
-.card-immersive .editable {
-  min-height: min(70vh, 560px);
-  height: auto;
-  overflow: visible;
+.card-horizontal .card-face::after,
+.card-short .card-face::after,
+.card-half .card-face::after {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 34%;
+  background: linear-gradient(to right, transparent, rgba(12, 17, 28, 0.96));
 }
 
-.card img {
-  width: 100%;
-  height: auto;
-  border-radius: 16px;
-  display: block;
+.note-page.light .card-face::after {
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.98));
 }
 
-.card-interior {
-  display: grid;
-  gap: 9px;
-  padding: 0 16px 16px;
+.note-page.light .card-horizontal .card-face::after,
+.note-page.light .card-short .card-face::after,
+.note-page.light .card-half .card-face::after {
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.98));
 }
 
-.card-child-preview {
+.card-title {
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 920;
+  line-height: 1.12;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-text {
+  position: relative;
+  z-index: 1;
   color: #fff;
   font-size: 13px;
   line-height: 1.35;
-  white-space: pre-wrap;
+  min-width: 0;
   overflow-wrap: anywhere;
+  overflow: hidden;
 }
 
-.card-child-image {
+.card-image {
+  position: relative;
+  z-index: 0;
   width: 100%;
-  max-height: 180px;
+  height: 100%;
+  min-height: 0;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 14px;
   display: block;
 }
 
-.card-add-image {
-  min-height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.card-cover-icon {
+  position: relative;
+  z-index: 1;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
   border-radius: 14px;
   color: #fff;
-  background: rgba(255, 255, 255, 0.075);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-  font-size: 12px;
-  font-weight: 850;
+  background: color-mix(in srgb, var(--accent) 32%, rgba(255, 255, 255, 0.09));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.13);
 }
 
-.note-page.light .card-child-preview {
-  color: #111827;
+.card-cover-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
-.note-page.light .card-add-image {
+.card-face.title-text {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.card-square .card-face.title-image,
+.card-square .card-face.title-icon {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.card-square .card-face.title-image .card-image,
+.card-square .card-face.title-icon .card-cover-icon {
+  align-self: stretch;
+  justify-self: stretch;
+}
+
+.card-square .card-face.title-icon .card-cover-icon {
+  width: auto;
+  height: auto;
+  border-radius: 18px;
+}
+
+.card-square .card-face.title-icon .card-cover-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+.card-horizontal .card-face.title-text,
+.card-short .card-face.title-text,
+.card-half .card-face.title-text {
+  grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
+  grid-template-rows: 1fr;
+  align-items: center;
+}
+
+.card-horizontal .card-face.title-image,
+.card-short .card-face.title-image,
+.card-half .card-face.title-image {
+  padding: 0;
+}
+
+.card-horizontal .card-face.title-image .card-image,
+.card-short .card-face.title-image .card-image,
+.card-half .card-face.title-image .card-image {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.card-horizontal .card-face.title-image .card-title,
+.card-short .card-face.title-image .card-title,
+.card-half .card-face.title-image .card-title {
+  grid-area: 1 / 1;
+  align-self: start;
+  margin: 12px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+}
+
+.card-horizontal .card-face.title-icon,
+.card-short .card-face.title-icon,
+.card-half .card-face.title-icon {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  align-items: center;
+}
+
+.card-horizontal .card-text,
+.card-short .card-text,
+.card-half .card-text,
+.card-horizontal .card-title,
+.card-short .card-title,
+.card-half .card-title {
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.card-cover-action {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  display: none;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  box-shadow: 0 14px 30px rgba(90, 140, 255, 0.32);
+  transform: translate(-50%, -50%);
+}
+
+.block-selection .card.selected .card-cover-action {
+  display: grid;
+}
+
+.note-page.light .card-text,
+.note-page.light .card-title {
   color: #111827;
-  background: rgba(17, 24, 39, 0.045);
-  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.12);
 }
 
 .separator-block {
@@ -1147,7 +1357,13 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
-.selection-active .block.selected .block-edit-control {
+#editorView.page-light .block-edit-control {
+  color: #111827;
+  background: #d1d5db;
+  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.14);
+}
+
+.block-selection .block.selected .block-edit-control {
   display: grid;
 }
 
@@ -1485,6 +1701,24 @@
       overflow: hidden;
     }
 
+    #noteModal .compact-sheet {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    #noteModal .note-form {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-right: 1px;
+      scrollbar-width: none;
+    }
+
+    #noteModal .note-form::-webkit-scrollbar {
+      display: none;
+    }
+
     #textColorModal .compact-sheet {
       width: min(100%, 260px);
       max-height: min(360px, calc(100dvh - 118px));
@@ -1578,6 +1812,16 @@
       margin-top: 2px;
     }
 
+    #noteModal .modal-actions {
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      padding-top: 8px;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(16, 22, 34, 0.96) 34%),
+        rgba(16, 22, 34, 0.96);
+    }
+
     .modal-action {
       min-height: 44px;
       border-radius: 14px;
@@ -1589,6 +1833,12 @@
     .modal-action.primary {
       color: #fff;
       background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+    }
+
+    .modal-action.danger {
+      color: #fff;
+      background: color-mix(in srgb, var(--red) 24%, rgba(255, 255, 255, 0.07));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--red) 46%, rgba(255, 255, 255, 0.1));
     }
 
     .size-list {
@@ -2261,8 +2511,8 @@
           </div>
 
           <div class="modal-actions">
-            <button class="modal-action" type="button" data-command="close-note-modal">Cancel</button>
-            <button class="modal-action primary" type="button" data-command="save-note-modal">Save</button>
+            <button class="modal-action" id="noteModalSecondaryButton" type="button" data-command="note-modal-secondary">Cancel</button>
+            <button class="modal-action primary" id="noteModalSaveButton" type="button" data-command="save-note-modal">Add</button>
           </div>
         </div>
       </section>
@@ -2290,10 +2540,6 @@
 
       <button class="insert-option" type="button" data-command="open-line-options">
         <i class="fa-solid fa-grip-lines" aria-hidden="true"></i><span>Line</span>
-      </button>
-
-      <button class="insert-option" type="button" data-command="insert-block" data-type="page-break">
-        <i class="fa-regular fa-clone" aria-hidden="true"></i><span>Page Break</span>
       </button>
 
       <button class="insert-option" type="button" data-command="insert-block" data-type="heading">
@@ -2370,16 +2616,35 @@
         <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-short">
-        <i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Short Card</span>
+      <button class="insert-option" type="button" data-command="insert-block" data-type="card-horizontal">
+        <i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Horizontal Card</span>
+      </button>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="cardCoverModal" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cardCoverTitle">
+    <div class="grabber"></div>
+
+    <div class="sheet-head">
+      <h2 id="cardCoverTitle">Card includes</h2>
+      <button class="icon-btn" type="button" data-command="close-card-cover-options" aria-label="Close card cover options">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="insert-list">
+      <button class="insert-option" type="button" data-command="set-card-cover" data-cover="title-text">
+        <i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Title + Text</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-tall">
-        <i class="fa-solid fa-table-list" aria-hidden="true"></i><span>Tall Card</span>
+      <button class="insert-option" type="button" data-command="set-card-cover" data-cover="title-image">
+        <i class="fa-solid fa-image" aria-hidden="true"></i><span>Title + Image</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-immersive">
-        <i class="fa-solid fa-mobile-screen" aria-hidden="true"></i><span>Immersive Card</span>
+      <button class="insert-option" type="button" data-command="set-card-cover" data-cover="title-icon">
+        <i class="fa-solid fa-icons" aria-hidden="true"></i><span>Title + Icon</span>
       </button>
     </div>
   </section>
@@ -2625,6 +2890,7 @@ let blockPath = [];
     const noteModal = document.getElementById("noteModal");
     const insertModal = document.getElementById("insertModal");
     const cardModal = document.getElementById("cardModal");
+    const cardCoverModal = document.getElementById("cardCoverModal");
     const lineModal = document.getElementById("lineModal");
     const blockEditModal = document.getElementById("blockEditModal");
     const blockEditChoices = document.getElementById("blockEditChoices");
@@ -2638,6 +2904,8 @@ let blockPath = [];
     const viewTextModal = document.getElementById("viewTextModal");
     const viewTextField = document.getElementById("viewTextField");
     const noteModalTitle = document.getElementById("noteModalTitle");
+    const noteModalSaveButton = document.getElementById("noteModalSaveButton");
+    const noteModalSecondaryButton = document.getElementById("noteModalSecondaryButton");
     const noteTitleField = document.getElementById("noteTitleField");
     const colorChoices = document.getElementById("colorChoices");
     const iconChoices = document.getElementById("iconChoices");
@@ -2660,6 +2928,7 @@ let blockPath = [];
     let blockNextClick = false;
     let pendingInsertAfterId = null;
     let pendingImageBlockId = null;
+    let pendingCardCoverId = null;
     let activeBlockIconCategory = "recents";
     let activeBlockIconPage = 0;
     let savedTextRange = null;
@@ -2756,6 +3025,10 @@ function loadState() {
         }
 
         note.blocks.forEach(cleanBlock);
+        note.blocks = note.blocks.filter(block => block.type !== "page-break");
+        if (!note.blocks.length) {
+          note.blocks = [{ id: uid(), type: "paragraph", text: "", children: [] }];
+        }
       });
 
       if (!saved.activeNoteId || !saved.notes.some(note => note.id === saved.activeNoteId)) {
@@ -2778,11 +3051,32 @@ function cleanBlock(block) {
   block.type ||= "paragraph";
   block.text ||= "";
 
+  if (["card-short", "card-half"].includes(block.type)) {
+    block.type = "card-horizontal";
+  }
+
+  if (["card-tall", "card-long"].includes(block.type)) {
+    block.type = "card-square";
+  }
+
+  if (block.type === "card-immersive") {
+    block.type = "card-square";
+    block.cardCover ||= "image";
+  }
+
+  if (block.type?.startsWith("card-")) {
+    block.cardCover ||= block.type === "card-horizontal" ? "icon-title-text" : "title-text";
+    if (["image"].includes(block.cardCover)) block.cardCover = "title-image";
+    if (["icon", "title-icon", "icon-title", "icon-title-text"].includes(block.cardCover)) block.cardCover = "title-icon";
+    if (!["title-text", "title-image", "title-icon"].includes(block.cardCover)) block.cardCover = "title-text";
+  }
+
   if (!Array.isArray(block.children)) {
     block.children = [];
   }
 
   block.children.forEach(cleanBlock);
+  block.children = block.children.filter(child => child.type !== "page-break");
 
   if (block.type === "task") {
     block.checked = Boolean(block.checked);
@@ -3199,50 +3493,38 @@ function dropdownChildrenHtml(block) {
 function cardInteriorHtml(block) {
   if (!block.type?.startsWith("card-")) return "";
   const children = Array.isArray(block.children) ? block.children : [];
-  const childHtml = children.map(child => {
-    if (child.type === "image") {
-      return child.src
-        ? `<img class="card-child-image" src="${child.src}" alt="Card image" />`
-        : "";
-    }
+  const title = stripHtml(block.interiorTitle || block.text || "Untitled");
+  const textChild = children.find(child => stripHtml(child.text || "").trim());
+  const imageChild = children.find(child => child.type === "image" && child.src);
+  const body = textChild ? stripHtml(textChild.text || "") : "";
+  const mode = ["title-text", "title-image", "title-icon"].includes(block.cardCover) ? block.cardCover : "title-text";
+  const icon = `<span class="card-cover-icon">${iconSvg(block.icon || "solid:note-sticky")}</span>`;
+  const image = imageChild ? `<img class="card-image" src="${imageChild.src}" alt="" />` : "";
+  const titleHtml = `<div class="card-title">${escapeHtml(title)}</div>`;
+  const textHtml = body ? `<div class="card-text">${escapeHtml(body)}</div>` : "";
+  const imageButton = `<button class="card-cover-action" type="button" data-command="choose-card-cover-image" data-id="${block.id}" aria-label="Change card image"><i class="fa-solid fa-image" aria-hidden="true"></i></button>`;
+  const iconButton = `<button class="card-cover-action" type="button" data-command="open-block-icon-menu" data-id="${block.id}" aria-label="Change card icon"><i class="fa-solid fa-icons" aria-hidden="true"></i></button>`;
+  const isHorizontal = block.type === "card-horizontal" || block.type === "card-short" || block.type === "card-half";
+  let content = `${titleHtml}${textHtml}`;
 
-    const text = stripHtml(child.text || "");
-    if (!text) return "";
-    return `<div class="card-child-preview">${sanitizeHtml(child.text || "")}</div>`;
-  }).filter(Boolean).join("");
+  if (mode === "title-image") {
+    content = isHorizontal
+      ? `${image || ""}${titleHtml}${imageButton}`
+      : `${titleHtml}${image || ""}${imageButton}`;
+  } else if (mode === "title-icon") {
+    content = isHorizontal
+      ? `${icon}${titleHtml}${iconButton}`
+      : `${titleHtml}${icon}${iconButton}`;
+  }
 
-  return `
-    <div class="card-interior">
-      ${childHtml}
-      <button class="card-add-image" type="button" data-command="add-image-to-card" data-id="${block.id}" aria-label="Add image to card">
-        <i class="fa-solid fa-image" aria-hidden="true"></i><span>Add image</span>
-      </button>
-    </div>
-  `;
+  return `<div class="card-face ${mode}">${content}</div>`;
 }
 function renderBlocksHtml(blocks, accent, pageMode = "dark") {
-  let html = "";
-  let pageBlocks = [];
-  let lastBlockId = "";
-
-  const flushPage = () => {
-    html += `<div class="note-page ${pageMode === "light" ? "light" : "dark"}">${renderBlockSequence(pageBlocks, accent)}</div>`;
-    pageBlocks = [];
-  };
-
-  blocks.forEach((block, index) => {
-    if (block.type === "page-break") {
-      flushPage();
-      html += renderBlock(block, index, accent);
-      lastBlockId = block.id;
-      return;
-    }
-
-    pageBlocks.push({ block, index });
-    lastBlockId = block.id;
-  });
-
-  flushPage();
+  const pageBlocks = blocks
+    .map((block, index) => ({ block, index }))
+    .filter(item => item.block.type !== "page-break");
+  const lastBlockId = pageBlocks.at(-1)?.block.id || "";
+  let html = `<div class="note-page ${pageMode === "light" ? "light" : "dark"}">${renderBlockSequence(pageBlocks, accent)}</div>`;
   html += renderInsertRow(lastBlockId);
 
   return html;
@@ -3314,14 +3596,6 @@ function safeUrl(value) {
   `;
       }
 
-      if (block.type === "page-break") {
-        return `
-    <article class="block page-break-block ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
-      ${blockEditButtonHtml(block)}
-    </article>
-  `;
-      }
-
       if (block.type === "image") {
   const imageCommand = block.src ? "open-image" : "choose-image-for-block";
 
@@ -3364,15 +3638,19 @@ if (block.type === "url") {
             : block.type === "dropdown"
               ? `<button class="dropdown-caret" type="button" data-command="toggle-dropdown" data-id="${block.id}" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>`
             : "";
-   return `
-  <article class="block ${block.type} ${block.collapsed ? "collapsed" : ""} ${block.icon ? "has-icon" : ""} ${block.type?.startsWith("card-") ? `card ${block.type}` : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
+      const bodyHtml = block.type?.startsWith("card-")
+        ? cardInteriorHtml(block)
+        : `
     <div class="block-line">
       ${marker || blockIconHtml(block)}
       <div class="editable ${block.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write" style="text-align:${escapeHtml(block.align || "left")}; ${block.textGradient ? `--text-gradient:${escapeHtml(block.textGradient)}` : block.textColor ? `color:${escapeHtml(block.textColor)}` : ""}">${sanitizeHtml(block.text || "")}</div>
     </div>
 
     ${block.type === "dropdown" ? dropdownChildrenHtml(block) : ""}
-    ${cardInteriorHtml(block)}
+  `;
+   return `
+  <article class="block ${block.type} ${block.collapsed ? "collapsed" : ""} ${block.icon ? "has-icon" : ""} ${block.type?.startsWith("card-") ? `card ${block.type}` : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
+    ${bodyHtml}
     ${blockIconEditorHtml(block)}
     ${blockEditButtonHtml(block)}
   </article>
@@ -3405,11 +3683,10 @@ function updateEditorModeLabel() {
 
   const inSelectionMode = Boolean(
     currentView === "editor" &&
-    selection.kind === "block" &&
-    selection.ids.size
+    selection.kind === "block"
   );
 
-  editorModeText.textContent = inSelectionMode ? "Selection Mode" : "Editing";
+  editorModeText.textContent = inSelectionMode ? "Selection" : "Editing";
 }
     function renderAll() {
       renderNotes();
@@ -3484,6 +3761,12 @@ function updateEditorModeLabel() {
   saveState();
   renderEditor();
 
+  if (block.type?.startsWith("card-")) {
+    pendingCardCoverId = block.id;
+    openCardCoverOptions(block.id);
+    return;
+  }
+
   setTimeout(() => focusBlock(block.id), 50);
 }
  function createBlock(type) {
@@ -3512,7 +3795,7 @@ function updateEditorModeLabel() {
   };
 }
 
-  if (String(type || "").startsWith("separator-") || type === "page-break") {
+  if (String(type || "").startsWith("separator-")) {
     return {
       ...base,
       text: ""
@@ -3531,31 +3814,35 @@ function updateEditorModeLabel() {
     return {
       ...base,
       type: "card-square",
-      text: ""
+      text: "",
+      cardCover: "title-text"
     };
   }
 
-  if (type === "card-half" || type === "card-short") {
+  if (type === "card-horizontal" || type === "card-half" || type === "card-short") {
     return {
       ...base,
-      type: "card-short",
-      text: ""
+      type: "card-horizontal",
+      text: "",
+      cardCover: "title-text"
     };
   }
 
   if (type === "card-long" || type === "card-tall") {
     return {
       ...base,
-      type: "card-tall",
-      text: ""
+      type: "card-square",
+      text: "",
+      cardCover: "title-text"
     };
   }
 
   if (type === "card-immersive") {
     return {
       ...base,
-      type: "card-immersive",
-      text: ""
+      type: "card-square",
+      text: "",
+      cardCover: "title-image"
     };
   }
 
@@ -3845,7 +4132,7 @@ function refreshSelectionClasses() {
   if (
     event.target.closest(
       ".url-field, .action-btn, .selection-bar, .toolbar, .modal"
-        + ", .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret, .card-add-image"
+        + ", .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret"
     )
   ) {
     return;
@@ -3855,24 +4142,6 @@ function refreshSelectionClasses() {
   if (!item) return;
 
   if (item.dataset.kind !== selection.kind) return;
-
-  if (
-    selection.kind === "note" &&
-    event.type === "click" &&
-    event.target.closest(".note-main") &&
-    selection.ids.size <= 1
-  ) {
-    return;
-  }
-
-  if (
-    selection.kind === "note" &&
-    event.type === "pointerdown" &&
-    event.target.closest(".note-main") &&
-    selection.ids.size <= 1
-  ) {
-    return;
-  }
 
   event.preventDefault();
   event.stopPropagation();
@@ -3907,7 +4176,7 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
     let holdTimer = null;
 
     element.addEventListener("pointerdown", event => {
-      if (event.target.closest("[contenteditable='true'], input, textarea, .url-field, .action-btn, .task-check, .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret, .card-add-image")) return;
+      if (event.target.closest("[contenteditable='true'], input, textarea, .url-field, .action-btn, .task-check, .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret")) return;
 
 if (event.target.closest(".image-open") && !selection.kind) {
   // allow image blocks to be long-pressed/swiped for selection
@@ -4248,6 +4517,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
       closeSizeMenu();
       saveState();
       renderEditor();
+      updateSelectionUi();
       refreshSelectionClasses();
     }
 
@@ -4276,8 +4546,10 @@ if (event.target.closest(".image-open") && !selection.kind) {
     function targetBlockForPicker(id) {
       if (!id) return;
       focusedBlockId = id;
-      selection.kind = "block";
-      selection.ids = new Set([id]);
+      if (!(selection.kind === "block" && selection.ids.has(id))) {
+        selection.kind = "block";
+        selection.ids = new Set([id]);
+      }
       updateSelectionUi();
       refreshSelectionClasses();
     }
@@ -4332,15 +4604,24 @@ if (event.target.closest(".image-open") && !selection.kind) {
     }
 
     function setFocusColor(color) {
-      const block = findBlockEverywhere(focusColorTargetId);
-      if (!block) return;
+      const ids = selection.kind === "block" && selection.ids.size
+        ? [...selection.ids]
+        : focusColorTargetId
+          ? [focusColorTargetId]
+          : [];
+      if (!ids.length) return;
+      const idSet = new Set(ids);
       remember();
-      if (color) block.focusColor = color;
-      else delete block.focusColor;
+      activeBlocks().forEach(block => {
+        if (!idSet.has(block.id)) return;
+        if (color) block.focusColor = color;
+        else delete block.focusColor;
+      });
       saveState();
       closeBlockColorMenu();
       closeBlockEditMenu();
       renderEditor();
+      updateSelectionUi();
       refreshSelectionClasses();
     }
 
@@ -4543,7 +4824,8 @@ if (event.target.closest(".image-open") && !selection.kind) {
     }
 
     function openTextColorMenu(target = "color") {
-      if (!rememberTextSelection()) {
+      const hasSelectedBlocks = selection.kind === "block" && selection.ids.size > 0;
+      if (!hasSelectedBlocks && !rememberTextSelection()) {
         showToast("Select text first");
         return;
       }
@@ -4573,6 +4855,25 @@ if (event.target.closest(".image-open") && !selection.kind) {
       const preset = presets[Number(index)];
       if (!preset) return;
       remember();
+      if (selection.kind === "block" && selection.ids.size && textStyleTarget === "color") {
+        const ids = new Set(selection.ids);
+        activeBlocks().forEach(block => {
+          if (!ids.has(block.id) || block.type === "image") return;
+          if (preset.gradient) {
+            block.textGradient = preset.gradient;
+            delete block.textColor;
+          } else {
+            block.textColor = preset.color;
+            delete block.textGradient;
+          }
+        });
+        saveState();
+        closeTextColorMenu();
+        renderEditor();
+        updateSelectionUi();
+        refreshSelectionClasses();
+        return;
+      }
       if (preset.clear) {
         const editable = clearSavedHighlight();
         if (!editable) showToast("Select text first");
@@ -4758,10 +5059,13 @@ if (event.target.closest(".image-open") && !selection.kind) {
           delete block.collapsed;
         }
       });
-      closeSelection();
       saveState();
       renderEditor();
-      setTimeout(() => focusBlock(ids[ids.length - 1]), 20);
+      updateSelectionUi();
+      refreshSelectionClasses();
+      if (selection.kind !== "block" || !selection.ids.size) {
+        setTimeout(() => focusBlock(ids[ids.length - 1]), 20);
+      }
     }
 
     function openInsert() {
@@ -4789,6 +5093,23 @@ function openCardOptions() {
 function closeCardOptions() {
   cardModal.classList.remove("open");
   cardModal.setAttribute("aria-hidden", "true");
+}
+
+function openCardCoverOptions(id = "") {
+  pendingCardCoverId = id || selectedBlockIds()[0] || pendingCardCoverId;
+  if (!pendingCardCoverId) return;
+  cardModal.classList.remove("open");
+  cardModal.setAttribute("aria-hidden", "true");
+  blockEditModal.classList.remove("open");
+  blockEditModal.setAttribute("aria-hidden", "true");
+  cardCoverModal.classList.add("open");
+  cardCoverModal.setAttribute("aria-hidden", "false");
+}
+
+function closeCardCoverOptions() {
+  cardCoverModal.classList.remove("open");
+  cardCoverModal.setAttribute("aria-hidden", "true");
+  pendingCardCoverId = null;
 }
 
 function openLineOptions() {
@@ -4846,6 +5167,25 @@ function addImageToCard(id) {
     children: []
   };
   block.children.push(imageBlock);
+  pendingImageBlockId = imageBlock.id;
+  focusedBlockId = block.id;
+  saveState();
+  renderEditor();
+  photoInput.value = "";
+  photoInput.click();
+}
+
+function chooseCardCoverImage(id) {
+  const block = findBlockEverywhere(id);
+  if (!block || !block.type?.startsWith("card-")) return;
+  remember();
+  if (!Array.isArray(block.children)) block.children = [];
+  let imageBlock = block.children.find(child => child.type === "image");
+  if (!imageBlock) {
+    imageBlock = { id: uid(), type: "image", text: "", src: "", children: [] };
+    block.children.unshift(imageBlock);
+  }
+  block.cardCover = "title-image";
   pendingImageBlockId = imageBlock.id;
   focusedBlockId = block.id;
   saveState();
@@ -4934,6 +5274,11 @@ function insertBlock(type) {
         pageMode: note?.pageMode === "light" ? "light" : "dark"
       };
       noteModalTitle.textContent = id ? "Edit note" : "New note";
+      if (noteModalSaveButton) noteModalSaveButton.textContent = id ? "Save" : "Add";
+      if (noteModalSecondaryButton) {
+        noteModalSecondaryButton.textContent = id ? "Delete" : "Cancel";
+        noteModalSecondaryButton.classList.toggle("danger", Boolean(id));
+      }
       noteTitleField.value = noteDraft.title;
       renderNoteModalChoices();
       noteModal.classList.add("open");
@@ -5024,6 +5369,21 @@ function insertBlock(type) {
       }
       newNote();
       closeNoteModal();
+    }
+
+    function noteModalSecondaryAction() {
+      if (!noteDraft?.id) {
+        closeNoteModal();
+        return;
+      }
+
+      const id = noteDraft.id;
+      closeNoteModal();
+      enterSelection("note", id);
+      deleteSelected();
+      if (state.activeNoteId === id) {
+        setView("notes");
+      }
     }
 
     function autoSizeTitle() {
@@ -5297,11 +5657,8 @@ function renderBlockEditChoices(block) {
 
   if (block.type?.startsWith("card-")) {
     blockEditChoices.innerHTML = `
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-square"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span></button>
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-short"><i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Short Card</span></button>
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-tall"><i class="fa-solid fa-table-list" aria-hidden="true"></i><span>Tall Card</span></button>
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-immersive"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i><span>Immersive Card</span></button>
-      ${textTools}
+      <button class="insert-option" type="button" data-command="set-card-type" data-type="card-square"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span></button>
+      <button class="insert-option" type="button" data-command="set-card-type" data-type="card-horizontal"><i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Horizontal Card</span></button>
     `;
     return;
   }
@@ -5331,8 +5688,10 @@ function openBlockEditMenu(id) {
   const block = findBlockEverywhere(id);
   if (!block) return;
   focusedBlockId = id;
-  selection.kind = "block";
-  selection.ids = new Set([id]);
+  if (!(selection.kind === "block" && selection.ids.has(id))) {
+    selection.kind = "block";
+    selection.ids = new Set([id]);
+  }
   renderBlockEditChoices(block);
   updateSelectionUi();
   refreshSelectionClasses();
@@ -5365,11 +5724,58 @@ function setBlockType(type) {
       block.children = keepChildren.length ? keepChildren : [{ id: uid(), type: "paragraph", text: "", size: "subtext", children: [] }];
     } else if (nextType === "heading") {
       block.children = keepChildren;
+    } else if (nextType === "card-square") {
+      block.children = keepChildren;
+      block.cardCover ||= "title-text";
+      delete block.collapsed;
+    } else if (nextType === "card-horizontal") {
+      block.children = keepChildren;
+      block.cardCover ||= "title-text";
+      delete block.collapsed;
     } else if (!nextType.startsWith("card-")) {
       block.children = keepChildren;
       delete block.collapsed;
     }
   });
+  closeBlockEditMenu();
+  saveState();
+  renderEditor();
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
+
+function setCardType(type) {
+  if (!["card-square", "card-horizontal"].includes(type)) return;
+  const ids = selectedBlockIds();
+  if (!ids.length) return;
+  remember();
+  const idSet = new Set(ids);
+  activeBlocks().forEach(block => {
+    if (!idSet.has(block.id) || !block.type?.startsWith("card-")) return;
+    block.type = type;
+    if (!["title-text", "title-image", "title-icon"].includes(block.cardCover)) block.cardCover = "title-text";
+    pendingCardCoverId = block.id;
+  });
+  saveState();
+  renderEditor();
+  updateSelectionUi();
+  refreshSelectionClasses();
+  openCardCoverOptions(pendingCardCoverId);
+}
+
+function setCardCover(cover) {
+  const allowed = new Set(["title-image", "title-text", "title-icon"]);
+  if (!allowed.has(cover)) return;
+  const ids = pendingCardCoverId ? [pendingCardCoverId] : selectedBlockIds();
+  if (!ids.length) return;
+  remember();
+  const idSet = new Set(ids);
+  activeBlocks().forEach(block => {
+    if (idSet.has(block.id) && block.type?.startsWith("card-")) {
+      block.cardCover = cover;
+    }
+  });
+  closeCardCoverOptions();
   closeBlockEditMenu();
   saveState();
   renderEditor();
@@ -5398,6 +5804,26 @@ if (name === "set-block-type") {
   return;
 }
 
+if (name === "set-card-type") {
+  setCardType(element.dataset.type);
+  return;
+}
+
+if (name === "set-card-cover") {
+  setCardCover(element.dataset.cover);
+  return;
+}
+
+if (name === "close-card-cover-options") {
+  closeCardCoverOptions();
+  return;
+}
+
+if (name === "choose-card-cover-image") {
+  chooseCardCoverImage(element.dataset.id);
+  return;
+}
+
 if (name === "open-focus-color-menu") {
   openFocusColorMenu(element.dataset.id);
   return;
@@ -5405,11 +5831,6 @@ if (name === "open-focus-color-menu") {
 
 if (name === "set-focus-color") {
   setFocusColor(element.dataset.color || "");
-  return;
-}
-
-if (name === "add-image-to-card") {
-  addImageToCard(element.dataset.id);
   return;
 }
 
@@ -5572,7 +5993,7 @@ if (name === "done-selection") {
   if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
 if (name === "open-note") {
-  if (selection.kind === "note" && selection.ids.size > 1) {
+  if (selection.kind === "note") {
     toggleSelection("note", element.dataset.id);
     return;
   }
@@ -5723,6 +6144,7 @@ if (name === "open-image") {
       if (name === "redo-action") redoAction();
       if (name === "done-selection") closeSelection();
       if (name === "close-note-modal") closeNoteModal();
+      if (name === "note-modal-secondary") noteModalSecondaryAction();
       if (name === "save-note-modal") saveNoteModal();
       if (name === "close-insert") closeInsert();
       if (name === "insert-block") insertBlock(element.dataset.type);
@@ -5737,7 +6159,7 @@ if (name === "open-image") {
           if (note) {
             note.pageMode = noteDraft.pageMode;
             saveState();
-            if (state.activeId === note.id) renderEditor();
+            if (state.activeNoteId === note.id) renderEditor();
           }
         }
         renderNoteModalChoices();
@@ -5901,6 +6323,12 @@ if (cardModal) {
   });
 }
 
+if (cardCoverModal) {
+  cardCoverModal.addEventListener("click", event => {
+    if (event.target === cardCoverModal) closeCardCoverOptions();
+  });
+}
+
 if (lineModal) {
   lineModal.addEventListener("click", event => {
     if (event.target === lineModal) closeLineOptions();
@@ -6008,4 +6436,3 @@ window.addEventListener("load", () => {
 <script src="bottom-bar.js"></script>
 </body>
 </html>
- 
