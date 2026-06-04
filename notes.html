@@ -6486,6 +6486,17 @@ window.addEventListener("load", () => {
   startApp();
 });
 </script>
-<script src="bottom-bar.js"></script>
+<script>
+const APP_VERSION = "2";
+
+const oldVersion = localStorage.getItem("appVersion");
+
+if (oldVersion && oldVersion !== APP_VERSION) {
+  localStorage.setItem("appVersion", APP_VERSION);
+  location.reload();
+} else {
+  localStorage.setItem("appVersion", APP_VERSION);
+}
+</script>
 </body>
 </html>
