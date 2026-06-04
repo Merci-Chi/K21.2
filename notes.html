@@ -26,6 +26,7 @@
       --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
       --nav-height: 94px;
       --keyboard-offset: 0px;
+      --keyboard-toolbar-top: auto;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -1440,7 +1441,9 @@
 }
 
 .editor-active.keyboard-open .toolbar {
-  bottom: calc(10px + var(--keyboard-offset) + env(safe-area-inset-bottom));
+  position: fixed;
+  top: var(--keyboard-toolbar-top);
+  bottom: auto;
 }
 
 @media (min-width: 461px) {
@@ -1456,7 +1459,8 @@
 
   .editor-active.keyboard-open .toolbar {
     position: fixed;
-    bottom: calc(10px + var(--keyboard-offset) + env(safe-area-inset-bottom));
+    top: var(--keyboard-toolbar-top);
+    bottom: auto;
     z-index: 9999;
   }
 }
@@ -2250,6 +2254,26 @@
 }
 
 @media (max-width: 460px) {
+  body {
+    padding: 0;
+    display: block;
+  }
+
+  .phone {
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: 0;
+  }
+
+  .app {
+    height: 100%;
+    min-height: 0;
+    padding: 54px 21px 112px;
+  }
+
   .toolbar {
     left: 10px;
     right: 10px;
@@ -2925,7 +2949,10 @@ let blockPath = [];
     let focusColorTargetId = null;
     let keyboardLocked = false;
     let keyboardOffset = 0;
+    let keyboardToolbarTop = 0;
+    let keyboardOpenTimer = null;
     let keyboardReleaseTimer = null;
+    let pendingKeyboardOffset = 0;
     let closedViewportHeight = keyboardViewport?.height || window.innerHeight;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
@@ -3689,22 +3716,61 @@ if (block.type === "url") {
       phone.style.setProperty("--keyboard-offset", `${nextOffset}px`);
     }
 
+    function toolbarTopAboveKeyboard() {
+      const viewportHeight = keyboardViewport?.height || window.innerHeight;
+      const toolbarHeight = toolbar?.offsetHeight || 54;
+      return Math.max(8, Math.round(viewportHeight - toolbarHeight - 10));
+    }
+
+    function setKeyboardToolbarTop(top) {
+      if (top === null) {
+        keyboardToolbarTop = 0;
+        phone.style.setProperty("--keyboard-toolbar-top", "auto");
+        return;
+      }
+
+      keyboardToolbarTop = Math.max(8, Math.round(top));
+      phone.style.setProperty("--keyboard-toolbar-top", `${keyboardToolbarTop}px`);
+    }
+
     function lockToolbarAboveKeyboard(offset) {
       clearTimeout(keyboardReleaseTimer);
       keyboardReleaseTimer = null;
+      if (keyboardLocked) return;
+
       keyboardLocked = true;
+      setKeyboardOffset(offset);
+      setKeyboardToolbarTop(toolbarTopAboveKeyboard());
       phone.classList.add("keyboard-open");
-      setKeyboardOffset(Math.max(keyboardOffset, offset));
+    }
+
+    function scheduleToolbarKeyboardLock(offset) {
+      clearTimeout(keyboardReleaseTimer);
+      keyboardReleaseTimer = null;
+
+      if (keyboardLocked) return;
+
+      pendingKeyboardOffset = Math.max(pendingKeyboardOffset, offset);
+      clearTimeout(keyboardOpenTimer);
+      keyboardOpenTimer = setTimeout(() => {
+        keyboardOpenTimer = null;
+        lockToolbarAboveKeyboard(Math.max(pendingKeyboardOffset, measureKeyboardOffset()));
+        pendingKeyboardOffset = 0;
+      }, 140);
     }
 
     function releaseToolbarAfterKeyboardCloses() {
       if (keyboardReleaseTimer) return;
+      clearTimeout(keyboardOpenTimer);
+      keyboardOpenTimer = null;
+      pendingKeyboardOffset = 0;
 
       keyboardReleaseTimer = setTimeout(() => {
         keyboardLocked = false;
         keyboardReleaseTimer = null;
         phone.classList.remove("keyboard-open");
         setKeyboardOffset(0);
+        setKeyboardToolbarTop(null);
         closedViewportHeight = keyboardViewport?.height || window.innerHeight;
       }, 1000);
     }
@@ -3714,9 +3780,13 @@ if (block.type === "url") {
       const keyboardIsOpen = textInputHasFocus() && measuredOffset > 90;
 
       if (keyboardIsOpen) {
-        lockToolbarAboveKeyboard(measuredOffset);
+        scheduleToolbarKeyboardLock(measuredOffset);
         return;
       }
+
+      clearTimeout(keyboardOpenTimer);
+      keyboardOpenTimer = null;
+      pendingKeyboardOffset = 0;
 
       if (keyboardLocked) {
         releaseToolbarAfterKeyboardCloses();
@@ -3733,6 +3803,17 @@ if (block.type === "url") {
       notesView.classList.toggle("active", view === "notes");
       editorView.classList.toggle("active", view === "editor");
       phone.classList.toggle("editor-active", view === "editor");
+      if (view !== "editor") {
+        clearTimeout(keyboardOpenTimer);
+        clearTimeout(keyboardReleaseTimer);
+        keyboardOpenTimer = null;
+        keyboardReleaseTimer = null;
+        keyboardLocked = false;
+        pendingKeyboardOffset = 0;
+        phone.classList.remove("keyboard-open");
+        setKeyboardOffset(0);
+        setKeyboardToolbarTop(null);
+      }
       closeSelection();
       if (view === "notes") renderNotes();
       if (view === "editor") renderEditor();
@@ -6473,10 +6554,14 @@ function startApp() {
   editorView.classList.remove("active");
   phone.classList.remove("editor-active");
   phone.classList.remove("keyboard-open");
+  clearTimeout(keyboardOpenTimer);
   clearTimeout(keyboardReleaseTimer);
+  keyboardOpenTimer = null;
   keyboardReleaseTimer = null;
   keyboardLocked = false;
+  pendingKeyboardOffset = 0;
   setKeyboardOffset(0);
+  setKeyboardToolbarTop(null);
 
   if (searchInput) searchInput.value = "";
 
@@ -6512,5 +6597,6 @@ if (oldVersion && oldVersion !== APP_VERSION) {
   localStorage.setItem("appVersion", APP_VERSION);
 }
 </script>
+<script src="bottom-bar.js"></script>
 </body>
 </html>
