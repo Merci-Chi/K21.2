@@ -185,6 +185,10 @@ document.querySelectorAll(".nav-item").forEach((item) => {
 const nav = document.querySelector(".nav");
 const addButton = document.querySelector(".add");
 
+if (!nav || !addButton) {
+  console.warn("Bottom bar not loaded: .nav or .add is missing");
+}
+
 if (nav && addButton) {
   const quickAddMenu = document.createElement("div");
   quickAddMenu.className = "quick-add-menu";
@@ -236,6 +240,7 @@ if (nav && addButton) {
   });
 
   quickAddMenu.addEventListener("click", (event) => {
+  event.stopPropagation();
     const option = event.target.closest("[data-add-kind]");
     if (!option) return;
     closeQuickAdd();
