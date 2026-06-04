@@ -3746,7 +3746,6 @@ if (block.type === "url") {
 
     function showCenteredKeyboardToolbar() {
   phone.classList.remove("keyboard-open");
-  setKeyboardOffset(0);
 }
 
     function hideKeyboardToolbar() {
@@ -3761,10 +3760,25 @@ if (block.type === "url") {
     }
 
     function updateKeyboardToolbarPosition() {
-  phone.classList.remove("keyboard-open");
-  keyboardLocked = false;
-  setKeyboardOffset(0);
-}
+      const measuredOffset = measureKeyboardOffset();
+      const keyboardIsOpen = currentView === "editor" && measuredOffset > 90;
+
+      if (keyboardIsOpen) {
+        keyboardLocked = true;
+        setKeyboardOffset(measuredOffset);
+        showCenteredKeyboardToolbar();
+        return;
+      }
+
+      if (keyboardLocked) {
+        hideKeyboardToolbar();
+        return;
+      }
+
+      if (measuredOffset <= 30) {
+        closedViewportHeight = Math.max(closedViewportHeight, keyboardViewport?.height || window.innerHeight, window.innerHeight);
+      }
+    }
 
     function setView(view) {
       currentView = view;
@@ -6392,7 +6406,8 @@ document.addEventListener("input", event => {
     document.addEventListener("beforeinput", handleBeforeInput);
 
     if (keyboardViewport) {
-}
+      keyboardViewport.addEventListener("resize", updateKeyboardToolbarPosition);
+    }
 
     window.addEventListener("resize", updateKeyboardToolbarPosition);
     window.addEventListener("orientationchange", () => {
@@ -6403,6 +6418,9 @@ document.addEventListener("input", event => {
     document.addEventListener("focusin", event => {
       const block = event.target.closest(".block");
       if (block) focusedBlockId = block.dataset.id;
+      if (!keyboardLocked) {
+        setTimeout(updateKeyboardToolbarPosition, 140);
+      }
     });
     document.addEventListener("focusout", event => {
   const editable = event.target.closest("[contenteditable='true']");
