@@ -6405,21 +6405,27 @@ selectionBar.addEventListener("mousedown", event => {
 
     let keyboardCloseTimer = null;
 let lockedKeyboardOffset = 0;
+let keyboardLocked = false;
 
-function updateKeyboardOffset() {
-  if (!window.visualViewport) return;
+function measureKeyboardOffset() {
+  if (!window.visualViewport) return 0;
 
   const vv = window.visualViewport;
 
-  const offset = Math.max(
+  return Math.max(
     0,
     window.innerHeight - vv.height - vv.offsetTop
   );
+}
+
+function updateKeyboardOffset() {
+  const offset = measureKeyboardOffset();
 
   if (offset > 80) {
     clearTimeout(keyboardCloseTimer);
 
-    lockedKeyboardOffset = offset;
+    keyboardLocked = true;
+    lockedKeyboardOffset = Math.max(lockedKeyboardOffset, offset);
 
     document.documentElement.style.setProperty(
       "--keyboard-offset",
@@ -6429,22 +6435,28 @@ function updateKeyboardOffset() {
     return;
   }
 
+  if (!keyboardLocked) return;
+
   clearTimeout(keyboardCloseTimer);
 
   keyboardCloseTimer = setTimeout(() => {
+    keyboardLocked = false;
     lockedKeyboardOffset = 0;
 
-    document.documentElement.style.setProperty(
-      "--keyboard-offset",
-      "0px"
-    );
+    document.documentElement.style.setProperty("--keyboard-offset", "0px");
   }, 1000);
 }
 
 window.visualViewport?.addEventListener("resize", updateKeyboardOffset);
 window.visualViewport?.addEventListener("scroll", updateKeyboardOffset);
-window.addEventListener("focusin", updateKeyboardOffset);
-window.addEventListener("focusout", updateKeyboardOffset);
+
+window.addEventListener("focusin", () => {
+  setTimeout(updateKeyboardOffset, 250);
+});
+
+window.addEventListener("focusout", () => {
+  setTimeout(updateKeyboardOffset, 250);
+});
 
 updateKeyboardOffset();
 
