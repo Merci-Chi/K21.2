@@ -2341,6 +2341,21 @@
     min-height: 38px;
   }
 }
+.editor-active.keyboard-open .toolbar {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  bottom: calc(var(--keyboard-offset) + env(safe-area-inset-bottom)) !important;
+  width: 100vw !important;
+  transform: none !important;
+  display: flex !important;
+  border-radius: 0 !important;
+  z-index: 9999 !important;
+}
+.nav {
+  bottom: 14px !important;
+}
   </style>
 </head>
 <body>
@@ -3764,31 +3779,29 @@ if (block.type === "url") {
     }
 
     function updateKeyboardToolbarPosition() {
-      const viewportHeight = keyboardViewport?.height || window.innerHeight;
-      const measuredOffset = measureKeyboardOffset();
-      const keyboardIsOpen = currentView === "editor" && measuredOffset > 90;
-      const viewportHeightChanged = Math.abs(viewportHeight - lastAccessoryViewportHeight) > 2;
+  const viewportHeight = keyboardViewport?.height || window.innerHeight;
+  const measuredOffset = measureKeyboardOffset();
+  const keyboardIsOpen = currentView === "editor" && measuredOffset > 90;
 
-      if (keyboardIsOpen) {
-        if (keyboardLocked && !viewportHeightChanged) return;
+  lastAccessoryViewportHeight = viewportHeight;
 
-        keyboardLocked = true;
-        setKeyboardOffset(measuredOffset);
-        showKeyboardAccessoryToolbar();
-        lastAccessoryViewportHeight = viewportHeight;
-        return;
-      }
+  if (keyboardIsOpen) {
+    keyboardLocked = true;
+    setKeyboardOffset(measuredOffset);
+    phone.classList.add("keyboard-open");
+    return;
+  }
 
-      if (keyboardLocked) {
-        hideKeyboardToolbar();
-        return;
-      }
+  keyboardLocked = false;
+  setKeyboardOffset(0);
+  phone.classList.remove("keyboard-open");
 
-      if (measuredOffset <= 30) {
-        closedViewportHeight = Math.max(closedViewportHeight, keyboardViewport?.height || window.innerHeight, window.innerHeight);
-        lastAccessoryViewportHeight = viewportHeight;
-      }
-    }
+  closedViewportHeight = Math.max(
+    closedViewportHeight,
+    keyboardViewport?.height || window.innerHeight,
+    window.innerHeight
+  );
+}
 
     function setView(view) {
       currentView = view;
@@ -6432,10 +6445,18 @@ document.addEventListener("input", event => {
     });
 
     document.addEventListener("focusin", event => {
-      setActiveEditorElement(event.target);
-      const block = event.target.closest(".block");
-      if (block) focusedBlockId = block.dataset.id;
-    });
+  const editor = event.target.closest("[contenteditable='true'], textarea, input");
+  if (!editor) return;
+
+  activeEditorElement = editor;
+
+  const block = event.target.closest(".block");
+  if (block) focusedBlockId = block.dataset.id;
+
+  if (currentView === "editor") {
+    phone.classList.add("keyboard-open");
+  }
+});
     document.addEventListener("focusout", event => {
   const editable = event.target.closest("[contenteditable='true']");
   if (!editable?.dataset?.id) return;
