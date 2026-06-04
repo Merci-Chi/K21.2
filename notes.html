@@ -1441,12 +1441,12 @@
 
 .editor-active.keyboard-open .toolbar {
   position: fixed;
-  left: 18px;
-  right: 18px;
-  top: auto;
-  bottom: calc(var(--nav-height) + 12px);
-  width: auto;
-  transform: none;
+  left: 50%;
+  right: auto;
+  top: 50%;
+  width: min(calc(100vw - 20px), 430px);
+  bottom: auto;
+  transform: translate(-50%, -50%);
 }
 
 @media (min-width: 461px) {
@@ -1461,13 +1461,15 @@
   }
 
   .editor-active.keyboard-open .toolbar {
-  position: fixed;
-  left: 18px;
-  right: 18px;
-  top: auto;
-  bottom: calc(var(--nav-height) + 24px);
-  width: auto;
-  transform: none;
+    position: fixed;
+    left: 50%;
+    right: auto;
+    top: 50%;
+    width: min(calc(100vw - 20px), 430px);
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+  }
 }
 
     .toolbar button {
