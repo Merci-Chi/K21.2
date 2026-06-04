@@ -2281,6 +2281,25 @@
     padding: 8px;
   }
 
+  .editor-active .toolbar {
+    display: none;
+  }
+
+  .editor-active.keyboard-open .toolbar {
+    left: 0;
+    right: 0;
+    width: 100vw;
+    display: flex;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08), 0 -18px 34px rgba(0, 0, 0, 0.32);
+  }
+
+  .keyboard-open .nav {
+    display: none;
+  }
+
   .toolbar button {
     min-width: 36px;
     height: 36px;
@@ -3703,7 +3722,7 @@ if (block.type === "url") {
       const activeViewportHeight = keyboardViewport?.height || window.innerHeight;
       const viewportTop = keyboardViewport?.offsetTop || 0;
       const viewportBottom = viewportTop + activeViewportHeight;
-      const layoutHeight = Math.max(window.innerHeight, closedViewportHeight);
+      const layoutHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight, closedViewportHeight);
       const coveredByViewport = Math.max(0, layoutHeight - viewportBottom);
       const viewportShrink = Math.max(0, closedViewportHeight - activeViewportHeight);
 
@@ -3716,10 +3735,8 @@ if (block.type === "url") {
       phone.style.setProperty("--keyboard-offset", `${nextOffset}px`);
     }
 
-    function toolbarTopAboveKeyboard() {
-      const viewportHeight = keyboardViewport?.height || window.innerHeight;
-      const toolbarHeight = toolbar?.offsetHeight || 54;
-      return Math.max(8, Math.round(viewportHeight - toolbarHeight - 10));
+    function visualViewportBottom() {
+      return Math.round((keyboardViewport?.offsetTop || 0) + (keyboardViewport?.height || window.innerHeight));
     }
 
     function setKeyboardToolbarTop(top) {
@@ -3729,50 +3746,26 @@ if (block.type === "url") {
         return;
       }
 
-      keyboardToolbarTop = Math.max(8, Math.round(top));
+      keyboardToolbarTop = Math.max(0, Math.round(top));
       phone.style.setProperty("--keyboard-toolbar-top", `${keyboardToolbarTop}px`);
     }
 
-    function lockToolbarAboveKeyboard(offset) {
-      clearTimeout(keyboardReleaseTimer);
-      keyboardReleaseTimer = null;
-      if (keyboardLocked) return;
-
-      keyboardLocked = true;
-      setKeyboardOffset(offset);
-      setKeyboardToolbarTop(toolbarTopAboveKeyboard());
+    function dockToolbarToVisualViewport() {
       phone.classList.add("keyboard-open");
+      const toolbarHeight = toolbar?.offsetHeight || 54;
+      setKeyboardToolbarTop(visualViewportBottom() - toolbarHeight);
     }
 
-    function scheduleToolbarKeyboardLock(offset) {
+    function hideKeyboardToolbar() {
+      clearTimeout(keyboardOpenTimer);
       clearTimeout(keyboardReleaseTimer);
-      keyboardReleaseTimer = null;
-
-      if (keyboardLocked) return;
-
-      pendingKeyboardOffset = Math.max(pendingKeyboardOffset, offset);
-      clearTimeout(keyboardOpenTimer);
-      keyboardOpenTimer = setTimeout(() => {
-        keyboardOpenTimer = null;
-        lockToolbarAboveKeyboard(Math.max(pendingKeyboardOffset, measureKeyboardOffset()));
-        pendingKeyboardOffset = 0;
-      }, 140);
-    }
-
-    function releaseToolbarAfterKeyboardCloses() {
-      if (keyboardReleaseTimer) return;
-      clearTimeout(keyboardOpenTimer);
       keyboardOpenTimer = null;
+      keyboardReleaseTimer = null;
       pendingKeyboardOffset = 0;
-
-      keyboardReleaseTimer = setTimeout(() => {
-        keyboardLocked = false;
-        keyboardReleaseTimer = null;
-        phone.classList.remove("keyboard-open");
-        setKeyboardOffset(0);
-        setKeyboardToolbarTop(null);
-        closedViewportHeight = keyboardViewport?.height || window.innerHeight;
-      }, 1000);
+      keyboardLocked = false;
+      phone.classList.remove("keyboard-open");
+      setKeyboardOffset(0);
+      setKeyboardToolbarTop(null);
     }
 
     function updateKeyboardToolbarPosition() {
@@ -3780,21 +3773,19 @@ if (block.type === "url") {
       const keyboardIsOpen = textInputHasFocus() && measuredOffset > 90;
 
       if (keyboardIsOpen) {
-        scheduleToolbarKeyboardLock(measuredOffset);
+        keyboardLocked = true;
+        setKeyboardOffset(measuredOffset);
+        dockToolbarToVisualViewport();
         return;
       }
 
-      clearTimeout(keyboardOpenTimer);
-      keyboardOpenTimer = null;
-      pendingKeyboardOffset = 0;
-
       if (keyboardLocked) {
-        releaseToolbarAfterKeyboardCloses();
+        hideKeyboardToolbar();
         return;
       }
 
       if (!textInputHasFocus()) {
-        closedViewportHeight = Math.max(closedViewportHeight, keyboardViewport?.height || window.innerHeight);
+        closedViewportHeight = Math.max(closedViewportHeight, keyboardViewport?.height || window.innerHeight, window.innerHeight);
       }
     }
 
@@ -6530,6 +6521,10 @@ if (imageViewer) {
     revealImageControls();
   });
 }
+    toolbar.addEventListener("pointerdown", event => {
+  event.preventDefault();
+});
+
     toolbar.addEventListener("mousedown", event => {
   event.preventDefault();
 });
