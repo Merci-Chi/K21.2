@@ -1417,11 +1417,12 @@
 
     .toolbar {
   position: fixed;
-  left: 18px;
-  right: 18px;
-  bottom: 10px;
-  transform: translateY(calc(-1 * var(--keyboard-offset)));
-  z-index: 30;
+left: 18px;
+right: 18px;
+top: var(--toolbar-top, auto);
+bottom: auto;
+transform: none;
+z-index: 9999;
   display: none;
   gap: 7px;
   overflow-x: auto;
@@ -1440,10 +1441,16 @@
 }
 
 @media (min-width: 461px) {
-  .editor-active .toolbar {
-    display: flex;
+  .toolbar {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: auto;
+    bottom: calc(var(--nav-height) + 24px);
+    transform: none;
+    z-index: 19;
   }
-
+}
   .toolbar {
     position: absolute;
     left: 18px;
@@ -6403,62 +6410,65 @@ selectionBar.addEventListener("mousedown", event => {
   event.preventDefault();
 });
 
-    let keyboardCloseTimer = null;
-let lockedKeyboardOffset = 0;
-let keyboardLocked = false;
+    let toolbarCloseTimer = null;
 
-function measureKeyboardOffset() {
-  if (!window.visualViewport) return 0;
+function positionToolbarAboveKeyboard() {
+  const toolbar = document.querySelector(".toolbar");
+  if (!toolbar || !window.visualViewport) return;
 
   const vv = window.visualViewport;
+  const toolbarHeight = toolbar.offsetHeight || 60;
+  const gap = 10;
 
-  return Math.max(
-    0,
-    window.innerHeight - vv.height - vv.offsetTop
-  );
-}
+  const keyboardOpen =
+    (window.innerHeight - vv.height - vv.offsetTop) > 80;
 
-function updateKeyboardOffset() {
-  const offset = measureKeyboardOffset();
+  if (keyboardOpen) {
+    clearTimeout(toolbarCloseTimer);
 
-  if (offset > 80) {
-    clearTimeout(keyboardCloseTimer);
-
-    keyboardLocked = true;
-    lockedKeyboardOffset = Math.max(lockedKeyboardOffset, offset);
+    const top =
+      vv.offsetTop +
+      vv.height -
+      toolbarHeight -
+      gap;
 
     document.documentElement.style.setProperty(
-      "--keyboard-offset",
-      `${lockedKeyboardOffset}px`
+      "--toolbar-top",
+      `${top}px`
     );
 
     return;
   }
 
-  if (!keyboardLocked) return;
+  clearTimeout(toolbarCloseTimer);
 
-  clearTimeout(keyboardCloseTimer);
-
-  keyboardCloseTimer = setTimeout(() => {
-    keyboardLocked = false;
-    lockedKeyboardOffset = 0;
-
-    document.documentElement.style.setProperty("--keyboard-offset", "0px");
+  toolbarCloseTimer = setTimeout(() => {
+    document.documentElement.style.setProperty(
+      "--toolbar-top",
+      "auto"
+    );
   }, 1000);
 }
 
-window.visualViewport?.addEventListener("resize", updateKeyboardOffset);
-window.visualViewport?.addEventListener("scroll", updateKeyboardOffset);
+window.visualViewport?.addEventListener(
+  "resize",
+  positionToolbarAboveKeyboard
+);
+
+window.visualViewport?.addEventListener(
+  "scroll",
+  positionToolbarAboveKeyboard
+);
 
 window.addEventListener("focusin", () => {
-  setTimeout(updateKeyboardOffset, 250);
+  setTimeout(positionToolbarAboveKeyboard, 250);
 });
 
 window.addEventListener("focusout", () => {
-  setTimeout(updateKeyboardOffset, 250);
+  setTimeout(positionToolbarAboveKeyboard, 250);
 });
 
-updateKeyboardOffset();
+positionToolbarAboveKeyboard();
 
     searchInput.addEventListener("input", renderNotes);
     noteTitleField.addEventListener("keydown", event => {
