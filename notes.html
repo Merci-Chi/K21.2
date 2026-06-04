@@ -124,6 +124,43 @@
       display: block;
     }
 
+    #editorView.page-dark {
+      background: transparent;
+      color: #fff;
+    }
+
+    #editorView.page-light {
+      background: #fff;
+      color: #111827;
+    }
+
+    #editorView.page-light .topbar.center {
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.98),
+        rgba(255, 255, 255, 0.86) 72%,
+        transparent
+      );
+    }
+
+    #editorView.page-light .editor-title {
+      color: #111827;
+    }
+
+    #editorView.page-light .editor-title::placeholder {
+      color: rgba(17, 24, 39, 0.38);
+    }
+
+    #editorView.page-light .icon-btn:not(.primary) {
+      color: rgba(17, 24, 39, 0.82);
+      background: rgba(17, 24, 39, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.1);
+    }
+
+    #editorView.page-light .kicker {
+      color: rgba(17, 24, 39, 0.58);
+    }
+
     .topbar {
       display: flex;
       align-items: flex-start;
@@ -467,33 +504,45 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      background: #fff;
-      border: 1px solid #e1e4e8;
-      border-radius: 24px;
-      padding: 18px 16px;
-      color: #111827;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      background: rgba(12, 17, 28, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 22px;
+      padding: 16px 14px;
+      color: #fff;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
     .note-page + .note-page {
       margin-top: 14px;
     }
 
+    .note-page.light {
+      background: #fff;
+      border-color: #e1e4e8;
+      color: #111827;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
     .note-page .block:focus-within {
+      background: rgba(255, 255, 255, 0.045);
+      border-color: rgba(255, 255, 255, 0.09);
+    }
+
+    .note-page.light .block:focus-within {
       background: rgba(15, 23, 42, 0.035);
       border-color: rgba(15, 23, 42, 0.08);
     }
 
-    .note-page .editable,
-    .note-page .dropdown-child-editable,
-    .note-page .marker,
-    .note-page .dropdown-caret,
-    .note-page .dropdown-child-marker {
+    .note-page.light .editable,
+    .note-page.light .dropdown-child-editable,
+    .note-page.light .marker,
+    .note-page.light .dropdown-caret,
+    .note-page.light .dropdown-child-marker {
       color: #111827;
     }
 
-    .note-page .editable:empty::before,
-    .note-page .dropdown-child-editable:empty::before {
+    .note-page.light .editable:empty::before,
+    .note-page.light .dropdown-child-editable:empty::before {
       color: rgba(17, 24, 39, 0.38);
     }
 
@@ -664,11 +713,17 @@
 
     .card {
       border-radius: 22px;
-      background: #fff;
-      border: 1px solid #e1e4e8;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2);
       padding: 0;
       overflow: visible;
+    }
+
+    .note-page.light .card {
+      background: #fff;
+      border-color: #e1e4e8;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
     .card .block-line {
@@ -679,9 +734,13 @@
       min-height: 72px;
       padding: 16px;
       border-radius: inherit;
-      color: #111827;
+      color: #fff;
       background: transparent;
       box-shadow: none;
+    }
+
+    .note-page.light .card .editable {
+      color: #111827;
     }
 
     .bullet .block-line,
@@ -930,6 +989,52 @@
   display: block;
 }
 
+.card-interior {
+  display: grid;
+  gap: 9px;
+  padding: 0 16px 16px;
+}
+
+.card-child-preview {
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.card-child-image {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+}
+
+.card-add-image {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.note-page.light .card-child-preview {
+  color: #111827;
+}
+
+.note-page.light .card-add-image {
+  color: #111827;
+  background: rgba(17, 24, 39, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.12);
+}
+
 .separator-block {
   padding: 8px 0;
 }
@@ -1131,11 +1236,11 @@
 }
 
     .toolbar button {
-      min-width: 40px;
-      height: 40px;
+      min-width: 38px;
+      height: 38px;
       display: grid;
       place-items: center;
-      border-radius: 13px;
+      border-radius: 12px;
       color: rgba(255, 255, 255, 0.82);
       background: rgba(255, 255, 255, 0.065);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -1289,8 +1394,7 @@
     }
 
     .nav-item,
-    .nav-add,
-.add {
+    .add {
       min-width: 0;
       display: grid;
       place-items: center;
@@ -1304,11 +1408,18 @@
       font-size: 17px;
     }
 
+    .nav-item svg,
+    .add svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 1.8;
+    }
+
     .nav-item.active {
       color: var(--text);
     }
 
-    .nav-add {
+    .add {
       width: 60px;
       height: 60px;
       border-radius: 22px;
@@ -1374,9 +1485,69 @@
       overflow: hidden;
     }
 
+    #textColorModal .compact-sheet {
+      width: min(100%, 260px);
+      max-height: min(360px, calc(100dvh - 118px));
+    }
+
+    #textColorModal.mode-picker .compact-sheet {
+      width: 150px;
+      padding: 10px;
+    }
+
+    #textColorModal.mode-picker .grabber,
+    #textColorModal.mode-picker .sheet-head {
+      display: none;
+    }
+
+    #textColorModal.mode-picker .preset-grid {
+      grid-template-columns: repeat(2, 58px);
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #textColorModal .insert-option {
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 1fr;
+      place-items: center;
+      padding: 10px;
+    }
+
+    #textColorModal .insert-option span {
+      display: none;
+    }
+
+    #textColorModal .insert-option i {
+      width: 38px;
+      height: 38px;
+      margin: 0;
+    }
+
     .note-form {
       display: grid;
       gap: 12px;
+    }
+
+    .mode-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mode-choice {
+      min-height: 42px;
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.76);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      font-weight: 850;
+    }
+
+    .mode-choice.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--blue));
+      box-shadow: 0 12px 28px rgba(90, 140, 255, 0.24);
     }
 
     .field {
@@ -1427,25 +1598,47 @@
 
     .preset-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
     }
 
     .preset-color,
     .preset-gradient {
       aspect-ratio: 1;
+      min-height: 42px;
       border-radius: 50%;
       background: var(--preset);
       box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 10px 24px rgba(0, 0, 0, 0.22);
     }
 
     .preset-gradient {
-      border-radius: 16px;
+      border-radius: 14px;
     }
 
     .preset-color.active,
     .preset-gradient.active {
       box-shadow: inset 0 0 0 3px #fff, 0 0 0 2px rgba(255, 255, 255, 0.2), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .preset-clear {
+      position: relative;
+      background:
+        linear-gradient(135deg, transparent 47%, #ff4d67 48%, #ff4d67 52%, transparent 53%),
+        rgba(255, 255, 255, 0.055);
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .text-highlight {
+      border-radius: 5px;
+      padding: 0 2px;
+      background: var(--highlight-color);
+    }
+
+    .text-highlight-gradient {
+      border-radius: 5px;
+      padding: 0 2px;
+      background: var(--highlight-gradient);
     }
 
     .size-option {
@@ -1795,6 +1988,70 @@
   .app {
     padding-inline: 18px;
   }
+
+  #editorView {
+    padding-bottom: 112px;
+  }
+
+  #editorView .editor-title,
+  #editorView .blocks,
+  #editorView .add-line {
+    margin-left: 14px;
+    margin-right: 14px;
+    width: calc(100% - 28px);
+  }
+
+  .editor-title {
+    font-size: 30px;
+  }
+
+  .note-page {
+    border-radius: 18px;
+    padding: 12px 10px;
+  }
+
+  .block {
+    padding: 8px 7px;
+    border-radius: 14px;
+  }
+
+  .toolbar {
+    left: 10px;
+    right: 10px;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 20px;
+  }
+
+  .toolbar button {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  .selection-bar {
+    left: 10px;
+    right: 10px;
+    bottom: calc(var(--nav-height) + 10px + var(--keyboard-offset));
+  }
+
+  .modal {
+    padding: 10px 10px calc(92px + env(safe-area-inset-bottom));
+  }
+
+  .sheet {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .preset-grid {
+    gap: 7px;
+  }
+
+  .preset-color,
+  .preset-gradient {
+    min-height: 38px;
+  }
 }
   </style>
 </head>
@@ -1936,22 +2193,35 @@
 
     <nav class="nav" aria-label="Primary navigation">
       <button class="nav-item" type="button" data-command="home">
-        <i class="fa-solid fa-house" aria-hidden="true"></i>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 10.7 12 3l9 7.7V20a1 1 0 0 1-1 1h-5.2v-6.6H9.2V21H4a1 1 0 0 1-1-1v-9.3Z" />
+        </svg>
         Home
       </button>
       <button class="nav-item" type="button" data-command="habits">
-        <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="8" stroke="currentColor" />
+          <circle cx="12" cy="12" r="3" stroke="currentColor" />
+        </svg>
         Habit
       </button>
-      <button class="nav-add add" type="button" data-command="smart-add" aria-label="Add">
-        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      <button class="add" type="button" data-command="smart-add" aria-label="Add">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-linecap="round" />
+        </svg>
       </button>
       <button class="nav-item active" type="button" data-command="notes">
-        <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" />
+          <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" />
+        </svg>
         Notes
       </button>
       <button class="nav-item" type="button" data-command="profile">
-        <i class="fa-solid fa-user" aria-hidden="true"></i>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" />
+          <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-linecap="round" />
+        </svg>
         Profile
       </button>
     </nav>
@@ -1980,6 +2250,14 @@
           <div>
             <p class="kicker"><i class="fa-solid fa-icons" aria-hidden="true"></i> Icon</p>
             <div class="icon-row" id="iconChoices"></div>
+          </div>
+
+          <div>
+            <p class="kicker"><i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i> Page mode</p>
+            <div class="mode-row" id="pageModeChoices">
+              <button class="mode-choice" type="button" data-command="draft-page-mode" data-mode="dark">Dark</button>
+              <button class="mode-choice" type="button" data-command="draft-page-mode" data-mode="light">Light</button>
+            </div>
           </div>
 
           <div class="modal-actions">
@@ -2384,23 +2662,32 @@ let blockPath = [];
     let pendingImageBlockId = null;
     let activeBlockIconCategory = "recents";
     let activeBlockIconPage = 0;
+    let savedTextRange = null;
+    let savedTextEditable = null;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
       { label: "White", color: "#ffffff" },
+      { label: "Black", color: "#000000" },
       { label: "Silver", color: "#d7deea" },
+      { label: "Slate", color: "#94a3b8" },
       { label: "Blue", color: "#7db0ff" },
+      { label: "Navy", color: "#3b82f6" },
       { label: "Sky", color: "#62d7ff" },
       { label: "Teal", color: "#5eead4" },
       { label: "Green", color: "#5ee0ad" },
+      { label: "Lime", color: "#bef264" },
       { label: "Gold", color: "#ffd866" },
+      { label: "Yellow", color: "#facc15" },
       { label: "Orange", color: "#ffab6b" },
       { label: "Pink", color: "#ff86c5" },
       { label: "Rose", color: "#ff8c9a" },
       { label: "Purple", color: "#b997ff" },
+      { label: "Violet", color: "#8b5cf6" },
       { label: "Red", color: "#ff7276" }
     ];
     const textGradientPresets = [
       { label: "White Glow", gradient: "linear-gradient(90deg, #ffffff 0%, #d7deea 100%)" },
+      { label: "Ink", gradient: "linear-gradient(90deg, #000000 0%, #64748b 100%)" },
       { label: "Sky", gradient: "linear-gradient(90deg, #5a8cff 0%, #46d7c5 100%)" },
       { label: "Glow", gradient: "linear-gradient(90deg, #5a8cff 0%, #9d70ff 48%, #ff74ba 100%)" },
       { label: "Sunrise", gradient: "linear-gradient(90deg, #ffd33d 0%, #ff9a52 48%, #ff74ba 100%)" },
@@ -2411,9 +2698,39 @@ let blockPath = [];
       { label: "Violet", gradient: "linear-gradient(90deg, #9d70ff 0%, #5a8cff 100%)" },
       { label: "Fire", gradient: "linear-gradient(90deg, #ff7276 0%, #ff9a52 100%)" },
       { label: "Aurora", gradient: "linear-gradient(90deg, #5ee0ad 0%, #7db0ff 50%, #ff86c5 100%)" },
-      { label: "Moon", gradient: "linear-gradient(90deg, #ffffff 0%, #7db0ff 55%, #9d70ff 100%)" }
+      { label: "Moon", gradient: "linear-gradient(90deg, #ffffff 0%, #7db0ff 55%, #9d70ff 100%)" },
+      { label: "Forest", gradient: "linear-gradient(90deg, #22c55e 0%, #84cc16 100%)" },
+      { label: "Lagoon", gradient: "linear-gradient(90deg, #06b6d4 0%, #14b8a6 100%)" },
+      { label: "Blush", gradient: "linear-gradient(90deg, #fb7185 0%, #f9a8d4 100%)" },
+      { label: "Royal", gradient: "linear-gradient(90deg, #4338ca 0%, #c084fc 100%)" },
+      { label: "Ember", gradient: "linear-gradient(90deg, #ef4444 0%, #facc15 100%)" }
     ];
+    const highlightColorPresets = [
+      { label: "Clear", clear: true },
+      { label: "White", color: "rgba(255, 255, 255, 0.42)" },
+      { label: "Black", color: "rgba(0, 0, 0, 0.5)" },
+      { label: "Silver", color: "rgba(215, 222, 234, 0.42)" },
+      { label: "Blue", color: "rgba(125, 176, 255, 0.48)" },
+      { label: "Sky", color: "rgba(98, 215, 255, 0.48)" },
+      { label: "Teal", color: "rgba(94, 234, 212, 0.48)" },
+      { label: "Green", color: "rgba(94, 224, 173, 0.48)" },
+      { label: "Lime", color: "rgba(190, 242, 100, 0.48)" },
+      { label: "Gold", color: "rgba(255, 216, 102, 0.56)" },
+      { label: "Yellow", color: "rgba(250, 204, 21, 0.56)" },
+      { label: "Orange", color: "rgba(255, 171, 107, 0.5)" },
+      { label: "Pink", color: "rgba(255, 134, 197, 0.5)" },
+      { label: "Rose", color: "rgba(255, 140, 154, 0.5)" },
+      { label: "Purple", color: "rgba(185, 151, 255, 0.5)" },
+      { label: "Violet", color: "rgba(139, 92, 246, 0.48)" },
+      { label: "Red", color: "rgba(255, 114, 118, 0.5)" },
+      { label: "Brown", color: "rgba(161, 98, 7, 0.5)" }
+    ];
+    const highlightGradientPresets = textGradientPresets.map(item => ({
+      label: item.label,
+      gradient: item.gradient.replaceAll(" 100%)", " 100%)")
+    }));
     let textColorMode = "";
+    let textStyleTarget = "color";
 
     function uid() {
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
@@ -2430,6 +2747,7 @@ function loadState() {
         note.pinned = Boolean(note.pinned);
         note.accent ||= colors[noteIndex % colors.length];
         note.icon ||= icons[noteIndex % icons.length];
+        note.pageMode = note.pageMode === "light" ? "light" : "dark";
         note.order = Number.isFinite(note.order) ? note.order : noteIndex;
 
         if (!Array.isArray(note.blocks) || !note.blocks.length) {
@@ -2613,13 +2931,31 @@ function goBackOneLevel() {
     function sanitizeHtml(value) {
       const template = document.createElement("template");
       template.innerHTML = String(value ?? "");
-      const allowed = new Set(["B", "STRONG", "I", "EM", "U", "MARK", "BR", "DIV"]);
+      const allowed = new Set(["B", "STRONG", "I", "EM", "U", "MARK", "BR", "DIV", "SPAN"]);
       template.content.querySelectorAll("*").forEach(node => {
         if (!allowed.has(node.tagName)) {
           node.replaceWith(document.createTextNode(node.textContent || ""));
           return;
         }
-        [...node.attributes].forEach(attr => node.removeAttribute(attr.name));
+        [...node.attributes].forEach(attr => {
+          if (node.tagName === "SPAN" && attr.name === "class" && ["text-gradient", "text-highlight", "text-highlight-gradient"].includes(attr.value)) return;
+          if (node.tagName === "SPAN" && attr.name === "style") {
+            const color = attr.value.match(/(?:^|;)\s*color\s*:\s*(#[0-9a-fA-F]{3,8})\s*(?:;|$)/);
+            const gradient = attr.value.match(/--text-gradient\s*:\s*(linear-gradient\([#0-9a-zA-Z,.\s%()-]+\))\s*(?:;|$)/);
+            const highlightColor = attr.value.match(/--highlight-color\s*:\s*((?:#[0-9a-fA-F]{3,8})|(?:rgba?\([0-9,.\s]+\)))\s*(?:;|$)/);
+            const highlightGradient = attr.value.match(/--highlight-gradient\s*:\s*(linear-gradient\([#0-9a-zA-Z,.\s%()-]+\))\s*(?:;|$)/);
+            const nextStyles = [];
+            if (color) nextStyles.push(`color: ${color[1]}`);
+            if (gradient) nextStyles.push(`--text-gradient: ${gradient[1]}`);
+            if (highlightColor) nextStyles.push(`--highlight-color: ${highlightColor[1]}`);
+            if (highlightGradient) nextStyles.push(`--highlight-gradient: ${highlightGradient[1]}`);
+            if (nextStyles.length) {
+              node.setAttribute("style", nextStyles.join("; "));
+              return;
+            }
+          }
+          node.removeAttribute(attr.name);
+        });
       });
       return template.innerHTML;
     }
@@ -2758,6 +3094,9 @@ function goBackOneLevel() {
         setView("notes");
         return;
       }
+const pageMode = note.pageMode === "light" ? "light" : "dark";
+editorView.classList.toggle("page-light", pageMode === "light");
+editorView.classList.toggle("page-dark", pageMode !== "light");
 const parentBlock = activeParentBlock();
 
 if (document.activeElement !== titleInput) {
@@ -2766,11 +3105,9 @@ if (document.activeElement !== titleInput) {
     : note.title || "";
 }
 
-titleInput.style.color = parentBlock
-  ? "#fff"
-  : "#fff";
+titleInput.style.color = pageMode === "light" ? "#111827" : "#fff";
 
-blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
+blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent, pageMode);
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
       wireDragging(blocksEl.querySelectorAll(".block"), "block");
       autoSizeTitle();
@@ -2813,14 +3150,7 @@ function blockIconHtml(block) {
 }
 
 function blockIconEditorHtml(block) {
-  return `
-    <div class="block-icon-edit">
-      <button class="block-color-control" type="button" data-command="open-block-color-menu" data-id="${block.id}" aria-label="Choose block icon color" style="--picked-color:${escapeHtml(block.iconColor || "var(--accent)")}"></button>
-      <button class="block-icon-control" type="button" data-command="open-block-icon-menu" data-id="${block.id}" aria-label="Choose block icon">
-        ${iconSvg(block.icon || "solid:circle")}
-      </button>
-    </div>
-  `;
+  return "";
 }
 
 function blockEditButtonHtml(block) {
@@ -2864,13 +3194,38 @@ function dropdownChildrenHtml(block) {
     </div>
   `;
 }
-function renderBlocksHtml(blocks, accent) {
+
+function cardInteriorHtml(block) {
+  if (!block.type?.startsWith("card-")) return "";
+  const children = Array.isArray(block.children) ? block.children : [];
+  const childHtml = children.map(child => {
+    if (child.type === "image") {
+      return child.src
+        ? `<img class="card-child-image" src="${child.src}" alt="Card image" />`
+        : "";
+    }
+
+    const text = stripHtml(child.text || "");
+    if (!text) return "";
+    return `<div class="card-child-preview">${sanitizeHtml(child.text || "")}</div>`;
+  }).filter(Boolean).join("");
+
+  return `
+    <div class="card-interior">
+      ${childHtml}
+      <button class="card-add-image" type="button" data-command="add-image-to-card" data-id="${block.id}" aria-label="Add image to card">
+        <i class="fa-solid fa-image" aria-hidden="true"></i><span>Add image</span>
+      </button>
+    </div>
+  `;
+}
+function renderBlocksHtml(blocks, accent, pageMode = "dark") {
   let html = "";
   let pageBlocks = [];
   let lastBlockId = "";
 
   const flushPage = () => {
-    html += `<div class="note-page">${renderBlockSequence(pageBlocks, accent)}</div>`;
+    html += `<div class="note-page ${pageMode === "light" ? "light" : "dark"}">${renderBlockSequence(pageBlocks, accent)}</div>`;
     pageBlocks = [];
   };
 
@@ -3016,6 +3371,7 @@ if (block.type === "url") {
     </div>
 
     ${block.type === "dropdown" ? dropdownChildrenHtml(block) : ""}
+    ${cardInteriorHtml(block)}
     ${blockIconEditorHtml(block)}
     ${blockEditButtonHtml(block)}
   </article>
@@ -3075,6 +3431,7 @@ function updateEditorModeLabel() {
         pinned: false,
         accent: noteDraft?.accent || colors[0],
         icon: normalizeIconValue(noteDraft?.icon || icons[0]),
+        pageMode: noteDraft?.pageMode === "light" ? "light" : "dark",
         order: state.notes.length,
         blocks: [{ id: uid(), type: "paragraph", text: "" }]
       };
@@ -3099,6 +3456,7 @@ function updateEditorModeLabel() {
         pinned: false,
         accent: colors[0],
         icon: normalizeIconValue(icons[0]),
+        pageMode: "dark",
         order: state.notes.length,
         blocks: []
       };
@@ -3486,7 +3844,7 @@ function refreshSelectionClasses() {
   if (
     event.target.closest(
       ".url-field, .action-btn, .selection-bar, .toolbar, .modal"
-        + ", .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret"
+        + ", .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret, .card-add-image"
     )
   ) {
     return;
@@ -3530,7 +3888,7 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
     let holdTimer = null;
 
     element.addEventListener("pointerdown", event => {
-      if (event.target.closest("[contenteditable='true'], input, textarea, .url-field, .action-btn, .task-check, .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret")) return;
+      if (event.target.closest("[contenteditable='true'], input, textarea, .url-field, .action-btn, .task-check, .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret, .card-add-image")) return;
 
 if (event.target.closest(".image-open") && !selection.kind) {
   // allow image blocks to be long-pressed/swiped for selection
@@ -4009,8 +4367,102 @@ if (event.target.closest(".image-open") && !selection.kind) {
       refreshSelectionClasses();
     }
 
+    function activeEditableSelection() {
+      const selected = window.getSelection();
+      if (!selected?.rangeCount || selected.isCollapsed) return null;
+
+      const range = selected.getRangeAt(0);
+      const editable = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
+        ? range.commonAncestorContainer.closest?.("[contenteditable='true']")
+        : range.commonAncestorContainer.parentElement?.closest?.("[contenteditable='true']");
+
+      if (!editable || !editable.contains(range.commonAncestorContainer)) return null;
+      return { editable, range };
+    }
+
+    function rememberTextSelection() {
+      const active = activeEditableSelection();
+      if (!active) return false;
+
+      savedTextRange = active.range.cloneRange();
+      savedTextEditable = active.editable;
+      focusedBlockId = active.editable.dataset.parentId || active.editable.dataset.id || focusedBlockId;
+      focusedChild = active.editable.dataset.parentId
+        ? { parentId: active.editable.dataset.parentId, id: active.editable.dataset.id }
+        : null;
+      return true;
+    }
+
+    function restoreTextSelection() {
+      if (!savedTextRange || !savedTextEditable?.isConnected) return null;
+
+      const selected = window.getSelection();
+      selected.removeAllRanges();
+      selected.addRange(savedTextRange);
+      savedTextEditable.focus();
+      return savedTextEditable;
+    }
+
+    function wrapSavedSelection(wrapper) {
+      const editable = restoreTextSelection();
+      const selected = window.getSelection();
+      if (!editable || !selected?.rangeCount || selected.isCollapsed) return null;
+
+      const range = selected.getRangeAt(0);
+      if (!editable.contains(range.commonAncestorContainer)) return null;
+
+      const content = range.extractContents();
+      wrapper.appendChild(content);
+      range.insertNode(wrapper);
+      selected.removeAllRanges();
+      const after = document.createRange();
+      after.selectNodeContents(wrapper);
+      after.collapse(false);
+      selected.addRange(after);
+      updateBlockField(editable);
+      return editable;
+    }
+
+    function clearSavedHighlight() {
+      const editable = restoreTextSelection();
+      const selected = window.getSelection();
+      if (!editable || !selected?.rangeCount || selected.isCollapsed) return null;
+
+      const range = selected.getRangeAt(0);
+      if (!editable.contains(range.commonAncestorContainer)) return null;
+
+      const content = range.extractContents();
+      const clean = document.createDocumentFragment();
+
+      function appendClean(node, target) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          target.appendChild(node.cloneNode(true));
+          return;
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+        const isHighlight = node.tagName === "MARK"
+          || node.classList.contains("text-highlight")
+          || node.classList.contains("text-highlight-gradient");
+
+        if (isHighlight) {
+          [...node.childNodes].forEach(child => appendClean(child, target));
+          return;
+        }
+
+        const clone = node.cloneNode(false);
+        [...node.childNodes].forEach(child => appendClean(child, clone));
+        target.appendChild(clone);
+      }
+
+      [...content.childNodes].forEach(node => appendClean(node, clean));
+      range.insertNode(clean);
+      updateBlockField(editable);
+      return editable;
+    }
+
     function renderTextColorChoices() {
-      const block = firstSelectedBlock() || (focusedChild ? activeChildBlock(focusedChild.parentId, focusedChild.id) : null);
       if (!textColorMode) {
         textColorChoices.innerHTML = `
           <button class="insert-option" type="button" data-command="choose-text-color-mode" data-mode="color">
@@ -4020,19 +4472,30 @@ if (event.target.closest(".image-open") && !selection.kind) {
             <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i><span>Gradient</span>
           </button>
         `;
+        textColorModal.classList.add("mode-picker");
         return;
       }
 
-      const presets = textColorMode === "gradient" ? textGradientPresets : textColorPresets;
+      textColorModal.classList.remove("mode-picker");
+      const presets = textStyleTarget === "highlight"
+        ? (textColorMode === "gradient" ? highlightGradientPresets : highlightColorPresets)
+        : (textColorMode === "gradient" ? textGradientPresets : textColorPresets);
       textColorChoices.innerHTML = presets.map((preset, index) => {
-        const active = preset.gradient ? block?.textGradient === preset.gradient : (block?.textColor || "#ffffff") === preset.color && !block?.textGradient;
-        return `<button class="${preset.gradient ? "preset-gradient" : "preset-color"} ${active ? "active" : ""}" type="button" data-command="set-text-color" data-index="${index}" style="--preset:${preset.gradient || preset.color}" aria-label="${preset.label}"></button>`;
+        const className = preset.clear ? "preset-clear" : preset.gradient ? "preset-gradient" : "preset-color";
+        const style = preset.clear ? "" : ` style="--preset:${preset.gradient || preset.color}"`;
+        return `<button class="${className}" type="button" data-command="set-text-color" data-index="${index}"${style} aria-label="${preset.label}"></button>`;
       }).join("");
     }
 
-    function openTextColorMenu() {
-      if (!selectedBlockIds().length && !focusedChild?.id) return;
+    function openTextColorMenu(target = "color") {
+      if (!rememberTextSelection()) {
+        showToast("Select text first");
+        return;
+      }
+      textStyleTarget = target === "highlight" ? "highlight" : "color";
       textColorMode = "";
+      document.getElementById("textColorTitle").textContent = textStyleTarget === "highlight" ? "Highlight" : "Text color";
+      textColorModal.classList.add("mode-picker");
       renderTextColorChoices();
       textColorModal.classList.add("open");
       textColorModal.setAttribute("aria-hidden", "false");
@@ -4042,32 +4505,47 @@ if (event.target.closest(".image-open") && !selection.kind) {
       textColorModal.classList.remove("open");
       textColorModal.setAttribute("aria-hidden", "true");
       textColorMode = "";
+      textStyleTarget = "color";
+      textColorModal.classList.remove("mode-picker");
+      savedTextRange = null;
+      savedTextEditable = null;
     }
 
     function setSelectedTextColor(index) {
-      const presets = textColorMode === "gradient" ? textGradientPresets : textColorPresets;
+      const presets = textStyleTarget === "highlight"
+        ? (textColorMode === "gradient" ? highlightGradientPresets : highlightColorPresets)
+        : (textColorMode === "gradient" ? textGradientPresets : textColorPresets);
       const preset = presets[Number(index)];
-      const ids = new Set(selectedBlockIds());
-      if (!preset || (!ids.size && !focusedChild?.id)) return;
+      if (!preset) return;
       remember();
-      const applyPreset = block => {
-        if (!block || block.type === "image") return;
-        if (preset.gradient) {
-          block.textGradient = preset.gradient;
-          delete block.textColor;
-        } else {
-          block.textColor = preset.color;
-          delete block.textGradient;
-        }
-      };
-      if (ids.size) activeBlocks().forEach(block => {
-        if (ids.has(block.id)) applyPreset(block);
-      });
-      else applyPreset(activeChildBlock(focusedChild.parentId, focusedChild.id));
+      if (preset.clear) {
+        const editable = clearSavedHighlight();
+        if (!editable) showToast("Select text first");
+        saveState();
+        closeTextColorMenu();
+        return;
+      }
+      const wrapper = document.createElement("span");
+      if (textStyleTarget === "highlight" && preset.gradient) {
+        wrapper.className = "text-highlight-gradient";
+        wrapper.style.setProperty("--highlight-gradient", preset.gradient);
+      } else if (textStyleTarget === "highlight") {
+        wrapper.className = "text-highlight";
+        wrapper.style.setProperty("--highlight-color", preset.color);
+      } else if (preset.gradient) {
+        wrapper.className = "text-gradient";
+        wrapper.style.setProperty("--text-gradient", preset.gradient);
+      } else {
+        wrapper.style.color = preset.color;
+      }
+      const editable = wrapSavedSelection(wrapper);
+      if (!editable) {
+        showToast("Select text first");
+        closeTextColorMenu();
+        return;
+      }
       saveState();
       closeTextColorMenu();
-      renderEditor();
-      refreshSelectionClasses();
     }
 
     function openViewText() {
@@ -4295,6 +4773,27 @@ function enterFocusedChildNote() {
   openInteriorNote(targetId);
 }
 
+function addImageToCard(id) {
+  const block = findBlockEverywhere(id);
+  if (!block || !block.type?.startsWith("card-")) return;
+  remember();
+  if (!Array.isArray(block.children)) block.children = [];
+  const imageBlock = {
+    id: uid(),
+    type: "image",
+    text: "",
+    src: "",
+    children: []
+  };
+  block.children.push(imageBlock);
+  pendingImageBlockId = imageBlock.id;
+  focusedBlockId = block.id;
+  saveState();
+  renderEditor();
+  photoInput.value = "";
+  photoInput.click();
+}
+
 function cycleAlignment() {
   const editable = document.activeElement?.closest?.("[contenteditable='true']")
     || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
@@ -4344,7 +4843,8 @@ function convertFocusedChild(type) {
       if (!editable || !selected?.rangeCount || selected.isCollapsed || !editable.contains(selected.getRangeAt(0).commonAncestorContainer)) return;
       if (editable) editable.focus();
       if (format === "highlight") {
-        document.execCommand("insertHTML", false, `<mark>${sanitizeHtml(selected.toString())}</mark>`);
+        openTextColorMenu("highlight");
+        return;
       } else if (format === "indent") {
         document.execCommand("indent", false, null);
       } else {
@@ -4368,7 +4868,8 @@ function insertBlock(type) {
         id,
         title: note?.title || "",
         accent: note?.accent || colors[0],
-        icon: normalizeIconValue(note?.icon || icons[0])
+        icon: normalizeIconValue(note?.icon || icons[0]),
+        pageMode: note?.pageMode === "light" ? "light" : "dark"
       };
       noteModalTitle.textContent = id ? "Edit note" : "New note";
       noteTitleField.value = noteDraft.title;
@@ -4382,6 +4883,9 @@ function insertBlock(type) {
       colorChoices.innerHTML = colors.map(color => `
         <button class="swatch ${noteDraft.accent === color ? "active" : ""}" type="button" data-command="draft-color" data-color="${color}" style="--accent:${color}" aria-label="Set note color"></button>
       `).join("");
+      document.querySelectorAll("#pageModeChoices .mode-choice").forEach(button => {
+        button.classList.toggle("active", button.dataset.mode === (noteDraft.pageMode || "dark"));
+      });
       renderNoteIconPicker(activeIconCategory);
     }
 
@@ -4450,6 +4954,7 @@ function insertBlock(type) {
         note.title = noteDraft.title;
         note.accent = noteDraft.accent;
         note.icon = normalizeIconValue(noteDraft.icon);
+        note.pageMode = noteDraft.pageMode === "light" ? "light" : "dark";
         saveState();
         closeNoteModal();
         renderAll();
@@ -4717,11 +5222,9 @@ function renderBlockEditChoices(block) {
     return;
   }
 
-  const textTools = `
+    const textTools = `
     <button class="insert-option" type="button" data-command="open-size-menu"><i class="fa-solid fa-text-height" aria-hidden="true"></i><span>Text Size</span></button>
     <button class="insert-option" type="button" data-command="open-text-color-menu"><i class="fa-solid fa-palette" aria-hidden="true"></i><span>Text Color</span></button>
-    <button class="insert-option" type="button" data-command="open-block-icon-menu" data-id="${block.id}"><i class="fa-solid fa-icons" aria-hidden="true"></i><span>Icon</span></button>
-    <button class="insert-option" type="button" data-command="open-block-color-menu" data-id="${block.id}"><i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>Icon Color</span></button>
     <button class="insert-option" type="button" data-command="set-block-type" data-type="bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i><span>Bullet</span></button>
     <button class="insert-option" type="button" data-command="set-block-type" data-type="number"><i class="fa-solid fa-list-ol" aria-hidden="true"></i><span>Number</span></button>
     <button class="insert-option" type="button" data-command="set-block-type" data-type="task"><i class="fa-solid fa-square-check" aria-hidden="true"></i><span>Checkbox</span></button>
@@ -4826,6 +5329,11 @@ if (name === "close-block-edit-menu") {
 
 if (name === "set-block-type") {
   setBlockType(element.dataset.type);
+  return;
+}
+
+if (name === "add-image-to-card") {
+  addImageToCard(element.dataset.id);
   return;
 }
 
@@ -5150,6 +5658,18 @@ if (name === "open-image") {
         noteDraft.accent = element.dataset.color;
         renderNoteModalChoices();
       }
+      if (name === "draft-page-mode" && noteDraft) {
+        noteDraft.pageMode = element.dataset.mode === "light" ? "light" : "dark";
+        if (noteDraft.id) {
+          const note = noteById(noteDraft.id);
+          if (note) {
+            note.pageMode = noteDraft.pageMode;
+            saveState();
+            if (state.activeId === note.id) renderEditor();
+          }
+        }
+        renderNoteModalChoices();
+      }
       if (name === "draft-icon" && noteDraft) {
         noteDraft.icon = normalizeIconValue(element.dataset.icon);
         rememberIcon(noteDraft.icon);
@@ -5358,12 +5878,10 @@ if (imageViewer) {
   });
 }
     toolbar.addEventListener("mousedown", event => {
-  if (event.target.closest("[data-command]")) return;
   event.preventDefault();
 });
 
 selectionBar.addEventListener("mousedown", event => {
-  if (event.target.closest("[data-command]")) return;
   event.preventDefault();
 });
 
