@@ -26,7 +26,6 @@
       --soft-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
       --nav-height: 94px;
       --keyboard-offset: 0px;
-      --keyboard-toolbar-top: auto;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -1442,8 +1441,12 @@
 
 .editor-active.keyboard-open .toolbar {
   position: fixed;
-  top: var(--keyboard-toolbar-top);
+  left: 50%;
+  right: auto;
+  top: 50%;
+  width: min(calc(100vw - 20px), 430px);
   bottom: auto;
+  transform: translate(-50%, -50%);
 }
 
 @media (min-width: 461px) {
@@ -1459,8 +1462,12 @@
 
   .editor-active.keyboard-open .toolbar {
     position: fixed;
-    top: var(--keyboard-toolbar-top);
+    left: 50%;
+    right: auto;
+    top: 50%;
+    width: min(calc(100vw - 20px), 430px);
     bottom: auto;
+    transform: translate(-50%, -50%);
     z-index: 9999;
   }
 }
@@ -2286,14 +2293,17 @@
   }
 
   .editor-active.keyboard-open .toolbar {
-    left: 0;
-    right: 0;
-    width: 100vw;
+    left: 50%;
+    right: auto;
+    top: 50%;
+    bottom: auto;
+    width: min(calc(100vw - 20px), 430px);
     display: flex;
-    border-radius: 0;
-    border-left: 0;
-    border-right: 0;
-    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08), 0 -18px 34px rgba(0, 0, 0, 0.32);
+    border-radius: 22px;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .keyboard-open .nav {
@@ -2968,12 +2978,10 @@ let blockPath = [];
     let focusColorTargetId = null;
     let keyboardLocked = false;
     let keyboardOffset = 0;
-    let keyboardToolbarTop = 0;
     let keyboardOpenTimer = null;
     let keyboardReleaseTimer = null;
     let pendingKeyboardOffset = 0;
     let closedViewportHeight = keyboardViewport?.height || window.innerHeight;
-    let lastKeyboardViewportHeight = keyboardViewport?.height || window.innerHeight;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
       { label: "White", color: "#ffffff" },
@@ -3736,31 +3744,8 @@ if (block.type === "url") {
       phone.style.setProperty("--keyboard-offset", `${nextOffset}px`);
     }
 
-    function currentVisualViewportHeight() {
-      return Math.round(keyboardViewport?.height || window.innerHeight);
-    }
-
-    function setKeyboardToolbarTop(top) {
-      if (top === null) {
-        keyboardToolbarTop = 0;
-        phone.style.setProperty("--keyboard-toolbar-top", "auto");
-        return;
-      }
-
-      keyboardToolbarTop = Math.max(0, Math.round(top));
-      phone.style.setProperty("--keyboard-toolbar-top", `${keyboardToolbarTop}px`);
-    }
-
-    function dockToolbarToVisualViewport(force = false) {
-      const viewportHeight = currentVisualViewportHeight();
-      const heightChanged = Math.abs(viewportHeight - lastKeyboardViewportHeight) > 4;
-
-      if (!force && keyboardLocked && !heightChanged) return;
-
+    function showCenteredKeyboardToolbar() {
       phone.classList.add("keyboard-open");
-      const toolbarHeight = toolbar?.offsetHeight || 54;
-      setKeyboardToolbarTop(viewportHeight - toolbarHeight);
-      lastKeyboardViewportHeight = viewportHeight;
     }
 
     function hideKeyboardToolbar() {
@@ -3772,8 +3757,6 @@ if (block.type === "url") {
       keyboardLocked = false;
       phone.classList.remove("keyboard-open");
       setKeyboardOffset(0);
-      setKeyboardToolbarTop(null);
-      lastKeyboardViewportHeight = currentVisualViewportHeight();
     }
 
     function updateKeyboardToolbarPosition() {
@@ -3781,10 +3764,9 @@ if (block.type === "url") {
       const keyboardIsOpen = currentView === "editor" && measuredOffset > 90;
 
       if (keyboardIsOpen) {
-        const wasOpen = keyboardLocked;
         keyboardLocked = true;
         setKeyboardOffset(measuredOffset);
-        dockToolbarToVisualViewport(!wasOpen);
+        showCenteredKeyboardToolbar();
         return;
       }
 
@@ -3812,8 +3794,6 @@ if (block.type === "url") {
         pendingKeyboardOffset = 0;
         phone.classList.remove("keyboard-open");
         setKeyboardOffset(0);
-        setKeyboardToolbarTop(null);
-        lastKeyboardViewportHeight = currentVisualViewportHeight();
       }
       closeSelection();
       if (view === "notes") renderNotes();
@@ -6566,8 +6546,6 @@ function startApp() {
   keyboardLocked = false;
   pendingKeyboardOffset = 0;
   setKeyboardOffset(0);
-  setKeyboardToolbarTop(null);
-  lastKeyboardViewportHeight = currentVisualViewportHeight();
 
   if (searchInput) searchInput.value = "";
 
