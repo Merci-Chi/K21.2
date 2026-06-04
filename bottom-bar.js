@@ -158,7 +158,7 @@ document.querySelectorAll(".nav-item").forEach((item) => {
   const page = window.location.pathname.split("/").pop() || "index.html";
   item.classList.toggle("active",
     (label === "Home" && page === "index.html") ||
-    (label === "Habits" && page === "habits.html") ||
+    ((label === "Habit" || label === "Habits") && page === "habits.html") ||
     (label === "Notes" && page === "notes.html")
   );
 
@@ -167,7 +167,7 @@ document.querySelectorAll(".nav-item").forEach((item) => {
       window.location.href = "index.html";
       return;
     }
-    if (label === "Habits") {
+    if (label === "Habit" || label === "Habits") {
       window.location.href = "habits.html";
       return;
     }
