@@ -457,9 +457,61 @@
     }
 
     .blocks {
-      display: grid;
-      gap: 3px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
       padding-bottom: 500px;
+    }
+
+    .note-page {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      background: #fff;
+      border: 1px solid #e1e4e8;
+      border-radius: 24px;
+      padding: 18px 16px;
+      color: #111827;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .note-page + .note-page {
+      margin-top: 14px;
+    }
+
+    .note-page .block:focus-within {
+      background: rgba(15, 23, 42, 0.035);
+      border-color: rgba(15, 23, 42, 0.08);
+    }
+
+    .note-page .editable,
+    .note-page .dropdown-child-editable,
+    .note-page .marker,
+    .note-page .dropdown-caret,
+    .note-page .dropdown-child-marker {
+      color: #111827;
+    }
+
+    .note-page .editable:empty::before,
+    .note-page .dropdown-child-editable:empty::before {
+      color: rgba(17, 24, 39, 0.38);
+    }
+
+    .page-break-block {
+      min-height: 0;
+      height: 24px;
+      margin: -21px 0;
+      padding: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .selection-active .page-break-block.selected {
+      height: 24px;
+      margin: -21px 0;
+      opacity: 1;
+      border-color: rgba(90, 140, 255, 0.45);
+      background: rgba(90, 140, 255, 0.12);
     }
 
     .block {
@@ -549,6 +601,14 @@
       color: rgba(255, 255, 255, 0.34);
     }
 
+    .editable mark,
+    .dropdown-child-editable mark {
+      color: #06101d;
+      background: linear-gradient(135deg, rgba(255, 211, 61, 0.94), rgba(255, 116, 186, 0.82));
+      border-radius: 5px;
+      padding: 0 2px;
+    }
+
     .heading .editable {
       font-size: 24px;
       font-weight: 920;
@@ -592,16 +652,23 @@
       font-style: italic;
     }
 
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .card-grid .block {
+      min-width: 0;
+    }
+
     .card {
-      padding: 10px;
-      border-radius: 20px;
-      background:
-        linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
-        rgba(12, 17, 28, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.11);
-      box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-radius: 22px;
+      background: #fff;
+      border: 1px solid #e1e4e8;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      padding: 0;
+      overflow: visible;
     }
 
     .card .block-line {
@@ -609,14 +676,12 @@
     }
 
     .card .editable {
+      min-height: 72px;
       padding: 16px;
-      border-radius: 16px;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.028)),
-        rgba(5, 10, 19, 0.46);
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 16px 24px rgba(255, 255, 255, 0.025);
+      border-radius: inherit;
+      color: #111827;
+      background: transparent;
+      box-shadow: none;
     }
 
     .bullet .block-line,
@@ -667,12 +732,69 @@
       color: #fff;
     }
 
+    .dropdown-caret i {
+      transform: rotate(-90deg);
+      transition: transform 150ms ease;
+    }
+
+    .dropdown:not(.collapsed) > .block-line .dropdown-caret i,
+    .dropdown-child-row.child-dropdown:not(.collapsed) > .dropdown-child-marker .dropdown-caret i {
+      transform: rotate(0deg);
+    }
+
     .dropdown-children {
       display: grid;
       gap: 6px;
       margin: 7px 0 0 32px;
       padding-left: 12px;
       border-left: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .dropdown.collapsed .dropdown-children {
+      display: none;
+    }
+
+    .dropdown-child-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .dropdown-child-row > .dropdown-children {
+      grid-column: 2 / -1;
+      margin: 0;
+    }
+
+    .dropdown-child-row.collapsed > .dropdown-children {
+      display: none;
+    }
+
+    .dropdown-child-marker {
+      min-width: 18px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .toolbar .enter-child-tool {
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--blue));
+      box-shadow: 0 12px 28px rgba(90, 140, 255, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    }
+
+    .alignment-tool {
+      margin-left: auto;
+    }
+
+    .focus .editable {
+      padding-left: 13px;
+      border-left: 3px solid var(--accent);
+      color: #fff;
     }
 
     .dropdown-child-editable {
@@ -776,39 +898,39 @@
 }
 
 .card-square .editable {
-  min-height: 164px;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
+.card-short .editable,
 .card-half .editable {
-  min-height: 110px;
+  min-height: 72px;
+  display: grid;
+  align-content: center;
 }
 
+.card-tall .editable,
 .card-long .editable {
-  display: grid;
-  gap: 5px;
-  min-height: 76px;
-  padding-left: 52px;
-  position: relative;
+  min-height: 280px;
+  height: auto;
+  overflow: visible;
 }
 
-.card-long .editable::before {
-  content: "\f15c";
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  position: absolute;
-  left: 16px;
-  top: 16px;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  color: #fff;
-  background: linear-gradient(140deg, #48a7ff, #9d70ff);
+.card-immersive .editable {
+  min-height: min(70vh, 560px);
+  height: auto;
+  overflow: visible;
 }
 
-.separator-block,
-.page-break-block {
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  display: block;
+}
+
+.separator-block {
   padding: 8px 0;
 }
 
@@ -837,29 +959,6 @@
   border-top: 2px dotted rgba(255, 255, 255, 0.58);
 }
 
-.page-break-block {
-  padding: 18px 0;
-}
-
-.page-break-line {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 10px;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 11px;
-  font-weight: 850;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.page-break-line::before,
-.page-break-line::after {
-  content: "";
-  height: 1px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.16) 50%, transparent 50%);
-  background-size: 10px 1px;
-}
 
 .url .editable {
   display: none;
@@ -926,6 +1025,24 @@
 }
 
 .selection-active .block.selected .block-icon-edit {
+  display: grid;
+}
+
+.block-edit-control {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: none;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.selection-active .block.selected .block-edit-control {
   display: grid;
 }
 
@@ -1001,10 +1118,6 @@
 
 @media (min-width: 461px) {
   .editor-active .toolbar {
-    display: none;
-  }
-
-  .editor-active.selection-active .toolbar {
     display: flex;
   }
 
@@ -1755,6 +1868,8 @@
       <button type="button" data-command="format-bold" aria-label="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
       <button type="button" data-command="format-italic" aria-label="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
       <button type="button" data-command="format-underline" aria-label="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
+      <button type="button" data-command="format-highlight" aria-label="Highlight"><i class="fa-solid fa-highlighter" aria-hidden="true"></i></button>
+      <button class="enter-child-tool" type="button" data-command="enter-child-note" aria-label="Enter child note"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i></button>
       <button type="button" data-command="open-size-menu" aria-label="Text size"><strong aria-hidden="true">aA</strong></button>
       <button type="button" data-command="open-text-color-menu" aria-label="Text color"><i class="fa-solid fa-palette" aria-hidden="true"></i></button>
       <button type="button" data-command="add-bullet" aria-label="Add bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
@@ -1762,6 +1877,7 @@
       <button type="button" data-command="add-task" aria-label="Add checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
       <button type="button" data-command="add-heading" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>
       <button type="button" data-command="photo" aria-label="Add photo"><i class="fa-solid fa-image" aria-hidden="true"></i></button>
+      <button class="alignment-tool" type="button" data-command="cycle-alignment" aria-label="Text alignment"><i class="fa-solid fa-align-left" aria-hidden="true"></i></button>
       <button class="primary" type="button" data-command="add-text" aria-label="Add text"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
     </nav>
 
@@ -1774,6 +1890,8 @@
         <button class="icon-btn block-tool" type="button" data-command="format-bold" aria-label="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="format-italic" aria-label="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="format-underline" aria-label="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool" type="button" data-command="format-highlight" aria-label="Highlight"><i class="fa-solid fa-highlighter" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool enter-child-tool" type="button" data-command="enter-child-note" aria-label="Enter child note"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="add-bullet" aria-label="Make bullet list"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="add-number" aria-label="Make numbered list"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="add-task" aria-label="Make checklist"><i class="fa-solid fa-square-check" aria-hidden="true"></i></button>
@@ -1785,6 +1903,7 @@
         <button class="icon-btn block-tool" type="button" data-command="paste-blocks" aria-label="Paste"><i class="fa-solid fa-paste" aria-hidden="true"></i></button>
         <button class="icon-btn block-tool" type="button" data-command="open-size-menu" aria-label="Text size"><strong aria-hidden="true">aA</strong></button>
         <button class="icon-btn block-tool" type="button" data-command="open-view-text" aria-label="View text"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+        <button class="icon-btn block-tool alignment-tool" type="button" data-command="cycle-alignment" aria-label="Text alignment"><i class="fa-solid fa-align-left" aria-hidden="true"></i></button>
 <button class="icon-btn note-tool" type="button" data-command="pin-selected-note" aria-label="Pin note">
   <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
 </button>
@@ -1821,7 +1940,7 @@
       </button>
       <button class="nav-item" type="button" data-command="habits">
         <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
-        Habits
+        Habit
       </button>
       <button class="nav-add" type="button" data-command="smart-add" aria-label="Add">
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -1830,9 +1949,9 @@
         <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
         Notes
       </button>
-      <button class="nav-item" type="button" data-command="photo">
-        <i class="fa-solid fa-image" aria-hidden="true"></i>
-        Photo
+      <button class="nav-item" type="button" data-command="profile">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+        Profile
       </button>
     </nav>
 
@@ -1895,7 +2014,7 @@
       </button>
 
       <button class="insert-option" type="button" data-command="insert-block" data-type="page-break">
-        <i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Page Break</span>
+        <i class="fa-regular fa-clone" aria-hidden="true"></i><span>Page Break</span>
       </button>
 
       <button class="insert-option" type="button" data-command="insert-block" data-type="heading">
@@ -1969,17 +2088,36 @@
 
     <div class="insert-list">
       <button class="insert-option" type="button" data-command="insert-block" data-type="card-square">
-        <i class="fa-solid fa-square" aria-hidden="true"></i><span>Big Square Card</span>
+        <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-half">
-        <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Half Note Card</span>
+      <button class="insert-option" type="button" data-command="insert-block" data-type="card-short">
+        <i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Short Card</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-long">
-        <i class="fa-solid fa-table-list" aria-hidden="true"></i><span>Long Card</span>
+      <button class="insert-option" type="button" data-command="insert-block" data-type="card-tall">
+        <i class="fa-solid fa-table-list" aria-hidden="true"></i><span>Tall Card</span>
+      </button>
+
+      <button class="insert-option" type="button" data-command="insert-block" data-type="card-immersive">
+        <i class="fa-solid fa-mobile-screen" aria-hidden="true"></i><span>Immersive Card</span>
       </button>
     </div>
+  </section>
+</div>
+
+<div class="modal" id="blockEditModal" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="blockEditTitle">
+    <div class="grabber"></div>
+
+    <div class="sheet-head">
+      <h2 id="blockEditTitle">Block edit</h2>
+      <button class="icon-btn" type="button" data-command="close-block-edit-menu" aria-label="Close block edit">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="insert-list" id="blockEditChoices"></div>
   </section>
 </div>
 
@@ -2194,6 +2332,7 @@
     let selection = { kind: null, ids: new Set() };
     let touch = null;
 let focusedBlockId = null;
+let focusedChild = null;
 let undo = null;
 let blockPath = [];
 
@@ -2208,6 +2347,8 @@ let blockPath = [];
     const insertModal = document.getElementById("insertModal");
     const cardModal = document.getElementById("cardModal");
     const lineModal = document.getElementById("lineModal");
+    const blockEditModal = document.getElementById("blockEditModal");
+    const blockEditChoices = document.getElementById("blockEditChoices");
     const sizeModal = document.getElementById("sizeModal");
     const blockColorModal = document.getElementById("blockColorModal");
     const blockIconModal = document.getElementById("blockIconModal");
@@ -2244,15 +2385,34 @@ let blockPath = [];
     let activeBlockIconPage = 0;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
-      { label: "White", color: "#f7f8ff" },
-      { label: "Muted", color: "#a5adbd" },
+      { label: "White", color: "#ffffff" },
+      { label: "Silver", color: "#d7deea" },
       { label: "Blue", color: "#7db0ff" },
+      { label: "Sky", color: "#62d7ff" },
+      { label: "Teal", color: "#5eead4" },
       { label: "Green", color: "#5ee0ad" },
-      { label: "Pink", color: "#ff86c5" },
       { label: "Gold", color: "#ffd866" },
-      { label: "Sky gradient", gradient: "linear-gradient(90deg, #5a8cff 0%, #46d7c5 100%)" },
-      { label: "Glow gradient", gradient: "linear-gradient(90deg, #5a8cff 0%, #9d70ff 48%, #ff74ba 100%)" }
+      { label: "Orange", color: "#ffab6b" },
+      { label: "Pink", color: "#ff86c5" },
+      { label: "Rose", color: "#ff8c9a" },
+      { label: "Purple", color: "#b997ff" },
+      { label: "Red", color: "#ff7276" }
     ];
+    const textGradientPresets = [
+      { label: "White Glow", gradient: "linear-gradient(90deg, #ffffff 0%, #d7deea 100%)" },
+      { label: "Sky", gradient: "linear-gradient(90deg, #5a8cff 0%, #46d7c5 100%)" },
+      { label: "Glow", gradient: "linear-gradient(90deg, #5a8cff 0%, #9d70ff 48%, #ff74ba 100%)" },
+      { label: "Sunrise", gradient: "linear-gradient(90deg, #ffd33d 0%, #ff9a52 48%, #ff74ba 100%)" },
+      { label: "Mint", gradient: "linear-gradient(90deg, #46d7c5 0%, #5ee0ad 100%)" },
+      { label: "Berry", gradient: "linear-gradient(90deg, #ff74ba 0%, #9d70ff 100%)" },
+      { label: "Ocean", gradient: "linear-gradient(90deg, #46d7c5 0%, #5a8cff 100%)" },
+      { label: "Candy", gradient: "linear-gradient(90deg, #ff86c5 0%, #ffd866 100%)" },
+      { label: "Violet", gradient: "linear-gradient(90deg, #9d70ff 0%, #5a8cff 100%)" },
+      { label: "Fire", gradient: "linear-gradient(90deg, #ff7276 0%, #ff9a52 100%)" },
+      { label: "Aurora", gradient: "linear-gradient(90deg, #5ee0ad 0%, #7db0ff 50%, #ff86c5 100%)" },
+      { label: "Moon", gradient: "linear-gradient(90deg, #ffffff 0%, #7db0ff 55%, #9d70ff 100%)" }
+    ];
+    let textColorMode = "";
 
     function uid() {
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
@@ -2309,6 +2469,7 @@ function cleanBlock(block) {
   }
 
   if (block.type === "dropdown") {
+    block.collapsed = block.collapsed !== false;
     if (!block.children.length) {
       block.children.push({
         id: uid(),
@@ -2451,7 +2612,7 @@ function goBackOneLevel() {
     function sanitizeHtml(value) {
       const template = document.createElement("template");
       template.innerHTML = String(value ?? "");
-      const allowed = new Set(["B", "STRONG", "I", "EM", "U", "BR", "DIV"]);
+      const allowed = new Set(["B", "STRONG", "I", "EM", "U", "MARK", "BR", "DIV"]);
       template.content.querySelectorAll("*").forEach(node => {
         if (!allowed.has(node.tagName)) {
           node.replaceWith(document.createTextNode(node.textContent || ""));
@@ -2661,56 +2822,115 @@ function blockIconEditorHtml(block) {
   `;
 }
 
+function blockEditButtonHtml(block) {
+  return `
+    <button class="block-edit-control" type="button" data-command="open-block-edit-menu" data-id="${block.id}" aria-label="Edit block">
+      <i class="fa-solid fa-pen" aria-hidden="true"></i>
+    </button>
+  `;
+}
+
+function dropdownChildMarker(child, index, parentId) {
+  if (child.type === "bullet") return "•";
+  if (child.type === "number") return `${index + 1}.`;
+  if (child.type === "task") {
+    return `<button class="task-check ${child.checked ? "checked" : ""}" type="button" data-command="toggle-dropdown-child-task" data-parent-id="${parentId}" data-id="${child.id}" aria-label="Toggle child task">${child.checked ? '<i class="fa-solid fa-check" aria-hidden="true"></i>' : ""}</button>`;
+  }
+  if (child.type === "dropdown") {
+    return `<button class="dropdown-caret" type="button" data-command="toggle-dropdown" data-id="${child.id}" aria-label="Toggle nested dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>`;
+  }
+  return "";
+}
+
+function dropdownChildHtml(child, index, parentId) {
+  const marker = dropdownChildMarker(child, index, parentId);
+
+  return `
+    <div class="dropdown-child-row child-${child.type || "paragraph"} ${child.collapsed ? "collapsed" : ""}" data-child-id="${child.id}">
+      <span class="dropdown-child-marker">${marker}</span>
+      <div class="dropdown-child-editable ${child.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${child.id}" data-parent-id="${parentId}" data-field="text" data-placeholder="Add context" style="text-align:${escapeHtml(child.align || "left")}; ${child.textGradient ? `--text-gradient:${escapeHtml(child.textGradient)}` : child.textColor ? `color:${escapeHtml(child.textColor)}` : ""}">${sanitizeHtml(child.text || "")}</div>
+      ${child.type === "dropdown" && !child.collapsed ? dropdownChildrenHtml(child) : ""}
+    </div>
+  `;
+}
+
 function dropdownChildrenHtml(block) {
   const children = Array.isArray(block.children) ? block.children : [];
 
   return `
     <div class="dropdown-children">
-      ${children.map(child => `
-        <div class="dropdown-child-editable" contenteditable="true" spellcheck="true" data-id="${child.id}" data-parent-id="${block.id}" data-field="text" data-placeholder="Add context">${sanitizeHtml(child.text || "")}</div>
-      `).join("")}
+      ${children.map((child, index) => dropdownChildHtml(child, index, block.id)).join("")}
     </div>
   `;
 }
 function renderBlocksHtml(blocks, accent) {
   let html = "";
-  let index = 0;
+  let pageBlocks = [];
   let lastBlockId = "";
 
-  while (index < blocks.length) {
-    const block = blocks[index];
+  const flushPage = () => {
+    html += `<div class="note-page">${renderBlockSequence(pageBlocks, accent)}</div>`;
+    pageBlocks = [];
+  };
+
+  blocks.forEach((block, index) => {
+    if (block.type === "page-break") {
+      flushPage();
+      html += renderBlock(block, index, accent);
+      lastBlockId = block.id;
+      return;
+    }
+
+    pageBlocks.push({ block, index });
+    lastBlockId = block.id;
+  });
+
+  flushPage();
+  html += renderInsertRow(lastBlockId);
+
+  return html;
+}
+
+function renderBlockSequence(items, accent) {
+  let html = "";
+  let index = 0;
+
+  while (index < items.length) {
+    const { block } = items[index];
+
+    if (block.type === "card-square") {
+      const squareItems = [];
+
+      while (index < items.length && items[index].block.type === "card-square") {
+        squareItems.push(items[index]);
+        index += 1;
+      }
+
+      html += `<div class="card-grid">${squareItems.map(item => renderBlock(item.block, item.index, accent)).join("")}</div>`;
+      continue;
+    }
 
     if (block.groupId) {
       const groupId = block.groupId;
       const groupItems = [];
 
-      while (index < blocks.length && blocks[index].groupId === groupId) {
-        groupItems.push({
-          block: blocks[index],
-          index
-        });
+      while (index < items.length && items[index].block.groupId === groupId) {
+        groupItems.push(items[index]);
         index += 1;
       }
 
       const groupSelected = groupItems.some(item => selection.ids.has(item.block.id));
-      const lastGroupBlock = groupItems[groupItems.length - 1]?.block;
-      lastBlockId = lastGroupBlock?.id || lastBlockId;
-
       html += `
         <div class="block-group ${groupSelected ? "selected" : ""}" style="--accent:${accent}">
           ${groupItems.map(item => renderBlock(item.block, item.index, accent)).join("")}
         </div>
       `;
-
       continue;
     }
 
-    html += renderBlock(block, index, accent);
-    lastBlockId = block.id;
+    html += renderBlock(block, items[index].index, accent);
     index += 1;
   }
-
-  html += renderInsertRow(lastBlockId);
 
   return html;
 }
@@ -2732,6 +2952,7 @@ function safeUrl(value) {
         return `
     <article class="block separator-block separator-${kind} ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
       <div class="separator-line" aria-hidden="true"></div>
+      ${blockEditButtonHtml(block)}
     </article>
   `;
       }
@@ -2739,7 +2960,7 @@ function safeUrl(value) {
       if (block.type === "page-break") {
         return `
     <article class="block page-break-block ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
-      <div class="page-break-line"><span>Page Break</span></div>
+      ${blockEditButtonHtml(block)}
     </article>
   `;
       }
@@ -2754,6 +2975,7 @@ function safeUrl(value) {
           ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Tap to add photo</span></div>`}
         </button>
       </div>
+      ${blockEditButtonHtml(block)}
     </article>
   `;
 }
@@ -2772,6 +2994,7 @@ if (block.type === "url") {
           <input class="url-field" type="url" value="${escapeHtml(block.url || "")}" placeholder="https://example.com" data-field="url" data-id="${block.id}" />
         </div>
       </div>
+      ${blockEditButtonHtml(block)}
     </article>
   `;
 }
@@ -2782,17 +3005,18 @@ if (block.type === "url") {
           : block.type === "task"
             ? `<button class="task-check ${block.checked ? "checked" : ""}" type="button" data-command="toggle-task" data-id="${block.id}" aria-label="Toggle task">${block.checked ? '<i class="fa-solid fa-check" aria-hidden="true"></i>' : ""}</button>`
             : block.type === "dropdown"
-              ? `<span class="dropdown-caret"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></span>`
+              ? `<button class="dropdown-caret" type="button" data-command="toggle-dropdown" data-id="${block.id}" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>`
             : "";
    return `
-  <article class="block ${block.type} ${block.icon ? "has-icon" : ""} ${block.type === "card-square" ? "card card-square" : ""} ${block.type === "card-half" ? "card card-half" : ""} ${block.type === "card-long" ? "card card-long" : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+  <article class="block ${block.type} ${block.collapsed ? "collapsed" : ""} ${block.icon ? "has-icon" : ""} ${block.type?.startsWith("card-") ? `card ${block.type}` : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
     <div class="block-line">
       ${marker || blockIconHtml(block)}
-      <div class="editable ${block.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write" style="${block.textGradient ? `--text-gradient:${escapeHtml(block.textGradient)}` : block.textColor ? `color:${escapeHtml(block.textColor)}` : ""}">${sanitizeHtml(block.text || "")}</div>
+      <div class="editable ${block.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write" style="text-align:${escapeHtml(block.align || "left")}; ${block.textGradient ? `--text-gradient:${escapeHtml(block.textGradient)}` : block.textColor ? `color:${escapeHtml(block.textColor)}` : ""}">${sanitizeHtml(block.text || "")}</div>
     </div>
 
     ${block.type === "dropdown" ? dropdownChildrenHtml(block) : ""}
     ${blockIconEditorHtml(block)}
+    ${blockEditButtonHtml(block)}
   </article>
 `;
     }
@@ -2935,27 +3159,43 @@ function updateEditorModeLabel() {
     };
   }
 
+  if (type === "focus") {
+    return {
+      ...base,
+      type: "focus",
+      text: ""
+    };
+  }
+
   if (type === "card-square") {
     return {
       ...base,
       type: "card-square",
-      text: "Card"
+      text: ""
     };
   }
 
-  if (type === "card-half") {
+  if (type === "card-half" || type === "card-short") {
     return {
       ...base,
-      type: "card-half",
-      text: "Card"
+      type: "card-short",
+      text: ""
     };
   }
 
-  if (type === "card-long") {
+  if (type === "card-long" || type === "card-tall") {
     return {
       ...base,
-      type: "card-long",
-      text: "<b>Card Title</b><br>Write details here"
+      type: "card-tall",
+      text: ""
+    };
+  }
+
+  if (type === "card-immersive") {
+    return {
+      ...base,
+      type: "card-immersive",
+      text: ""
     };
   }
 
@@ -2975,6 +3215,7 @@ function updateEditorModeLabel() {
     return {
       ...base,
       type: "dropdown",
+      collapsed: true,
       children: [{
         id: uid(),
         type: "paragraph",
@@ -2993,6 +3234,8 @@ function updateEditorModeLabel() {
     function focusBlock(id) {
       const editable = blocksEl.querySelector(`[data-id="${CSS.escape(id)}"][contenteditable="true"]`);
       if (!editable) return;
+      focusedBlockId = editable.dataset.parentId || id;
+      focusedChild = editable.dataset.parentId ? { parentId: editable.dataset.parentId, id } : null;
       editable.focus();
       const range = document.createRange();
       range.selectNodeContents(editable);
@@ -3004,6 +3247,8 @@ function updateEditorModeLabel() {
 function focusDropdownChild(parentId, childId) {
   const editable = blocksEl.querySelector(`[data-parent-id="${CSS.escape(parentId)}"][data-id="${CSS.escape(childId)}"][contenteditable="true"]`);
   if (!editable) return;
+  focusedBlockId = parentId;
+  focusedChild = { parentId, id: childId };
   editable.focus();
   const range = document.createRange();
   range.selectNodeContents(editable);
@@ -3013,7 +3258,7 @@ function focusDropdownChild(parentId, childId) {
   selection.addRange(range);
 }
 function activeChildBlock(parentId, childId) {
-  const parent = activeBlocks().find(item => item.id === parentId);
+  const parent = findBlockEverywhere(parentId);
   if (!parent || !Array.isArray(parent.children)) return null;
   return parent.children.find(child => child.id === childId) || null;
 }
@@ -3043,6 +3288,7 @@ function deleteEmptyBlock(blockId) {
       if (!block) return;
       block[target.dataset.field] = target.dataset.field === "text" ? sanitizeHtml(target.innerHTML) : target.textContent;
       focusedBlockId = target.dataset.parentId || block.id;
+      focusedChild = target.dataset.parentId ? { parentId: target.dataset.parentId, id: block.id } : null;
       saveState();
     }
 
@@ -3091,9 +3337,10 @@ function deleteEmptyBlock(blockId) {
         const childIndex = children.findIndex(item => item.id === block.id);
         const nextChild = {
           id: uid(),
-          type: "paragraph",
+          type: block.type === "dropdown" ? "paragraph" : block.type || "paragraph",
           text: split.after,
           size: "subtext",
+          checked: block.type === "task" ? false : undefined,
           children: []
         };
 
@@ -3172,8 +3419,6 @@ function toggleSelection(kind, id) {
     ids.forEach(itemId => selection.ids.add(itemId));
   }
 
-  if (!selection.ids.size) closeSelection();
-
   updateSelectionUi();
   refreshSelectionClasses();
 }
@@ -3188,7 +3433,7 @@ function closeSelection() {
 }
 
  function updateSelectionUi() {
-  const active = Boolean(selection.kind && selection.ids.size);
+  const active = Boolean(selection.kind);
   phone.classList.toggle("selection-active", active);
   phone.classList.toggle("block-selection", active && selection.kind === "block");
   phone.classList.toggle("note-selection", active && selection.kind === "note");
@@ -3234,13 +3479,13 @@ function refreshSelectionClasses() {
   });
 }
  function handleSelectionModeTap(event) {
-  const active = Boolean(selection.kind && selection.ids.size);
+  const active = Boolean(selection.kind);
   if (!active) return;
 
   if (
     event.target.closest(
       ".url-field, .action-btn, .selection-bar, .toolbar, .modal"
-        + ", .block-icon-control, .block-color-control"
+        + ", .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret"
     )
   ) {
     return;
@@ -3268,7 +3513,7 @@ noteList.addEventListener("click", handleSelectionModeTap, true);
 blocksEl.addEventListener("pointerdown", handleSelectionModeTap, true);
 blocksEl.addEventListener("click", handleSelectionModeTap, true);
 function exitSelectionWhenTappingOutside(event) {
-  const active = Boolean(selection.kind && selection.ids.size);
+  const active = Boolean(selection.kind);
   if (!active) return;
 
   if (event.target.closest("[data-kind][data-id]")) return;
@@ -3284,7 +3529,7 @@ editorView.addEventListener("pointerdown", exitSelectionWhenTappingOutside);
     let holdTimer = null;
 
     element.addEventListener("pointerdown", event => {
-      if (event.target.closest("[contenteditable='true'], input, textarea, .url-field, .action-btn, .task-check, .block-icon-control, .block-color-control")) return;
+      if (event.target.closest("[contenteditable='true'], input, textarea, .url-field, .action-btn, .task-check, .block-icon-control, .block-color-control, .block-edit-control, .dropdown-caret")) return;
 
 if (event.target.closest(".image-open") && !selection.kind) {
   // allow image blocks to be long-pressed/swiped for selection
@@ -3523,7 +3768,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
   showUndo();
 }
     function selectedBlockIds() {
-      if (selection.kind === "block" && selection.ids.size) return [...selection.ids];
+      if (selection.kind === "block") return [...selection.ids];
       return focusedBlockId ? [focusedBlockId] : [];
     }
 
@@ -3764,15 +4009,29 @@ if (event.target.closest(".image-open") && !selection.kind) {
     }
 
     function renderTextColorChoices() {
-      const block = firstSelectedBlock();
-      textColorChoices.innerHTML = textColorPresets.map((preset, index) => {
-        const active = preset.gradient ? block?.textGradient === preset.gradient : block?.textColor === preset.color && !block?.textGradient;
+      const block = firstSelectedBlock() || (focusedChild ? activeChildBlock(focusedChild.parentId, focusedChild.id) : null);
+      if (!textColorMode) {
+        textColorChoices.innerHTML = `
+          <button class="insert-option" type="button" data-command="choose-text-color-mode" data-mode="color">
+            <i class="fa-solid fa-droplet" aria-hidden="true"></i><span>Color</span>
+          </button>
+          <button class="insert-option" type="button" data-command="choose-text-color-mode" data-mode="gradient">
+            <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i><span>Gradient</span>
+          </button>
+        `;
+        return;
+      }
+
+      const presets = textColorMode === "gradient" ? textGradientPresets : textColorPresets;
+      textColorChoices.innerHTML = presets.map((preset, index) => {
+        const active = preset.gradient ? block?.textGradient === preset.gradient : (block?.textColor || "#ffffff") === preset.color && !block?.textGradient;
         return `<button class="${preset.gradient ? "preset-gradient" : "preset-color"} ${active ? "active" : ""}" type="button" data-command="set-text-color" data-index="${index}" style="--preset:${preset.gradient || preset.color}" aria-label="${preset.label}"></button>`;
       }).join("");
     }
 
     function openTextColorMenu() {
-      if (!selectedBlockIds().length) return;
+      if (!selectedBlockIds().length && !focusedChild?.id) return;
+      textColorMode = "";
       renderTextColorChoices();
       textColorModal.classList.add("open");
       textColorModal.setAttribute("aria-hidden", "false");
@@ -3781,15 +4040,17 @@ if (event.target.closest(".image-open") && !selection.kind) {
     function closeTextColorMenu() {
       textColorModal.classList.remove("open");
       textColorModal.setAttribute("aria-hidden", "true");
+      textColorMode = "";
     }
 
     function setSelectedTextColor(index) {
-      const preset = textColorPresets[Number(index)];
+      const presets = textColorMode === "gradient" ? textGradientPresets : textColorPresets;
+      const preset = presets[Number(index)];
       const ids = new Set(selectedBlockIds());
-      if (!preset || !ids.size) return;
+      if (!preset || (!ids.size && !focusedChild?.id)) return;
       remember();
-      activeBlocks().forEach(block => {
-        if (!ids.has(block.id) || block.type === "image") return;
+      const applyPreset = block => {
+        if (!block || block.type === "image") return;
         if (preset.gradient) {
           block.textGradient = preset.gradient;
           delete block.textColor;
@@ -3797,7 +4058,11 @@ if (event.target.closest(".image-open") && !selection.kind) {
           block.textColor = preset.color;
           delete block.textGradient;
         }
+      };
+      if (ids.size) activeBlocks().forEach(block => {
+        if (ids.has(block.id)) applyPreset(block);
       });
+      else applyPreset(activeChildBlock(focusedChild.parentId, focusedChild.id));
       saveState();
       closeTextColorMenu();
       renderEditor();
@@ -3921,6 +4186,9 @@ if (event.target.closest(".image-open") && !selection.kind) {
     }
 
     function convertBlocks(type) {
+      if (!(selection.kind === "block" && selection.ids.size) && convertFocusedChild(type)) {
+        return;
+      }
       const ids = selection.kind === "block" && selection.ids.size
         ? [...selection.ids]
         : focusedBlockId
@@ -3938,6 +4206,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
         else delete block.checked;
         if (type === "heading") block.children = block.children || [];
         else if (type === "dropdown") {
+          block.collapsed = block.collapsed !== false;
           block.children = Array.isArray(block.children) && block.children.length
             ? block.children
             : [{
@@ -3996,27 +4265,90 @@ function closeLineOptions() {
   lineModal.setAttribute("aria-hidden", "true");
 }
 
+function toggleDropdown(id) {
+  const block = findBlockEverywhere(id);
+  if (!block || block.type !== "dropdown") return;
+  remember();
+  block.collapsed = !block.collapsed;
+  saveState();
+  renderEditor();
+  refreshSelectionClasses();
+}
+
+function toggleDropdownChildTask(parentId, childId) {
+  const child = activeChildBlock(parentId, childId);
+  if (!child) return;
+  remember();
+  child.checked = !child.checked;
+  saveState();
+  renderEditor();
+  setTimeout(() => focusDropdownChild(parentId, childId), 30);
+}
+
+function enterFocusedChildNote() {
+  const targetId = focusedChild?.id || selectedBlockIds()[0] || focusedBlockId;
+  if (!targetId) {
+    showToast("Select a block first", "fa-arrow-right-to-bracket");
+    return;
+  }
+  openInteriorNote(targetId);
+}
+
+function cycleAlignment() {
+  const editable = document.activeElement?.closest?.("[contenteditable='true']")
+    || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+  const block = editable?.dataset?.parentId
+    ? activeChildBlock(editable.dataset.parentId, editable.dataset.id)
+    : findBlockEverywhere(editable?.dataset?.id || focusedBlockId);
+  if (!block) return;
+  const modes = ["left", "center", "right"];
+  const next = modes[(modes.indexOf(block.align || "left") + 1) % modes.length];
+  remember();
+  block.align = next;
+  saveState();
+  renderEditor();
+  setTimeout(() => {
+    if (editable?.dataset?.parentId) focusDropdownChild(editable.dataset.parentId, editable.dataset.id);
+    else if (block.id) focusBlock(block.id);
+  }, 30);
+}
+
+function convertFocusedChild(type) {
+  if (!focusedChild?.parentId || !focusedChild?.id) return false;
+  const child = activeChildBlock(focusedChild.parentId, focusedChild.id);
+  if (!child) return false;
+  remember();
+  child.type = type;
+  if (type === "task") child.checked = Boolean(child.checked);
+  else delete child.checked;
+  if (type === "dropdown") {
+    child.collapsed = child.collapsed !== false;
+    child.children = Array.isArray(child.children) && child.children.length
+      ? child.children
+      : [{ id: uid(), type: "paragraph", text: "", size: "subtext", children: [] }];
+  } else if (type !== "heading") {
+    child.children = Array.isArray(child.children) ? child.children : [];
+  }
+  child.size = child.size || "subtext";
+  saveState();
+  renderEditor();
+  setTimeout(() => focusDropdownChild(focusedChild.parentId, focusedChild.id), 30);
+  return true;
+}
+
     function applyInlineFormat(format) {
-      if (selection.kind === "block" && selection.ids.size) {
-        remember();
-        const tag = format === "bold" ? "strong" : format === "italic" ? "em" : "u";
-        const ids = new Set(selectedBlockIds());
-        activeBlocks().forEach(block => {
-          if (!ids.has(block.id) || block.type === "image") return;
-          const html = sanitizeHtml(block.text || "");
-          const plain = stripHtml(html);
-          if (!plain) return;
-          block.text = `<${tag}>${html}</${tag}>`;
-        });
-        saveState();
-        renderEditor();
-        refreshSelectionClasses();
-        return;
-      }
       const editable = document.activeElement?.closest?.("[contenteditable='true']")
         || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+      const selected = window.getSelection();
+      if (!editable || !selected?.rangeCount || selected.isCollapsed || !editable.contains(selected.getRangeAt(0).commonAncestorContainer)) return;
       if (editable) editable.focus();
-      document.execCommand(format, false, null);
+      if (format === "highlight") {
+        document.execCommand("insertHTML", false, `<mark>${sanitizeHtml(selected.toString())}</mark>`);
+      } else if (format === "indent") {
+        document.execCommand("indent", false, null);
+      } else {
+        document.execCommand(format, false, null);
+      }
       if (editable) updateBlockField(editable);
     }
 function insertBlock(type) {
@@ -4136,6 +4468,20 @@ function findBlockEverywhere(blockId, blocks = activeBlocks()) {
 
     if (Array.isArray(block.children)) {
       const found = findBlockEverywhere(blockId, block.children);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
+
+function findBlockPath(blockId, blocks = activeNote()?.blocks || [], path = []) {
+  for (const block of blocks) {
+    const nextPath = [...path, block.id];
+    if (block.id === blockId) return nextPath;
+
+    if (Array.isArray(block.children)) {
+      const found = findBlockPath(blockId, block.children, nextPath);
       if (found) return found;
     }
   }
@@ -4272,7 +4618,7 @@ async function handlePhoto(files) {
   function openInteriorNote(blockId) {
   closeSelection();
 
-  const block = activeBlocks().find(item => item.id === blockId);
+  const block = findBlockEverywhere(blockId);
   if (!block) return;
 
   if (!block.interiorTitle) {
@@ -4296,7 +4642,8 @@ async function handlePhoto(files) {
     });
   }
 
-  blockPath = [...blockPath, blockId];
+  const path = findBlockPath(blockId);
+  blockPath = path || [...blockPath, blockId];
   focusedBlockId = block.children[0]?.id || null;
 
   saveState();
@@ -4363,12 +4710,131 @@ function ungroupSelectedBlocks() {
   refreshSelectionClasses();
 }
 
+function renderBlockEditChoices(block) {
+  if (!block) {
+    blockEditChoices.innerHTML = "";
+    return;
+  }
+
+  const textTools = `
+    <button class="insert-option" type="button" data-command="open-size-menu"><i class="fa-solid fa-text-height" aria-hidden="true"></i><span>Text Size</span></button>
+    <button class="insert-option" type="button" data-command="open-text-color-menu"><i class="fa-solid fa-palette" aria-hidden="true"></i><span>Text Color</span></button>
+    <button class="insert-option" type="button" data-command="open-block-icon-menu" data-id="${block.id}"><i class="fa-solid fa-icons" aria-hidden="true"></i><span>Icon</span></button>
+    <button class="insert-option" type="button" data-command="open-block-color-menu" data-id="${block.id}"><i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>Icon Color</span></button>
+    <button class="insert-option" type="button" data-command="set-block-type" data-type="bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i><span>Bullet</span></button>
+    <button class="insert-option" type="button" data-command="set-block-type" data-type="number"><i class="fa-solid fa-list-ol" aria-hidden="true"></i><span>Number</span></button>
+    <button class="insert-option" type="button" data-command="set-block-type" data-type="task"><i class="fa-solid fa-square-check" aria-hidden="true"></i><span>Checkbox</span></button>
+    <button class="insert-option" type="button" data-command="set-block-type" data-type="dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i><span>Dropdown</span></button>
+    <button class="insert-option" type="button" data-command="set-block-type" data-type="focus"><i class="fa-solid fa-grip-lines-vertical" aria-hidden="true"></i><span>Focus</span></button>
+  `;
+
+  if (block.type?.startsWith("card-")) {
+    blockEditChoices.innerHTML = `
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-square"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span></button>
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-short"><i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Short Card</span></button>
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-tall"><i class="fa-solid fa-table-list" aria-hidden="true"></i><span>Tall Card</span></button>
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-immersive"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i><span>Immersive Card</span></button>
+      ${textTools}
+    `;
+    return;
+  }
+
+  if (block.type?.startsWith("separator-")) {
+    blockEditChoices.innerHTML = `
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="separator-dotted"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i><span>Dotted</span></button>
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="separator-thin"><i class="fa-solid fa-minus" aria-hidden="true"></i><span>Thin</span></button>
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="separator-normal"><i class="fa-solid fa-grip-lines" aria-hidden="true"></i><span>Normal</span></button>
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="separator-strong"><i class="fa-solid fa-grip-lines-vertical" aria-hidden="true"></i><span>Strong</span></button>
+    `;
+    return;
+  }
+
+  if (block.type === "url") {
+    blockEditChoices.innerHTML = `
+      <button class="insert-option" type="button" data-command="show-url-fields"><i class="fa-solid fa-link" aria-hidden="true"></i><span>Edit URL Fields</span></button>
+      <button class="insert-option" type="button" data-command="set-block-type" data-type="paragraph"><i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Convert to Text</span></button>
+    `;
+    return;
+  }
+
+  blockEditChoices.innerHTML = textTools;
+}
+
+function openBlockEditMenu(id) {
+  const block = findBlockEverywhere(id);
+  if (!block) return;
+  focusedBlockId = id;
+  selection.kind = "block";
+  selection.ids = new Set([id]);
+  renderBlockEditChoices(block);
+  updateSelectionUi();
+  refreshSelectionClasses();
+  blockEditModal.classList.add("open");
+  blockEditModal.setAttribute("aria-hidden", "false");
+}
+
+function closeBlockEditMenu() {
+  blockEditModal.classList.remove("open");
+  blockEditModal.setAttribute("aria-hidden", "true");
+}
+
+function setBlockType(type) {
+  const ids = selectedBlockIds();
+  if (!ids.length) return;
+  remember();
+  const idSet = new Set(ids);
+  activeBlocks().forEach(block => {
+    if (!idSet.has(block.id)) return;
+    const keepText = block.text || "";
+    const keepChildren = Array.isArray(block.children) ? block.children : [];
+    block.type = type;
+    block.text = keepText;
+    if (type === "task") block.checked = Boolean(block.checked);
+    else delete block.checked;
+    if (type === "dropdown") {
+      block.collapsed = block.collapsed !== false;
+      block.children = keepChildren.length ? keepChildren : [{ id: uid(), type: "paragraph", text: "", size: "subtext", children: [] }];
+    } else if (type === "heading") {
+      block.children = keepChildren;
+    } else if (!type.startsWith("card-")) {
+      block.children = keepChildren;
+    }
+  });
+  closeBlockEditMenu();
+  saveState();
+  renderEditor();
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
+
 function command(name, element) {
 if (name === "close-toast") {
   toast.classList.remove("show");
   clearTimeout(showToast.timer);
   return;
 }
+if (name === "open-block-edit-menu") {
+  openBlockEditMenu(element.dataset.id);
+  return;
+}
+
+if (name === "close-block-edit-menu") {
+  closeBlockEditMenu();
+  return;
+}
+
+if (name === "set-block-type") {
+  setBlockType(element.dataset.type);
+  return;
+}
+
+if (name === "show-url-fields") {
+  closeBlockEditMenu();
+  renderEditor();
+  refreshSelectionClasses();
+  return;
+}
+
 if (name === "choose-image-for-block") {
   if (selection.kind === "block" && selection.ids.size) {
     toggleSelection("block", element.dataset.id);
@@ -4463,13 +4929,15 @@ if (name === "toggle-block-selection-mode") {
 }
 
 if (name === "pin-selected-note") {
-  const id = selectedNoteId();
-  if (!id) return;
+  if (selection.kind !== "note" || !selection.ids.size) return;
 
-  const note = state.notes.find(item => item.id === id);
-  if (!note) return;
+  const selectedNotes = state.notes.filter(item => selection.ids.has(item.id));
+  if (!selectedNotes.length) return;
 
-  note.pinned = !note.pinned;
+  const shouldPin = selectedNotes.some(note => !note.pinned);
+  selectedNotes.forEach(note => {
+    note.pinned = shouldPin;
+  });
   reindex();
   saveState();
   renderNotes();
@@ -4573,7 +5041,8 @@ if (name === "notes") {
   return;
 }
       if (name === "home") showToast("Home is index.html", "fa-house");
-      if (name === "habits") showToast("Habits is habits.html", "fa-bullseye");
+      if (name === "habits") showToast("Habit is habits.html", "fa-bullseye");
+      if (name === "profile") showToast("Profile coming soon", "fa-user");
       if (name === "pin-note") togglePin(element.dataset.id);
       if (name === "edit-note") openNoteModal(element.dataset.id);
 if (name === "move-note-up") {
@@ -4593,9 +5062,15 @@ if (name === "move-note-down") {
       if (name === "add-bullet") convertBlocks("bullet");
       if (name === "add-number") convertBlocks("number");
       if (name === "add-task") convertBlocks("task");
-      if (name === "add-heading") convertBlocks("dropdown");
+      if (name === "add-heading") {
+        const block = focusedBlockId ? findBlockEverywhere(focusedBlockId) : null;
+        if (!(selection.kind === "block" && selection.ids.size) && block?.type === "dropdown") toggleDropdown(block.id);
+        else convertBlocks("dropdown");
+      }
       if (name === "photo") photoInput.click();
       if (name === "toggle-task") toggleTask(element.dataset.id);
+      if (name === "toggle-dropdown") toggleDropdown(element.dataset.id);
+      if (name === "toggle-dropdown-child-task") toggleDropdownChildTask(element.dataset.parentId, element.dataset.id);
 if (name === "open-image") {
   if (selection.kind === "block" && selection.ids.size) {
     toggleSelection("block", element.dataset.id);
@@ -4614,6 +5089,10 @@ if (name === "open-image") {
       if (name === "format-bold") applyInlineFormat("bold");
       if (name === "format-italic") applyInlineFormat("italic");
       if (name === "format-underline") applyInlineFormat("underline");
+      if (name === "format-highlight") applyInlineFormat("highlight");
+      if (name === "format-indent") applyInlineFormat("indent");
+      if (name === "enter-child-note") enterFocusedChildNote();
+      if (name === "cycle-alignment") cycleAlignment();
       if (name === "move-up") moveSelected(-1);
       if (name === "move-down") moveSelected(1);
       if (name === "duplicate-selected") duplicateSelected();
@@ -4651,6 +5130,10 @@ if (name === "open-image") {
       }
       if (name === "open-text-color-menu") openTextColorMenu();
       if (name === "close-text-color-menu") closeTextColorMenu();
+      if (name === "choose-text-color-mode") {
+        textColorMode = element.dataset.mode;
+        renderTextColorChoices();
+      }
       if (name === "set-text-color") setSelectedTextColor(element.dataset.index);
       if (name === "open-view-text") openViewText();
       if (name === "close-view-text") closeViewText();
@@ -4769,6 +5252,7 @@ document.addEventListener("input", event => {
         closeInsert();
         closeCardOptions();
         closeLineOptions();
+        closeBlockEditMenu();
         closeSizeMenu();
         closeBlockColorMenu();
         closeBlockIconMenu();
@@ -4800,33 +5284,11 @@ document.addEventListener("input", event => {
 document.addEventListener("click", event => {
   if (event.target.matches(".url-field")) return;
   if (event.target.closest("[data-command]")) return;
-  if (selection.kind && selection.ids.size) return;
+  if (selection.kind) return;
   if (event.target.closest(".task-check, .image-open, .action-btn, .block-insert-row")) return;
 
   const blockEl = event.target.closest(".block");
   if (!blockEl) return;
-
-  const block = findBlockEverywhere(blockEl.dataset.id);
-  if (!blockHasInteriorContent(block)) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  if (document.activeElement) document.activeElement.blur();
-
-  openInteriorNote(blockEl.dataset.id);
-});
-document.addEventListener("dblclick", event => {
-  if (selection.kind && selection.ids.size) return;
-  if (event.target.closest(".task-check, .image-open, .action-btn, .url-field, .block-icon-control, .block-color-control, .block-insert-row")) return;
-
-  const block = event.target.closest(".block");
-  if (!block) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  openInteriorNote(block.dataset.id);
 });
     if (noteModal) {
   noteModal.addEventListener("click", event => {
@@ -4849,6 +5311,12 @@ if (cardModal) {
 if (lineModal) {
   lineModal.addEventListener("click", event => {
     if (event.target === lineModal) closeLineOptions();
+  });
+}
+
+if (blockEditModal) {
+  blockEditModal.addEventListener("click", event => {
+    if (event.target === blockEditModal) closeBlockEditMenu();
   });
 }
 
