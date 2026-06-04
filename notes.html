@@ -1441,12 +1441,16 @@
 
 .editor-active.keyboard-open .toolbar {
   position: fixed;
-  left: 18px;
-  right: 18px;
+  left: 0;
+  right: 0;
   top: auto;
-  bottom: calc(var(--nav-height) + 12px);
-  width: auto;
+  bottom: calc(var(--keyboard-offset) + env(safe-area-inset-bottom));
+  width: 100vw;
   transform: none;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08), 0 -18px 34px rgba(0, 0, 0, 0.32);
 }
 
 @media (min-width: 461px) {
@@ -1462,12 +1466,12 @@
 
   .editor-active.keyboard-open .toolbar {
     position: fixed;
-    left: 50%;
-    right: auto;
-    top: 50%;
-    width: min(calc(100vw - 20px), 430px);
-    bottom: auto;
-    transform: translate(-50%, -50%);
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: calc(var(--keyboard-offset) + env(safe-area-inset-bottom));
+    width: 100vw;
+    transform: none;
     z-index: 9999;
   }
 }
@@ -2293,17 +2297,17 @@
   }
 
   .editor-active.keyboard-open .toolbar {
-    left: 50%;
-    right: auto;
-    top: 50%;
-    bottom: auto;
-    width: min(calc(100vw - 20px), 430px);
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: calc(var(--keyboard-offset) + env(safe-area-inset-bottom));
+    width: 100vw;
     display: flex;
-    border-radius: 22px;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-    transform: translate(-50%, -50%);
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    transform: none;
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08), 0 -18px 34px rgba(0, 0, 0, 0.32);
   }
 
   .keyboard-open .nav {
@@ -2975,6 +2979,7 @@ let blockPath = [];
     let activeBlockIconPage = 0;
     let savedTextRange = null;
     let savedTextEditable = null;
+    let activeEditorElement = null;
     let focusColorTargetId = null;
     let keyboardLocked = false;
     let keyboardOffset = 0;
@@ -2982,6 +2987,7 @@ let blockPath = [];
     let keyboardReleaseTimer = null;
     let pendingKeyboardOffset = 0;
     let closedViewportHeight = keyboardViewport?.height || window.innerHeight;
+    let lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
       { label: "White", color: "#ffffff" },
@@ -3744,9 +3750,13 @@ if (block.type === "url") {
       phone.style.setProperty("--keyboard-offset", `${nextOffset}px`);
     }
 
-    function showCenteredKeyboardToolbar() {
-  phone.classList.remove("keyboard-open");
-}
+    function setActiveEditorElement(target) {
+      activeEditorElement = target?.closest?.("[contenteditable='true'], textarea, input") || null;
+    }
+
+    function showKeyboardAccessoryToolbar() {
+      phone.classList.add("keyboard-open");
+    }
 
     function hideKeyboardToolbar() {
       clearTimeout(keyboardOpenTimer);
@@ -3757,16 +3767,22 @@ if (block.type === "url") {
       keyboardLocked = false;
       phone.classList.remove("keyboard-open");
       setKeyboardOffset(0);
+      lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
     }
 
     function updateKeyboardToolbarPosition() {
+      const viewportHeight = keyboardViewport?.height || window.innerHeight;
       const measuredOffset = measureKeyboardOffset();
       const keyboardIsOpen = currentView === "editor" && measuredOffset > 90;
+      const viewportHeightChanged = Math.abs(viewportHeight - lastAccessoryViewportHeight) > 2;
 
       if (keyboardIsOpen) {
+        if (keyboardLocked && !viewportHeightChanged) return;
+
         keyboardLocked = true;
         setKeyboardOffset(measuredOffset);
-        showCenteredKeyboardToolbar();
+        showKeyboardAccessoryToolbar();
+        lastAccessoryViewportHeight = viewportHeight;
         return;
       }
 
@@ -3777,6 +3793,7 @@ if (block.type === "url") {
 
       if (measuredOffset <= 30) {
         closedViewportHeight = Math.max(closedViewportHeight, keyboardViewport?.height || window.innerHeight, window.innerHeight);
+        lastAccessoryViewportHeight = viewportHeight;
       }
     }
 
@@ -3792,8 +3809,10 @@ if (block.type === "url") {
         keyboardReleaseTimer = null;
         keyboardLocked = false;
         pendingKeyboardOffset = 0;
+        activeEditorElement = null;
         phone.classList.remove("keyboard-open");
         setKeyboardOffset(0);
+        lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
       }
       closeSelection();
       if (view === "notes") renderNotes();
@@ -4837,6 +4856,12 @@ if (event.target.closest(".image-open") && !selection.kind) {
       return { editable, range };
     }
 
+    function activeContentEditable() {
+      return activeEditorElement?.closest?.("[contenteditable='true']")
+        || document.activeElement?.closest?.("[contenteditable='true']")
+        || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+    }
+
     function rememberTextSelection() {
       const active = activeEditableSelection();
       if (!active) return false;
@@ -5316,8 +5341,7 @@ function chooseCardCoverImage(id) {
 }
 
 function cycleAlignment() {
-  const editable = document.activeElement?.closest?.("[contenteditable='true']")
-    || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+  const editable = activeContentEditable();
   const block = editable?.dataset?.parentId
     ? activeChildBlock(editable.dataset.parentId, editable.dataset.id)
     : findBlockEverywhere(editable?.dataset?.id || focusedBlockId);
@@ -5360,8 +5384,7 @@ function convertFocusedChild(type) {
 }
 
     function applyInlineFormat(format) {
-      const editable = document.activeElement?.closest?.("[contenteditable='true']")
-        || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+      const editable = activeContentEditable();
       const selected = window.getSelection();
       if (!editable || !selected?.rangeCount || selected.isCollapsed || !editable.contains(selected.getRangeAt(0).commonAncestorContainer)) return;
       if (editable) editable.focus();
@@ -6416,11 +6439,9 @@ document.addEventListener("input", event => {
     });
 
     document.addEventListener("focusin", event => {
+      setActiveEditorElement(event.target);
       const block = event.target.closest(".block");
       if (block) focusedBlockId = block.dataset.id;
-      if (!keyboardLocked) {
-        setTimeout(updateKeyboardToolbarPosition, 140);
-      }
     });
     document.addEventListener("focusout", event => {
   const editable = event.target.closest("[contenteditable='true']");
@@ -6545,7 +6566,9 @@ function startApp() {
   keyboardReleaseTimer = null;
   keyboardLocked = false;
   pendingKeyboardOffset = 0;
+  activeEditorElement = null;
   setKeyboardOffset(0);
+  lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
 
   if (searchInput) searchInput.value = "";
 
