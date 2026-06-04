@@ -249,15 +249,16 @@
     }
 
     .icon-btn.primary {
-      color: #fff;
-      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
-      box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
-      #editorView.page-light .icon-btn.primary {
+  color: #fff;
+  background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+  box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
+}
+
+#editorView.page-light .icon-btn.primary {
   color: rgba(17, 24, 39, 0.82);
   background: rgba(17, 24, 39, 0.055);
   box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.1);
 }
-    }
 
     .icon-btn.active {
       color: #fff;
@@ -1418,7 +1419,8 @@
   position: fixed;
   left: 18px;
   right: 18px;
-  bottom: calc(10px + var(--keyboard-offset));
+  bottom: 10px;
+  transform: translateY(calc(-1 * var(--keyboard-offset)));
   z-index: 30;
   display: none;
   gap: 7px;
@@ -6401,26 +6403,28 @@ selectionBar.addEventListener("mousedown", event => {
   event.preventDefault();
 });
 
-    let lockedKeyboardOffset = 0;
-let keyboardCloseTimer = null;
+    let keyboardCloseTimer = null;
+let lockedKeyboardOffset = 0;
 
 function updateKeyboardOffset() {
   if (!window.visualViewport) return;
 
-  const rawOffset = Math.max(
+  const vv = window.visualViewport;
+
+  const offset = Math.max(
     0,
-    window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop
+    window.innerHeight - vv.height - vv.offsetTop
   );
 
-  const keyboardIsOpen = rawOffset > 80;
-
-  if (keyboardIsOpen) {
+  if (offset > 80) {
     clearTimeout(keyboardCloseTimer);
 
-    lockedKeyboardOffset = rawOffset;
+    lockedKeyboardOffset = offset;
 
-    document.documentElement.classList.add("keyboard-open");
-    document.documentElement.style.setProperty("--keyboard-offset", `${lockedKeyboardOffset}px`);
+    document.documentElement.style.setProperty(
+      "--keyboard-offset",
+      `${lockedKeyboardOffset}px`
+    );
 
     return;
   }
@@ -6429,13 +6433,19 @@ function updateKeyboardOffset() {
 
   keyboardCloseTimer = setTimeout(() => {
     lockedKeyboardOffset = 0;
-    document.documentElement.classList.remove("keyboard-open");
-    document.documentElement.style.setProperty("--keyboard-offset", "0px");
+
+    document.documentElement.style.setProperty(
+      "--keyboard-offset",
+      "0px"
+    );
   }, 1000);
 }
 
 window.visualViewport?.addEventListener("resize", updateKeyboardOffset);
 window.visualViewport?.addEventListener("scroll", updateKeyboardOffset);
+window.addEventListener("focusin", updateKeyboardOffset);
+window.addEventListener("focusout", updateKeyboardOffset);
+
 updateKeyboardOffset();
 
     searchInput.addEventListener("input", renderNotes);
