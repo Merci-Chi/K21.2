@@ -1427,12 +1427,11 @@ mask:
       font-size: 22px;
     }
 
-    .toolbar {
+   .toolbar {
   position: fixed;
   left: 18px;
   right: 18px;
   bottom: calc(var(--nav-height) + 12px);
-  transform: translateY(0);
   z-index: 9999;
   display: none;
   gap: 7px;
@@ -1453,13 +1452,11 @@ mask:
 
 .editor-active.keyboard-open .toolbar {
   position: fixed;
+  top: 50%;
+  bottom: auto;
   left: 18px;
   right: 18px;
-  top: auto;
-  bottom: calc(var(--nav-height) + 12px);
-  width: auto;
-  transform: none;
-  border-radius: 22px;
+  transform: translateY(-50%);
 }
 
 @media (min-width: 461px) {
@@ -3792,28 +3789,31 @@ if (block.type === "url") {
     }
 
     function updateKeyboardToolbarPosition() {
-  const viewportHeight = keyboardViewport?.height || window.innerHeight;
-  const measuredOffset = measureKeyboardOffset();
-  const keyboardIsOpen = currentView === "editor" && measuredOffset > 90;
+  const viewport = window.visualViewport;
+  const active = document.activeElement;
+  const editing = currentView === "editor" && (
+    active?.isContentEditable ||
+    active?.matches?.("textarea, input")
+  );
 
-  lastAccessoryViewportHeight = viewportHeight;
-
-  if (keyboardIsOpen) {
-    keyboardLocked = true;
-    setKeyboardOffset(measuredOffset);
-    phone.classList.add("keyboard-open");
+  if (!viewport || !editing) {
+    phone.classList.remove("keyboard-open");
+    setKeyboardOffset(0);
     return;
   }
 
-  keyboardLocked = false;
-  setKeyboardOffset(0);
-  phone.classList.remove("keyboard-open");
-
-  closedViewportHeight = Math.max(
-    closedViewportHeight,
-    keyboardViewport?.height || window.innerHeight,
-    window.innerHeight
+  const keyboardHeight = Math.max(
+    0,
+    window.innerHeight - viewport.height - viewport.offsetTop
   );
+
+  if (keyboardHeight > 90) {
+    phone.classList.add("keyboard-open");
+    setKeyboardOffset(0);
+  } else {
+    phone.classList.remove("keyboard-open");
+    setKeyboardOffset(0);
+  }
 }
 
     function setView(view) {
@@ -6466,9 +6466,8 @@ document.addEventListener("input", event => {
   const block = event.target.closest(".block");
   if (block) focusedBlockId = block.dataset.id;
 
-  if (currentView === "editor") {
-    phone.classList.add("keyboard-open");
-  }
+  requestAnimationFrame(updateKeyboardToolbarPosition);
+  setTimeout(updateKeyboardToolbarPosition, 250);
 });
     document.addEventListener("focusout", event => {
   const editable = event.target.closest("[contenteditable='true']");
