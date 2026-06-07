@@ -1451,12 +1451,7 @@ mask:
 }
 
 .editor-active.keyboard-open .toolbar {
-  position: fixed;
-  top: 50%;
-  bottom: auto;
-  left: 18px;
-  right: 18px;
-  transform: translateY(-50%);
+  bottom: calc(12px + var(--keyboard-offset) + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 461px) {
@@ -3809,7 +3804,7 @@ if (block.type === "url") {
 
   if (keyboardHeight > 90) {
     phone.classList.add("keyboard-open");
-    setKeyboardOffset(0);
+    setKeyboardOffset(keyboardHeight);
   } else {
     phone.classList.remove("keyboard-open");
     setKeyboardOffset(0);
