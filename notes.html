@@ -2278,25 +2278,6 @@ mask:
     padding: 8px;
   }
 
-  .editor-active .toolbar {
-    display: none;
-  }
-
-  .editor-active.keyboard-open .toolbar {
-  position: fixed;
-  left: 10px;
-  right: 10px;
-  top: auto;
-  bottom: calc(var(--nav-height) + 10px);
-  width: auto;
-  display: flex;
-  border-radius: 22px;
-  transform: none;
-}
-  .keyboard-open .nav {
-    display: none;
-  }
-
   .toolbar button {
     min-width: 36px;
     height: 36px;
@@ -2306,11 +2287,7 @@ mask:
     .selection-bar {
       left: 10px;
       right: 10px;
-      bottom: calc(var(--nav-height) + 10px + var(--keyboard-offset));
-    }
-
-    .editor-active.keyboard-open .selection-bar {
-      bottom: calc(10px + var(--keyboard-offset) + env(safe-area-inset-bottom));
+      bottom: calc(var(--nav-height) + 10px);
     }
 
   .modal {
@@ -2331,32 +2308,21 @@ mask:
     min-height: 38px;
   }
 }
-.editor-active.keyboard-open .toolbar {
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  top: auto !important;
-  bottom: calc(var(--keyboard-offset) + env(safe-area-inset-bottom)) !important;
-  width: 100vw !important;
-  transform: none !important;
-  display: flex !important;
-  border-radius: 0 !important;
-  z-index: 9999 !important;
-}
+
 .nav {
   bottom: 14px !important;
 }
 .editor-active .toolbar,
 .editor-active.keyboard-open .toolbar {
   position: fixed !important;
-  top: calc(112px + env(safe-area-inset-top)) !important;
-  left: 12px !important;
-  right: 12px !important;
+  top: 50% !important;
+  left: 18px !important;
+  right: 18px !important;
   bottom: auto !important;
   width: auto !important;
   display: flex !important;
-  transform: none !important;
-  z-index: 9999 !important;
+  transform: translateY(-50%) !important;
+  z-index: 99999 !important;
 }
   </style>
 </head>
