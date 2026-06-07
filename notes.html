@@ -124,6 +124,43 @@
       display: block;
     }
 
+    #editorView.page-dark {
+      background: transparent;
+      color: #fff;
+    }
+
+    #editorView.page-light {
+      background: #fff;
+      color: #111827;
+    }
+
+    #editorView.page-light .topbar.center {
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.98),
+        rgba(255, 255, 255, 0.86) 72%,
+        transparent
+      );
+    }
+
+    #editorView.page-light .editor-title {
+      color: #111827;
+    }
+
+    #editorView.page-light .editor-title::placeholder {
+      color: rgba(17, 24, 39, 0.38);
+    }
+
+    #editorView.page-light .icon-btn:not(.primary) {
+      color: rgba(17, 24, 39, 0.82);
+      background: rgba(17, 24, 39, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.1);
+    }
+
+    #editorView.page-light .kicker {
+      color: rgba(17, 24, 39, 0.58);
+    }
+
     .topbar {
       display: flex;
       align-items: flex-start;
@@ -212,10 +249,16 @@
     }
 
     .icon-btn.primary {
-      color: #fff;
-      background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
-      box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
-    }
+  color: #fff;
+  background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
+  box-shadow: 0 14px 30px rgba(90, 140, 255, 0.34);
+}
+
+#editorView.page-light .icon-btn.primary {
+  color: rgba(17, 24, 39, 0.82);
+  background: rgba(17, 24, 39, 0.055);
+  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.1);
+}
 
     .icon-btn.active {
       color: #fff;
@@ -264,7 +307,7 @@
       display: grid;
       gap: 16px;
       padding-top: 25px;
-      margin-bottom: 42px;
+      margin-bottom: 170px;
     }
 
     .note-card {
@@ -290,15 +333,32 @@
     }
 
  .selection-active .note-card.selected {
-  border-color: rgba(125, 122, 255, 0.9);
-  box-shadow:
-    0 0 0 2px rgba(90, 140, 255, 0.55),
-    0 0 24px rgba(157, 112, 255, 0.35),
-    0 18px 42px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.selection-active .note-card.selected::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 20px;
+  padding: 4px;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  mask-composite: exclude;
 }
 
 .block-group {
+  position: relative;
   display: grid;
   gap: 3px;
   padding: 0;
@@ -307,13 +367,29 @@
 }
 
 .selection-active .block-group.selected {
-  border-color: rgba(125, 122, 255, 0.9);
-  box-shadow:
-    0 0 0 2px rgba(90, 140, 255, 0.55),
-    0 0 24px rgba(157, 112, 255, 0.35),
-    0 18px 42px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: transparent;
+  box-shadow: none;
   background: transparent;
+}
+
+.selection-active .block-group.selected::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  mask-composite: exclude;
 }
 .selection-active .block-group.selected .block {
   border-color: transparent !important;
@@ -467,51 +543,46 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      background: #fff;
-      border: 1px solid #e1e4e8;
-      border-radius: 24px;
-      padding: 18px 16px;
-      color: #111827;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 22px;
+      padding: 16px 14px;
+      color: #fff;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
     .note-page + .note-page {
       margin-top: 14px;
     }
 
+    .note-page.light {
+      background: #fff;
+      border-color: #e1e4e8;
+      color: #111827;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
     .note-page .block:focus-within {
+      background: rgba(255, 255, 255, 0.045);
+      border-color: rgba(255, 255, 255, 0.09);
+    }
+
+    .note-page.light .block:focus-within {
       background: rgba(15, 23, 42, 0.035);
       border-color: rgba(15, 23, 42, 0.08);
     }
 
-    .note-page .editable,
-    .note-page .dropdown-child-editable,
-    .note-page .marker,
-    .note-page .dropdown-caret,
-    .note-page .dropdown-child-marker {
+    .note-page.light .editable,
+    .note-page.light .dropdown-child-editable,
+    .note-page.light .marker,
+    .note-page.light .dropdown-caret,
+    .note-page.light .dropdown-child-marker {
       color: #111827;
     }
 
-    .note-page .editable:empty::before,
-    .note-page .dropdown-child-editable:empty::before {
+    .note-page.light .editable:empty::before,
+    .note-page.light .dropdown-child-editable:empty::before {
       color: rgba(17, 24, 39, 0.38);
-    }
-
-    .page-break-block {
-      min-height: 0;
-      height: 24px;
-      margin: -21px 0;
-      padding: 0;
-      opacity: 0;
-      overflow: hidden;
-    }
-
-    .selection-active .page-break-block.selected {
-      height: 24px;
-      margin: -21px 0;
-      opacity: 1;
-      border-color: rgba(90, 140, 255, 0.45);
-      background: rgba(90, 140, 255, 0.12);
     }
 
     .block {
@@ -530,13 +601,29 @@
       border-color: rgba(255, 255, 255, 0.07);
     }
 
-.selection-active .blocks > .block.selected {
-  border-color: rgba(125, 122, 255, 0.9);
-  box-shadow:
-    0 0 0 2px rgba(90, 140, 255, 0.55),
-    0 0 24px rgba(157, 112, 255, 0.35),
-    0 18px 42px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+.selection-active .note-page .block.selected {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.selection-active .note-page .block.selected::after,
+.selection-active .block-group .block.selected::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 18px;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  -webkit-mask:
+  linear-gradient(#000 0 0) content-box,
+  linear-gradient(#000 0 0);
+mask:
+  linear-gradient(#000 0 0) content-box,
+  linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 .selection-active .block-group.selected .block.selected {
@@ -621,10 +708,22 @@
       line-height: 1.08;
     }
 
+    .size-title .marker,
+    .size-title .task-check,
+    .size-title .dropdown-caret {
+      font-size: 31px;
+    }
+
     .size-heading .editable {
       font-size: 24px;
       font-weight: 920;
       line-height: 1.12;
+    }
+
+    .size-heading .marker,
+    .size-heading .task-check,
+    .size-heading .dropdown-caret {
+      font-size: 24px;
     }
 
     .size-subtitle .editable {
@@ -634,15 +733,33 @@
       color: #fff;
     }
 
+    .size-subtitle .marker,
+    .size-subtitle .task-check,
+    .size-subtitle .dropdown-caret {
+      font-size: 20px;
+    }
+
     .size-text .editable {
       font-size: 16px;
       font-weight: 500;
+    }
+
+    .size-text .marker,
+    .size-text .task-check,
+    .size-text .dropdown-caret {
+      font-size: 16px;
     }
 
     .size-subtext .editable {
       font-size: 13px;
       line-height: 1.38;
       color: #fff;
+    }
+
+    .size-subtext .marker,
+    .size-subtext .task-check,
+    .size-subtext .dropdown-caret {
+      font-size: 13px;
     }
 
     .quote .editable {
@@ -664,11 +781,17 @@
 
     .card {
       border-radius: 22px;
-      background: #fff;
-      border: 1px solid #e1e4e8;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2);
       padding: 0;
       overflow: visible;
+    }
+
+    .note-page.light .card {
+      background: #fff;
+      border-color: #e1e4e8;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
     .card .block-line {
@@ -679,9 +802,13 @@
       min-height: 72px;
       padding: 16px;
       border-radius: inherit;
-      color: #111827;
+      color: #fff;
       background: transparent;
       box-shadow: none;
+    }
+
+    .note-page.light .card .editable {
+      color: #111827;
     }
 
     .bullet .block-line,
@@ -699,18 +826,22 @@
       place-items: center;
       color: rgba(255, 255, 255, 0.8);
       font-weight: 850;
+      font-size: 1em;
+      line-height: 1;
     }
 
     .task-check {
-      width: 24px;
-      height: 24px;
+      width: 1.35em;
+      height: 1.35em;
+      min-width: 1.35em;
       margin-top: 1px;
       display: grid;
       place-items: center;
-      border-radius: 8px;
+      border-radius: 0.42em;
       color: #06101d;
       background: rgba(255, 255, 255, 0.05);
       box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+      font-size: 1em;
     }
 
     .task-check.checked {
@@ -730,6 +861,7 @@
       display: grid;
       place-items: center;
       color: #fff;
+      font-size: 1em;
     }
 
     .dropdown-caret i {
@@ -777,7 +909,7 @@
       display: grid;
       place-items: center;
       color: rgba(255, 255, 255, 0.82);
-      font-size: 12px;
+      font-size: inherit;
       font-weight: 850;
     }
 
@@ -793,8 +925,8 @@
 
     .focus .editable {
       padding-left: 13px;
-      border-left: 3px solid var(--accent);
-      color: #fff;
+      border-left: 3px solid var(--focus-color, currentColor);
+      color: inherit;
     }
 
     .dropdown-child-editable {
@@ -897,37 +1029,233 @@
   box-shadow: none;
 }
 
-.card-square .editable {
+.card-square {
+  height: 100%;
+  min-height: 0;
+}
+
+.card-square .block-line {
   aspect-ratio: 1 / 1;
   min-height: 0;
+}
+
+.card-horizontal .block-line,
+.card-short .block-line,
+.card-half .block-line {
+  height: 82px;
+  min-height: 82px;
+}
+
+.card-tall .block-line,
+.card-long .block-line,
+.card-immersive .block-line {
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+}
+
+.card-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  gap: 8px;
+  padding: 16px;
   overflow: hidden;
 }
 
-.card-short .editable,
-.card-half .editable {
-  min-height: 72px;
-  display: grid;
-  align-content: center;
+.card-face::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
 }
 
-.card-tall .editable,
-.card-long .editable {
-  min-height: 280px;
-  height: auto;
-  overflow: visible;
+.card-square .card-face::after,
+.card-tall .card-face::after,
+.card-long .card-face::after,
+.card-immersive .card-face::after {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  background: linear-gradient(to bottom, transparent, rgba(12, 17, 28, 0.96));
 }
 
-.card-immersive .editable {
-  min-height: min(70vh, 560px);
-  height: auto;
-  overflow: visible;
+.card-horizontal .card-face::after,
+.card-short .card-face::after,
+.card-half .card-face::after {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 34%;
+  background: linear-gradient(to right, transparent, rgba(12, 17, 28, 0.96));
 }
 
-.card img {
+.note-page.light .card-face::after {
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.98));
+}
+
+.note-page.light .card-horizontal .card-face::after,
+.note-page.light .card-short .card-face::after,
+.note-page.light .card-half .card-face::after {
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.98));
+}
+
+.card-title {
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 920;
+  line-height: 1.12;
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-text {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+
+.card-image {
+  position: relative;
+  z-index: 0;
   width: 100%;
-  height: auto;
-  border-radius: 16px;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: 14px;
   display: block;
+}
+
+.card-cover-icon {
+  position: relative;
+  z-index: 1;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #fff;
+  background: color-mix(in srgb, var(--accent) 32%, rgba(255, 255, 255, 0.09));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.13);
+}
+
+.card-cover-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.card-face.title-text {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.card-square .card-face.title-image,
+.card-square .card-face.title-icon {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.card-square .card-face.title-image .card-image,
+.card-square .card-face.title-icon .card-cover-icon {
+  align-self: stretch;
+  justify-self: stretch;
+}
+
+.card-square .card-face.title-icon .card-cover-icon {
+  width: auto;
+  height: auto;
+  border-radius: 18px;
+}
+
+.card-square .card-face.title-icon .card-cover-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+.card-horizontal .card-face.title-text,
+.card-short .card-face.title-text,
+.card-half .card-face.title-text {
+  grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
+  grid-template-rows: 1fr;
+  align-items: center;
+}
+
+.card-horizontal .card-face.title-image,
+.card-short .card-face.title-image,
+.card-half .card-face.title-image {
+  padding: 0;
+}
+
+.card-horizontal .card-face.title-image .card-image,
+.card-short .card-face.title-image .card-image,
+.card-half .card-face.title-image .card-image {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.card-horizontal .card-face.title-image .card-title,
+.card-short .card-face.title-image .card-title,
+.card-half .card-face.title-image .card-title {
+  grid-area: 1 / 1;
+  align-self: start;
+  margin: 12px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+}
+
+.card-horizontal .card-face.title-icon,
+.card-short .card-face.title-icon,
+.card-half .card-face.title-icon {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  align-items: center;
+}
+
+.card-horizontal .card-text,
+.card-short .card-text,
+.card-half .card-text,
+.card-horizontal .card-title,
+.card-short .card-title,
+.card-half .card-title {
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.card-cover-action {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  display: none;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  box-shadow: 0 14px 30px rgba(90, 140, 255, 0.32);
+  transform: translate(-50%, -50%);
+}
+
+.block-selection .card.selected .card-cover-action {
+  display: grid;
+}
+
+.note-page.light .card-text,
+.note-page.light .card-title {
+  color: #111827;
 }
 
 .separator-block {
@@ -1042,7 +1370,13 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
-.selection-active .block.selected .block-edit-control {
+#editorView.page-light .block-edit-control {
+  color: #111827;
+  background: #d1d5db;
+  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.14);
+}
+
+.block-selection .block.selected .block-edit-control {
   display: grid;
 }
 
@@ -1093,12 +1427,12 @@
       font-size: 22px;
     }
 
-    .toolbar {
+   .toolbar {
   position: fixed;
   left: 18px;
   right: 18px;
-  bottom: calc(10px + var(--keyboard-offset));
-  z-index: 30;
+  bottom: calc(var(--nav-height) + 12px);
+  z-index: 9999;
   display: none;
   gap: 7px;
   overflow-x: auto;
@@ -1116,26 +1450,44 @@
   display: flex;
 }
 
-@media (min-width: 461px) {
-  .editor-active .toolbar {
-    display: flex;
-  }
+.editor-active.keyboard-open .toolbar {
+  position: fixed;
+  top: 50%;
+  bottom: auto;
+  left: 18px;
+  right: 18px;
+  transform: translateY(-50%);
+}
 
+@media (min-width: 461px) {
   .toolbar {
     position: absolute;
     left: 18px;
     right: 18px;
+    top: auto;
     bottom: calc(var(--nav-height) + 24px);
+    transform: none;
     z-index: 19;
   }
+
+  .editor-active.keyboard-open .toolbar {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: auto;
+  bottom: calc(var(--nav-height) + 24px);
+  width: auto;
+  transform: none;
+  z-index: 19;
+}
 }
 
     .toolbar button {
-      min-width: 40px;
-      height: 40px;
+      min-width: 38px;
+      height: 38px;
       display: grid;
       place-items: center;
-      border-radius: 13px;
+      border-radius: 12px;
       color: rgba(255, 255, 255, 0.82);
       background: rgba(255, 255, 255, 0.065);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -1289,8 +1641,7 @@
     }
 
     .nav-item,
-    .nav-add,
-.add {
+    .add {
       min-width: 0;
       display: grid;
       place-items: center;
@@ -1304,11 +1655,18 @@
       font-size: 17px;
     }
 
+    .nav-item svg,
+    .add svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 1.8;
+    }
+
     .nav-item.active {
       color: var(--text);
     }
 
-    .nav-add {
+    .add {
       width: 60px;
       height: 60px;
       border-radius: 22px;
@@ -1374,9 +1732,87 @@
       overflow: hidden;
     }
 
+    #noteModal .compact-sheet {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    #noteModal .note-form {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-right: 1px;
+      scrollbar-width: none;
+    }
+
+    #noteModal .note-form::-webkit-scrollbar {
+      display: none;
+    }
+
+    #textColorModal .compact-sheet {
+      width: min(100%, 260px);
+      max-height: min(360px, calc(100dvh - 118px));
+    }
+
+    #textColorModal.mode-picker .compact-sheet {
+      width: 150px;
+      padding: 10px;
+    }
+
+    #textColorModal.mode-picker .grabber,
+    #textColorModal.mode-picker .sheet-head {
+      display: none;
+    }
+
+    #textColorModal.mode-picker .preset-grid {
+      grid-template-columns: repeat(2, 58px);
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #textColorModal .insert-option {
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 1fr;
+      place-items: center;
+      padding: 10px;
+    }
+
+    #textColorModal .insert-option span {
+      display: none;
+    }
+
+    #textColorModal .insert-option i {
+      width: 38px;
+      height: 38px;
+      margin: 0;
+    }
+
     .note-form {
       display: grid;
       gap: 12px;
+    }
+
+    .mode-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mode-choice {
+      min-height: 42px;
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.76);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+      font-weight: 850;
+    }
+
+    .mode-choice.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--blue));
+      box-shadow: 0 12px 28px rgba(90, 140, 255, 0.24);
     }
 
     .field {
@@ -1407,6 +1843,32 @@
       margin-top: 2px;
     }
 
+    #noteModal .compact-sheet {
+  position: relative;
+  overflow: hidden;
+}
+
+#noteModal .note-form {
+  padding-bottom: 78px;
+}
+
+#noteModal .modal-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+
+  padding: 32px 16px 16px;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(16, 22, 34, 0) 0%,
+    rgba(16, 22, 34, 0.65) 38%,
+    rgba(16, 22, 34, 1) 100%
+  );
+}
+
     .modal-action {
       min-height: 44px;
       border-radius: 14px;
@@ -1420,6 +1882,12 @@
       background: linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
     }
 
+    .modal-action.danger {
+      color: #fff;
+      background: color-mix(in srgb, var(--red) 24%, rgba(255, 255, 255, 0.07));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--red) 46%, rgba(255, 255, 255, 0.1));
+    }
+
     .size-list {
       display: grid;
       gap: 9px;
@@ -1427,25 +1895,47 @@
 
     .preset-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
     }
 
     .preset-color,
     .preset-gradient {
       aspect-ratio: 1;
+      min-height: 42px;
       border-radius: 50%;
       background: var(--preset);
       box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 10px 24px rgba(0, 0, 0, 0.22);
     }
 
     .preset-gradient {
-      border-radius: 16px;
+      border-radius: 14px;
     }
 
     .preset-color.active,
     .preset-gradient.active {
       box-shadow: inset 0 0 0 3px #fff, 0 0 0 2px rgba(255, 255, 255, 0.2), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .preset-clear {
+      position: relative;
+      background:
+        linear-gradient(135deg, transparent 47%, #ff4d67 48%, #ff4d67 52%, transparent 53%),
+        rgba(255, 255, 255, 0.055);
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .text-highlight {
+      border-radius: 5px;
+      padding: 0 2px;
+      background: var(--highlight-color);
+    }
+
+    .text-highlight-gradient {
+      border-radius: 5px;
+      padding: 0 2px;
+      background: var(--highlight-gradient);
     }
 
     .size-option {
@@ -1783,18 +2273,98 @@
 @media (max-width: 460px) {
   body {
     padding: 0;
+    display: block;
   }
 
   .phone {
     width: 100%;
     height: 100dvh;
-    border: 0;
+    min-height: 0;
+    max-height: 100dvh;
     border-radius: 0;
+    border: 0;
   }
 
   .app {
-    padding-inline: 18px;
+    height: 100%;
+    min-height: 0;
+    padding: 54px 21px 112px;
   }
+
+  .toolbar {
+    left: 10px;
+    right: 10px;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .editor-active .toolbar {
+    display: none;
+  }
+
+  .editor-active.keyboard-open .toolbar {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  top: auto;
+  bottom: calc(var(--nav-height) + 10px);
+  width: auto;
+  display: flex;
+  border-radius: 22px;
+  transform: none;
+}
+  .keyboard-open .nav {
+    display: none;
+  }
+
+  .toolbar button {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+    .selection-bar {
+      left: 10px;
+      right: 10px;
+      bottom: calc(var(--nav-height) + 10px + var(--keyboard-offset));
+    }
+
+    .editor-active.keyboard-open .selection-bar {
+      bottom: calc(10px + var(--keyboard-offset) + env(safe-area-inset-bottom));
+    }
+
+  .modal {
+    padding: 10px 10px calc(92px + env(safe-area-inset-bottom));
+  }
+
+  .sheet {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .preset-grid {
+    gap: 7px;
+  }
+
+  .preset-color,
+  .preset-gradient {
+    min-height: 38px;
+  }
+}
+.editor-active.keyboard-open .toolbar {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  bottom: calc(var(--keyboard-offset) + env(safe-area-inset-bottom)) !important;
+  width: 100vw !important;
+  transform: none !important;
+  display: flex !important;
+  border-radius: 0 !important;
+  z-index: 9999 !important;
+}
+.nav {
+  bottom: 14px !important;
 }
   </style>
 </head>
@@ -1935,23 +2505,36 @@
     </div>
 
     <nav class="nav" aria-label="Primary navigation">
-      <button class="nav-item" type="button" data-command="home">
-        <i class="fa-solid fa-house" aria-hidden="true"></i>
+      <button class="nav-item" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 10.7 12 3l9 7.7V20a1 1 0 0 1-1 1h-5.2v-6.6H9.2V21H4a1 1 0 0 1-1-1v-9.3Z" />
+        </svg>
         Home
       </button>
-      <button class="nav-item" type="button" data-command="habits">
-        <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+      <button class="nav-item" type="button">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="8" stroke="currentColor" />
+          <circle cx="12" cy="12" r="3" stroke="currentColor" />
+        </svg>
         Habit
       </button>
-      <button class="nav-add add" type="button" data-command="smart-add" aria-label="Add">
-        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      <button class="add" type="button" aria-label="Add task">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-linecap="round" />
+        </svg>
       </button>
-      <button class="nav-item active" type="button" data-command="notes">
-        <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
+      <button class="nav-item active" type="button">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round" />
+          <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-linecap="round" />
+        </svg>
         Notes
       </button>
-      <button class="nav-item" type="button" data-command="profile">
-        <i class="fa-solid fa-user" aria-hidden="true"></i>
+      <button class="nav-item" type="button">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" />
+          <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-linecap="round" />
+        </svg>
         Profile
       </button>
     </nav>
@@ -1982,9 +2565,17 @@
             <div class="icon-row" id="iconChoices"></div>
           </div>
 
+          <div>
+            <p class="kicker"><i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i> Page mode</p>
+            <div class="mode-row" id="pageModeChoices">
+              <button class="mode-choice" type="button" data-command="draft-page-mode" data-mode="dark">Dark</button>
+              <button class="mode-choice" type="button" data-command="draft-page-mode" data-mode="light">Light</button>
+            </div>
+          </div>
+
           <div class="modal-actions">
-            <button class="modal-action" type="button" data-command="close-note-modal">Cancel</button>
-            <button class="modal-action primary" type="button" data-command="save-note-modal">Save</button>
+            <button class="modal-action" id="noteModalSecondaryButton" type="button" data-command="note-modal-secondary">Cancel</button>
+            <button class="modal-action primary" id="noteModalSaveButton" type="button" data-command="save-note-modal">Add</button>
           </div>
         </div>
       </section>
@@ -2012,10 +2603,6 @@
 
       <button class="insert-option" type="button" data-command="open-line-options">
         <i class="fa-solid fa-grip-lines" aria-hidden="true"></i><span>Line</span>
-      </button>
-
-      <button class="insert-option" type="button" data-command="insert-block" data-type="page-break">
-        <i class="fa-regular fa-clone" aria-hidden="true"></i><span>Page Break</span>
       </button>
 
       <button class="insert-option" type="button" data-command="insert-block" data-type="heading">
@@ -2092,16 +2679,35 @@
         <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-short">
-        <i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Short Card</span>
+      <button class="insert-option" type="button" data-command="insert-block" data-type="card-horizontal">
+        <i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Horizontal Card</span>
+      </button>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="cardCoverModal" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cardCoverTitle">
+    <div class="grabber"></div>
+
+    <div class="sheet-head">
+      <h2 id="cardCoverTitle">Card includes</h2>
+      <button class="icon-btn" type="button" data-command="close-card-cover-options" aria-label="Close card cover options">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="insert-list">
+      <button class="insert-option" type="button" data-command="set-card-cover" data-cover="title-text">
+        <i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Title + Text</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-tall">
-        <i class="fa-solid fa-table-list" aria-hidden="true"></i><span>Tall Card</span>
+      <button class="insert-option" type="button" data-command="set-card-cover" data-cover="title-image">
+        <i class="fa-solid fa-image" aria-hidden="true"></i><span>Title + Image</span>
       </button>
 
-      <button class="insert-option" type="button" data-command="insert-block" data-type="card-immersive">
-        <i class="fa-solid fa-mobile-screen" aria-hidden="true"></i><span>Immersive Card</span>
+      <button class="insert-option" type="button" data-command="set-card-cover" data-cover="title-icon">
+        <i class="fa-solid fa-icons" aria-hidden="true"></i><span>Title + Icon</span>
       </button>
     </div>
   </section>
@@ -2347,6 +2953,7 @@ let blockPath = [];
     const noteModal = document.getElementById("noteModal");
     const insertModal = document.getElementById("insertModal");
     const cardModal = document.getElementById("cardModal");
+    const cardCoverModal = document.getElementById("cardCoverModal");
     const lineModal = document.getElementById("lineModal");
     const blockEditModal = document.getElementById("blockEditModal");
     const blockEditChoices = document.getElementById("blockEditChoices");
@@ -2360,6 +2967,8 @@ let blockPath = [];
     const viewTextModal = document.getElementById("viewTextModal");
     const viewTextField = document.getElementById("viewTextField");
     const noteModalTitle = document.getElementById("noteModalTitle");
+    const noteModalSaveButton = document.getElementById("noteModalSaveButton");
+    const noteModalSecondaryButton = document.getElementById("noteModalSecondaryButton");
     const noteTitleField = document.getElementById("noteTitleField");
     const colorChoices = document.getElementById("colorChoices");
     const iconChoices = document.getElementById("iconChoices");
@@ -2372,6 +2981,7 @@ let blockPath = [];
 	const selectionTitle = document.getElementById("selectionTitle");
 	const editorModeText = document.getElementById("editorModeText");
 	const toolbar = document.getElementById("toolbar");
+    const keyboardViewport = window.visualViewport || null;
     let noteDraft = null;
     let imageControlsTimer = null;
     let blockClipboard = [];
@@ -2382,25 +2992,44 @@ let blockPath = [];
     let blockNextClick = false;
     let pendingInsertAfterId = null;
     let pendingImageBlockId = null;
+    let pendingCardCoverId = null;
     let activeBlockIconCategory = "recents";
     let activeBlockIconPage = 0;
+    let savedTextRange = null;
+    let savedTextEditable = null;
+    let activeEditorElement = null;
+    let focusColorTargetId = null;
+    let keyboardLocked = false;
+    let keyboardOffset = 0;
+    let keyboardOpenTimer = null;
+    let keyboardReleaseTimer = null;
+    let pendingKeyboardOffset = 0;
+    let closedViewportHeight = keyboardViewport?.height || window.innerHeight;
+    let lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
       { label: "White", color: "#ffffff" },
+      { label: "Black", color: "#000000" },
       { label: "Silver", color: "#d7deea" },
+      { label: "Slate", color: "#94a3b8" },
       { label: "Blue", color: "#7db0ff" },
+      { label: "Navy", color: "#3b82f6" },
       { label: "Sky", color: "#62d7ff" },
       { label: "Teal", color: "#5eead4" },
       { label: "Green", color: "#5ee0ad" },
+      { label: "Lime", color: "#bef264" },
       { label: "Gold", color: "#ffd866" },
+      { label: "Yellow", color: "#facc15" },
       { label: "Orange", color: "#ffab6b" },
       { label: "Pink", color: "#ff86c5" },
       { label: "Rose", color: "#ff8c9a" },
       { label: "Purple", color: "#b997ff" },
+      { label: "Violet", color: "#8b5cf6" },
       { label: "Red", color: "#ff7276" }
     ];
     const textGradientPresets = [
       { label: "White Glow", gradient: "linear-gradient(90deg, #ffffff 0%, #d7deea 100%)" },
+      { label: "Ink", gradient: "linear-gradient(90deg, #000000 0%, #64748b 100%)" },
       { label: "Sky", gradient: "linear-gradient(90deg, #5a8cff 0%, #46d7c5 100%)" },
       { label: "Glow", gradient: "linear-gradient(90deg, #5a8cff 0%, #9d70ff 48%, #ff74ba 100%)" },
       { label: "Sunrise", gradient: "linear-gradient(90deg, #ffd33d 0%, #ff9a52 48%, #ff74ba 100%)" },
@@ -2411,9 +3040,39 @@ let blockPath = [];
       { label: "Violet", gradient: "linear-gradient(90deg, #9d70ff 0%, #5a8cff 100%)" },
       { label: "Fire", gradient: "linear-gradient(90deg, #ff7276 0%, #ff9a52 100%)" },
       { label: "Aurora", gradient: "linear-gradient(90deg, #5ee0ad 0%, #7db0ff 50%, #ff86c5 100%)" },
-      { label: "Moon", gradient: "linear-gradient(90deg, #ffffff 0%, #7db0ff 55%, #9d70ff 100%)" }
+      { label: "Moon", gradient: "linear-gradient(90deg, #ffffff 0%, #7db0ff 55%, #9d70ff 100%)" },
+      { label: "Forest", gradient: "linear-gradient(90deg, #22c55e 0%, #84cc16 100%)" },
+      { label: "Lagoon", gradient: "linear-gradient(90deg, #06b6d4 0%, #14b8a6 100%)" },
+      { label: "Blush", gradient: "linear-gradient(90deg, #fb7185 0%, #f9a8d4 100%)" },
+      { label: "Royal", gradient: "linear-gradient(90deg, #4338ca 0%, #c084fc 100%)" },
+      { label: "Ember", gradient: "linear-gradient(90deg, #ef4444 0%, #facc15 100%)" }
     ];
+    const highlightColorPresets = [
+      { label: "Clear", clear: true },
+      { label: "White", color: "rgba(255, 255, 255, 0.42)" },
+      { label: "Black", color: "rgba(0, 0, 0, 0.5)" },
+      { label: "Silver", color: "rgba(215, 222, 234, 0.42)" },
+      { label: "Blue", color: "rgba(125, 176, 255, 0.48)" },
+      { label: "Sky", color: "rgba(98, 215, 255, 0.48)" },
+      { label: "Teal", color: "rgba(94, 234, 212, 0.48)" },
+      { label: "Green", color: "rgba(94, 224, 173, 0.48)" },
+      { label: "Lime", color: "rgba(190, 242, 100, 0.48)" },
+      { label: "Gold", color: "rgba(255, 216, 102, 0.56)" },
+      { label: "Yellow", color: "rgba(250, 204, 21, 0.56)" },
+      { label: "Orange", color: "rgba(255, 171, 107, 0.5)" },
+      { label: "Pink", color: "rgba(255, 134, 197, 0.5)" },
+      { label: "Rose", color: "rgba(255, 140, 154, 0.5)" },
+      { label: "Purple", color: "rgba(185, 151, 255, 0.5)" },
+      { label: "Violet", color: "rgba(139, 92, 246, 0.48)" },
+      { label: "Red", color: "rgba(255, 114, 118, 0.5)" },
+      { label: "Brown", color: "rgba(161, 98, 7, 0.5)" }
+    ];
+    const highlightGradientPresets = textGradientPresets.map(item => ({
+      label: item.label,
+      gradient: item.gradient.replaceAll(" 100%)", " 100%)")
+    }));
     let textColorMode = "";
+    let textStyleTarget = "color";
 
     function uid() {
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
@@ -2430,6 +3089,7 @@ function loadState() {
         note.pinned = Boolean(note.pinned);
         note.accent ||= colors[noteIndex % colors.length];
         note.icon ||= icons[noteIndex % icons.length];
+        note.pageMode = note.pageMode === "light" ? "light" : "dark";
         note.order = Number.isFinite(note.order) ? note.order : noteIndex;
 
         if (!Array.isArray(note.blocks) || !note.blocks.length) {
@@ -2437,6 +3097,10 @@ function loadState() {
         }
 
         note.blocks.forEach(cleanBlock);
+        note.blocks = note.blocks.filter(block => block.type !== "page-break");
+        if (!note.blocks.length) {
+          note.blocks = [{ id: uid(), type: "paragraph", text: "", children: [] }];
+        }
       });
 
       if (!saved.activeNoteId || !saved.notes.some(note => note.id === saved.activeNoteId)) {
@@ -2459,11 +3123,32 @@ function cleanBlock(block) {
   block.type ||= "paragraph";
   block.text ||= "";
 
+  if (["card-short", "card-half"].includes(block.type)) {
+    block.type = "card-horizontal";
+  }
+
+  if (["card-tall", "card-long"].includes(block.type)) {
+    block.type = "card-square";
+  }
+
+  if (block.type === "card-immersive") {
+    block.type = "card-square";
+    block.cardCover ||= "image";
+  }
+
+  if (block.type?.startsWith("card-")) {
+    block.cardCover ||= block.type === "card-horizontal" ? "icon-title-text" : "title-text";
+    if (["image"].includes(block.cardCover)) block.cardCover = "title-image";
+    if (["icon", "title-icon", "icon-title", "icon-title-text"].includes(block.cardCover)) block.cardCover = "title-icon";
+    if (!["title-text", "title-image", "title-icon"].includes(block.cardCover)) block.cardCover = "title-text";
+  }
+
   if (!Array.isArray(block.children)) {
     block.children = [];
   }
 
   block.children.forEach(cleanBlock);
+  block.children = block.children.filter(child => child.type !== "page-break");
 
   if (block.type === "task") {
     block.checked = Boolean(block.checked);
@@ -2613,13 +3298,31 @@ function goBackOneLevel() {
     function sanitizeHtml(value) {
       const template = document.createElement("template");
       template.innerHTML = String(value ?? "");
-      const allowed = new Set(["B", "STRONG", "I", "EM", "U", "MARK", "BR", "DIV"]);
+      const allowed = new Set(["B", "STRONG", "I", "EM", "U", "MARK", "BR", "DIV", "SPAN"]);
       template.content.querySelectorAll("*").forEach(node => {
         if (!allowed.has(node.tagName)) {
           node.replaceWith(document.createTextNode(node.textContent || ""));
           return;
         }
-        [...node.attributes].forEach(attr => node.removeAttribute(attr.name));
+        [...node.attributes].forEach(attr => {
+          if (node.tagName === "SPAN" && attr.name === "class" && ["text-gradient", "text-highlight", "text-highlight-gradient"].includes(attr.value)) return;
+          if (node.tagName === "SPAN" && attr.name === "style") {
+            const color = attr.value.match(/(?:^|;)\s*color\s*:\s*(#[0-9a-fA-F]{3,8})\s*(?:;|$)/);
+            const gradient = attr.value.match(/--text-gradient\s*:\s*(linear-gradient\([#0-9a-zA-Z,.\s%()-]+\))\s*(?:;|$)/);
+            const highlightColor = attr.value.match(/--highlight-color\s*:\s*((?:#[0-9a-fA-F]{3,8})|(?:rgba?\([0-9,.\s]+\)))\s*(?:;|$)/);
+            const highlightGradient = attr.value.match(/--highlight-gradient\s*:\s*(linear-gradient\([#0-9a-zA-Z,.\s%()-]+\))\s*(?:;|$)/);
+            const nextStyles = [];
+            if (color) nextStyles.push(`color: ${color[1]}`);
+            if (gradient) nextStyles.push(`--text-gradient: ${gradient[1]}`);
+            if (highlightColor) nextStyles.push(`--highlight-color: ${highlightColor[1]}`);
+            if (highlightGradient) nextStyles.push(`--highlight-gradient: ${highlightGradient[1]}`);
+            if (nextStyles.length) {
+              node.setAttribute("style", nextStyles.join("; "));
+              return;
+            }
+          }
+          node.removeAttribute(attr.name);
+        });
       });
       return template.innerHTML;
     }
@@ -2758,6 +3461,9 @@ function goBackOneLevel() {
         setView("notes");
         return;
       }
+const pageMode = note.pageMode === "light" ? "light" : "dark";
+editorView.classList.toggle("page-light", pageMode === "light");
+editorView.classList.toggle("page-dark", pageMode !== "light");
 const parentBlock = activeParentBlock();
 
 if (document.activeElement !== titleInput) {
@@ -2766,11 +3472,9 @@ if (document.activeElement !== titleInput) {
     : note.title || "";
 }
 
-titleInput.style.color = parentBlock
-  ? "#fff"
-  : "#fff";
+titleInput.style.color = pageMode === "light" ? "#111827" : "#fff";
 
-blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent);
+blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent, pageMode);
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
       wireDragging(blocksEl.querySelectorAll(".block"), "block");
       autoSizeTitle();
@@ -2813,14 +3517,7 @@ function blockIconHtml(block) {
 }
 
 function blockIconEditorHtml(block) {
-  return `
-    <div class="block-icon-edit">
-      <button class="block-color-control" type="button" data-command="open-block-color-menu" data-id="${block.id}" aria-label="Choose block icon color" style="--picked-color:${escapeHtml(block.iconColor || "var(--accent)")}"></button>
-      <button class="block-icon-control" type="button" data-command="open-block-icon-menu" data-id="${block.id}" aria-label="Choose block icon">
-        ${iconSvg(block.icon || "solid:circle")}
-      </button>
-    </div>
-  `;
+  return "";
 }
 
 function blockEditButtonHtml(block) {
@@ -2864,29 +3561,42 @@ function dropdownChildrenHtml(block) {
     </div>
   `;
 }
-function renderBlocksHtml(blocks, accent) {
-  let html = "";
-  let pageBlocks = [];
-  let lastBlockId = "";
 
-  const flushPage = () => {
-    html += `<div class="note-page">${renderBlockSequence(pageBlocks, accent)}</div>`;
-    pageBlocks = [];
-  };
+function cardInteriorHtml(block) {
+  if (!block.type?.startsWith("card-")) return "";
+  const children = Array.isArray(block.children) ? block.children : [];
+  const title = stripHtml(block.interiorTitle || block.text || "Untitled");
+  const textChild = children.find(child => stripHtml(child.text || "").trim());
+  const imageChild = children.find(child => child.type === "image" && child.src);
+  const body = textChild ? stripHtml(textChild.text || "") : "";
+  const mode = ["title-text", "title-image", "title-icon"].includes(block.cardCover) ? block.cardCover : "title-text";
+  const icon = `<span class="card-cover-icon">${iconSvg(block.icon || "solid:note-sticky")}</span>`;
+  const image = imageChild ? `<img class="card-image" src="${imageChild.src}" alt="" />` : "";
+  const titleHtml = `<div class="card-title">${escapeHtml(title)}</div>`;
+  const textHtml = body ? `<div class="card-text">${escapeHtml(body)}</div>` : "";
+  const imageButton = `<button class="card-cover-action" type="button" data-command="choose-card-cover-image" data-id="${block.id}" aria-label="Change card image"><i class="fa-solid fa-image" aria-hidden="true"></i></button>`;
+  const iconButton = `<button class="card-cover-action" type="button" data-command="open-block-icon-menu" data-id="${block.id}" aria-label="Change card icon"><i class="fa-solid fa-icons" aria-hidden="true"></i></button>`;
+  const isHorizontal = block.type === "card-horizontal" || block.type === "card-short" || block.type === "card-half";
+  let content = `${titleHtml}${textHtml}`;
 
-  blocks.forEach((block, index) => {
-    if (block.type === "page-break") {
-      flushPage();
-      html += renderBlock(block, index, accent);
-      lastBlockId = block.id;
-      return;
-    }
+  if (mode === "title-image") {
+    content = isHorizontal
+      ? `${image || ""}${titleHtml}${imageButton}`
+      : `${titleHtml}${image || ""}${imageButton}`;
+  } else if (mode === "title-icon") {
+    content = isHorizontal
+      ? `${icon}${titleHtml}${iconButton}`
+      : `${titleHtml}${icon}${iconButton}`;
+  }
 
-    pageBlocks.push({ block, index });
-    lastBlockId = block.id;
-  });
-
-  flushPage();
+  return `<div class="card-face ${mode}">${content}</div>`;
+}
+function renderBlocksHtml(blocks, accent, pageMode = "dark") {
+  const pageBlocks = blocks
+    .map((block, index) => ({ block, index }))
+    .filter(item => item.block.type !== "page-break");
+  const lastBlockId = pageBlocks.at(-1)?.block.id || "";
+  let html = `<div class="note-page ${pageMode === "light" ? "light" : "dark"}">${renderBlockSequence(pageBlocks, accent)}</div>`;
   html += renderInsertRow(lastBlockId);
 
   return html;
@@ -2951,16 +3661,8 @@ function safeUrl(value) {
         const kind = block.type.replace("separator-", "");
 
         return `
-    <article class="block separator-block separator-${kind} ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <article class="block separator-block separator-${kind} ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
       <div class="separator-line" aria-hidden="true"></div>
-      ${blockEditButtonHtml(block)}
-    </article>
-  `;
-      }
-
-      if (block.type === "page-break") {
-        return `
-    <article class="block page-break-block ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
       ${blockEditButtonHtml(block)}
     </article>
   `;
@@ -2970,7 +3672,7 @@ function safeUrl(value) {
   const imageCommand = block.src ? "open-image" : "choose-image-for-block";
 
   return `
-    <article class="block image ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <article class="block image ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
       <div class="image-block">
         <button class="image-open" type="button" data-command="${imageCommand}" data-id="${block.id}" aria-label="Add or open image">
           ${block.src ? `<img src="${block.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Tap to add photo</span></div>`}
@@ -2984,7 +3686,7 @@ if (block.type === "url") {
   const label = stripHtml(block.text || "").trim() || "Untitled link";
 
   return `
-    <article class="block url ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+    <article class="block url ${block.groupId ? "grouped" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
       <div class="url-card">
         <button class="url-display" type="button" data-command="open-url" data-id="${block.id}">
           ${escapeHtml(label)}
@@ -3008,14 +3710,19 @@ if (block.type === "url") {
             : block.type === "dropdown"
               ? `<button class="dropdown-caret" type="button" data-command="toggle-dropdown" data-id="${block.id}" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>`
             : "";
-   return `
-  <article class="block ${block.type} ${block.collapsed ? "collapsed" : ""} ${block.icon ? "has-icon" : ""} ${block.type?.startsWith("card-") ? `card ${block.type}` : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}">
+      const bodyHtml = block.type?.startsWith("card-")
+        ? cardInteriorHtml(block)
+        : `
     <div class="block-line">
       ${marker || blockIconHtml(block)}
       <div class="editable ${block.textGradient ? "text-gradient" : ""}" contenteditable="true" spellcheck="true" data-id="${block.id}" data-field="text" data-placeholder="Tap to write" style="text-align:${escapeHtml(block.align || "left")}; ${block.textGradient ? `--text-gradient:${escapeHtml(block.textGradient)}` : block.textColor ? `color:${escapeHtml(block.textColor)}` : ""}">${sanitizeHtml(block.text || "")}</div>
     </div>
 
     ${block.type === "dropdown" ? dropdownChildrenHtml(block) : ""}
+  `;
+   return `
+  <article class="block ${block.type} ${block.collapsed ? "collapsed" : ""} ${block.icon ? "has-icon" : ""} ${block.type?.startsWith("card-") ? `card ${block.type}` : ""} size-${block.size || sizeForType(block.type)} ${block.groupId ? "grouped" : ""} ${block.checked ? "done" : ""} ${selection.ids.has(block.id) ? "selected" : ""}" draggable="true" data-kind="block" data-id="${block.id}" style="--accent:${accent}; --focus-color:${escapeHtml(block.focusColor || "currentColor")}">
+    ${bodyHtml}
     ${blockIconEditorHtml(block)}
     ${blockEditButtonHtml(block)}
   </article>
@@ -3034,11 +3741,98 @@ if (block.type === "url") {
       return count;
     }
 
+    function textInputHasFocus() {
+      const active = document.activeElement;
+      if (!active) return false;
+      if (active.isContentEditable) return true;
+      if (active.matches?.("textarea, input")) {
+        return !active.matches("[readonly], [disabled]");
+      }
+      return false;
+    }
+
+    function measureKeyboardOffset() {
+      const activeViewportHeight = keyboardViewport?.height || window.innerHeight;
+      const viewportTop = keyboardViewport?.offsetTop || 0;
+      const viewportBottom = viewportTop + activeViewportHeight;
+      const layoutHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight, closedViewportHeight);
+      const coveredByViewport = Math.max(0, layoutHeight - viewportBottom);
+      const viewportShrink = Math.max(0, closedViewportHeight - activeViewportHeight);
+
+      return Math.round(Math.max(coveredByViewport, viewportShrink));
+    }
+
+    function setKeyboardOffset(offset) {
+      const nextOffset = Math.max(0, Math.round(offset));
+      keyboardOffset = nextOffset;
+      phone.style.setProperty("--keyboard-offset", `${nextOffset}px`);
+    }
+
+    function setActiveEditorElement(target) {
+      activeEditorElement = target?.closest?.("[contenteditable='true'], textarea, input") || null;
+    }
+
+    function showKeyboardAccessoryToolbar() {
+      phone.classList.add("keyboard-open");
+    }
+
+    function hideKeyboardToolbar() {
+      clearTimeout(keyboardOpenTimer);
+      clearTimeout(keyboardReleaseTimer);
+      keyboardOpenTimer = null;
+      keyboardReleaseTimer = null;
+      pendingKeyboardOffset = 0;
+      keyboardLocked = false;
+      phone.classList.remove("keyboard-open");
+      setKeyboardOffset(0);
+      lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
+    }
+
+    function updateKeyboardToolbarPosition() {
+  const viewport = window.visualViewport;
+  const active = document.activeElement;
+  const editing = currentView === "editor" && (
+    active?.isContentEditable ||
+    active?.matches?.("textarea, input")
+  );
+
+  if (!viewport || !editing) {
+    phone.classList.remove("keyboard-open");
+    setKeyboardOffset(0);
+    return;
+  }
+
+  const keyboardHeight = Math.max(
+    0,
+    window.innerHeight - viewport.height - viewport.offsetTop
+  );
+
+  if (keyboardHeight > 90) {
+    phone.classList.add("keyboard-open");
+    setKeyboardOffset(0);
+  } else {
+    phone.classList.remove("keyboard-open");
+    setKeyboardOffset(0);
+  }
+}
+
     function setView(view) {
       currentView = view;
       notesView.classList.toggle("active", view === "notes");
       editorView.classList.toggle("active", view === "editor");
       phone.classList.toggle("editor-active", view === "editor");
+      if (view !== "editor") {
+        clearTimeout(keyboardOpenTimer);
+        clearTimeout(keyboardReleaseTimer);
+        keyboardOpenTimer = null;
+        keyboardReleaseTimer = null;
+        keyboardLocked = false;
+        pendingKeyboardOffset = 0;
+        activeEditorElement = null;
+        phone.classList.remove("keyboard-open");
+        setKeyboardOffset(0);
+        lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
+      }
       closeSelection();
       if (view === "notes") renderNotes();
       if (view === "editor") renderEditor();
@@ -3048,11 +3842,10 @@ function updateEditorModeLabel() {
 
   const inSelectionMode = Boolean(
     currentView === "editor" &&
-    selection.kind === "block" &&
-    selection.ids.size
+    selection.kind === "block"
   );
 
-  editorModeText.textContent = inSelectionMode ? "Selection Mode" : "Editing";
+  editorModeText.textContent = inSelectionMode ? "Selection" : "Editing";
 }
     function renderAll() {
       renderNotes();
@@ -3075,6 +3868,7 @@ function updateEditorModeLabel() {
         pinned: false,
         accent: noteDraft?.accent || colors[0],
         icon: normalizeIconValue(noteDraft?.icon || icons[0]),
+        pageMode: noteDraft?.pageMode === "light" ? "light" : "dark",
         order: state.notes.length,
         blocks: [{ id: uid(), type: "paragraph", text: "" }]
       };
@@ -3099,6 +3893,7 @@ function updateEditorModeLabel() {
         pinned: false,
         accent: colors[0],
         icon: normalizeIconValue(icons[0]),
+        pageMode: "dark",
         order: state.notes.length,
         blocks: []
       };
@@ -3124,6 +3919,12 @@ function updateEditorModeLabel() {
 
   saveState();
   renderEditor();
+
+  if (block.type?.startsWith("card-")) {
+    pendingCardCoverId = block.id;
+    openCardCoverOptions(block.id);
+    return;
+  }
 
   setTimeout(() => focusBlock(block.id), 50);
 }
@@ -3153,7 +3954,7 @@ function updateEditorModeLabel() {
   };
 }
 
-  if (String(type || "").startsWith("separator-") || type === "page-break") {
+  if (String(type || "").startsWith("separator-")) {
     return {
       ...base,
       text: ""
@@ -3172,31 +3973,35 @@ function updateEditorModeLabel() {
     return {
       ...base,
       type: "card-square",
-      text: ""
+      text: "",
+      cardCover: "title-text"
     };
   }
 
-  if (type === "card-half" || type === "card-short") {
+  if (type === "card-horizontal" || type === "card-half" || type === "card-short") {
     return {
       ...base,
-      type: "card-short",
-      text: ""
+      type: "card-horizontal",
+      text: "",
+      cardCover: "title-text"
     };
   }
 
   if (type === "card-long" || type === "card-tall") {
     return {
       ...base,
-      type: "card-tall",
-      text: ""
+      type: "card-square",
+      text: "",
+      cardCover: "title-text"
     };
   }
 
   if (type === "card-immersive") {
     return {
       ...base,
-      type: "card-immersive",
-      text: ""
+      type: "card-square",
+      text: "",
+      cardCover: "title-image"
     };
   }
 
@@ -3871,6 +4676,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
       closeSizeMenu();
       saveState();
       renderEditor();
+      updateSelectionUi();
       refreshSelectionClasses();
     }
 
@@ -3889,6 +4695,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
     }
 
     function renderBlockColorChoices() {
+      document.getElementById("blockColorTitle").textContent = "Icon color";
       const selected = firstSelectedBlock()?.iconColor || "";
       blockColorChoices.innerHTML = blockIconColors.map(color => `
         <button class="preset-color ${selected === color ? "active" : ""}" type="button" data-command="set-block-icon-color" data-color="${color}" style="--preset:${color}" aria-label="Set icon color"></button>
@@ -3898,8 +4705,10 @@ if (event.target.closest(".image-open") && !selection.kind) {
     function targetBlockForPicker(id) {
       if (!id) return;
       focusedBlockId = id;
-      selection.kind = "block";
-      selection.ids = new Set([id]);
+      if (!(selection.kind === "block" && selection.ids.has(id))) {
+        selection.kind = "block";
+        selection.ids = new Set([id]);
+      }
       updateSelectionUi();
       refreshSelectionClasses();
     }
@@ -3915,6 +4724,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
     function closeBlockColorMenu() {
       blockColorModal.classList.remove("open");
       blockColorModal.setAttribute("aria-hidden", "true");
+      focusColorTargetId = null;
     }
 
     function setBlockIconColor(color) {
@@ -3926,6 +4736,49 @@ if (event.target.closest(".image-open") && !selection.kind) {
       });
       saveState();
       closeBlockColorMenu();
+      renderEditor();
+      updateSelectionUi();
+      refreshSelectionClasses();
+    }
+
+    function renderFocusColorChoices() {
+      const block = findBlockEverywhere(focusColorTargetId);
+      const selected = block?.focusColor || "";
+      blockColorChoices.innerHTML = [
+        `<button class="preset-clear ${!selected ? "active" : ""}" type="button" data-command="set-focus-color" data-color="" aria-label="Auto focus color"></button>`,
+        ...textColorPresets.map(preset => `
+          <button class="preset-color ${selected === preset.color ? "active" : ""}" type="button" data-command="set-focus-color" data-color="${preset.color}" style="--preset:${preset.color}" aria-label="${preset.label} focus color"></button>
+        `)
+      ].join("");
+    }
+
+    function openFocusColorMenu(id = "") {
+      const block = findBlockEverywhere(id || focusedBlockId);
+      if (!block) return;
+      focusColorTargetId = block.id;
+      document.getElementById("blockColorTitle").textContent = "Focus color";
+      renderFocusColorChoices();
+      blockColorModal.classList.add("open");
+      blockColorModal.setAttribute("aria-hidden", "false");
+    }
+
+    function setFocusColor(color) {
+      const ids = selection.kind === "block" && selection.ids.size
+        ? [...selection.ids]
+        : focusColorTargetId
+          ? [focusColorTargetId]
+          : [];
+      if (!ids.length) return;
+      const idSet = new Set(ids);
+      remember();
+      activeBlocks().forEach(block => {
+        if (!idSet.has(block.id)) return;
+        if (color) block.focusColor = color;
+        else delete block.focusColor;
+      });
+      saveState();
+      closeBlockColorMenu();
+      closeBlockEditMenu();
       renderEditor();
       updateSelectionUi();
       refreshSelectionClasses();
@@ -4009,8 +4862,108 @@ if (event.target.closest(".image-open") && !selection.kind) {
       refreshSelectionClasses();
     }
 
+    function activeEditableSelection() {
+      const selected = window.getSelection();
+      if (!selected?.rangeCount || selected.isCollapsed) return null;
+
+      const range = selected.getRangeAt(0);
+      const editable = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
+        ? range.commonAncestorContainer.closest?.("[contenteditable='true']")
+        : range.commonAncestorContainer.parentElement?.closest?.("[contenteditable='true']");
+
+      if (!editable || !editable.contains(range.commonAncestorContainer)) return null;
+      return { editable, range };
+    }
+
+    function activeContentEditable() {
+      return activeEditorElement?.closest?.("[contenteditable='true']")
+        || document.activeElement?.closest?.("[contenteditable='true']")
+        || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+    }
+
+    function rememberTextSelection() {
+      const active = activeEditableSelection();
+      if (!active) return false;
+
+      savedTextRange = active.range.cloneRange();
+      savedTextEditable = active.editable;
+      focusedBlockId = active.editable.dataset.parentId || active.editable.dataset.id || focusedBlockId;
+      focusedChild = active.editable.dataset.parentId
+        ? { parentId: active.editable.dataset.parentId, id: active.editable.dataset.id }
+        : null;
+      return true;
+    }
+
+    function restoreTextSelection() {
+      if (!savedTextRange || !savedTextEditable?.isConnected) return null;
+
+      const selected = window.getSelection();
+      selected.removeAllRanges();
+      selected.addRange(savedTextRange);
+      savedTextEditable.focus();
+      return savedTextEditable;
+    }
+
+    function wrapSavedSelection(wrapper) {
+      const editable = restoreTextSelection();
+      const selected = window.getSelection();
+      if (!editable || !selected?.rangeCount || selected.isCollapsed) return null;
+
+      const range = selected.getRangeAt(0);
+      if (!editable.contains(range.commonAncestorContainer)) return null;
+
+      const content = range.extractContents();
+      wrapper.appendChild(content);
+      range.insertNode(wrapper);
+      selected.removeAllRanges();
+      const after = document.createRange();
+      after.selectNodeContents(wrapper);
+      after.collapse(false);
+      selected.addRange(after);
+      updateBlockField(editable);
+      return editable;
+    }
+
+    function clearSavedHighlight() {
+      const editable = restoreTextSelection();
+      const selected = window.getSelection();
+      if (!editable || !selected?.rangeCount || selected.isCollapsed) return null;
+
+      const range = selected.getRangeAt(0);
+      if (!editable.contains(range.commonAncestorContainer)) return null;
+
+      const content = range.extractContents();
+      const clean = document.createDocumentFragment();
+
+      function appendClean(node, target) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          target.appendChild(node.cloneNode(true));
+          return;
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+        const isHighlight = node.tagName === "MARK"
+          || node.classList.contains("text-highlight")
+          || node.classList.contains("text-highlight-gradient");
+
+        if (isHighlight) {
+          [...node.childNodes].forEach(child => appendClean(child, target));
+          return;
+        }
+
+        const clone = node.cloneNode(false);
+        [...node.childNodes].forEach(child => appendClean(child, clone));
+        target.appendChild(clone);
+      }
+
+      [...content.childNodes].forEach(node => appendClean(node, clean));
+      range.insertNode(clean);
+      updateBlockField(editable);
+      return editable;
+    }
+
     function renderTextColorChoices() {
-      const block = firstSelectedBlock() || (focusedChild ? activeChildBlock(focusedChild.parentId, focusedChild.id) : null);
       if (!textColorMode) {
         textColorChoices.innerHTML = `
           <button class="insert-option" type="button" data-command="choose-text-color-mode" data-mode="color">
@@ -4020,19 +4973,31 @@ if (event.target.closest(".image-open") && !selection.kind) {
             <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i><span>Gradient</span>
           </button>
         `;
+        textColorModal.classList.add("mode-picker");
         return;
       }
 
-      const presets = textColorMode === "gradient" ? textGradientPresets : textColorPresets;
+      textColorModal.classList.remove("mode-picker");
+      const presets = textStyleTarget === "highlight"
+        ? (textColorMode === "gradient" ? highlightGradientPresets : highlightColorPresets)
+        : (textColorMode === "gradient" ? textGradientPresets : textColorPresets);
       textColorChoices.innerHTML = presets.map((preset, index) => {
-        const active = preset.gradient ? block?.textGradient === preset.gradient : (block?.textColor || "#ffffff") === preset.color && !block?.textGradient;
-        return `<button class="${preset.gradient ? "preset-gradient" : "preset-color"} ${active ? "active" : ""}" type="button" data-command="set-text-color" data-index="${index}" style="--preset:${preset.gradient || preset.color}" aria-label="${preset.label}"></button>`;
+        const className = preset.clear ? "preset-clear" : preset.gradient ? "preset-gradient" : "preset-color";
+        const style = preset.clear ? "" : ` style="--preset:${preset.gradient || preset.color}"`;
+        return `<button class="${className}" type="button" data-command="set-text-color" data-index="${index}"${style} aria-label="${preset.label}"></button>`;
       }).join("");
     }
 
-    function openTextColorMenu() {
-      if (!selectedBlockIds().length && !focusedChild?.id) return;
+    function openTextColorMenu(target = "color") {
+      const hasSelectedBlocks = selection.kind === "block" && selection.ids.size > 0;
+      if (!hasSelectedBlocks && !rememberTextSelection()) {
+        showToast("Select text first");
+        return;
+      }
+      textStyleTarget = target === "highlight" ? "highlight" : "color";
       textColorMode = "";
+      document.getElementById("textColorTitle").textContent = textStyleTarget === "highlight" ? "Highlight" : "Text color";
+      textColorModal.classList.add("mode-picker");
       renderTextColorChoices();
       textColorModal.classList.add("open");
       textColorModal.setAttribute("aria-hidden", "false");
@@ -4042,32 +5007,66 @@ if (event.target.closest(".image-open") && !selection.kind) {
       textColorModal.classList.remove("open");
       textColorModal.setAttribute("aria-hidden", "true");
       textColorMode = "";
+      textStyleTarget = "color";
+      textColorModal.classList.remove("mode-picker");
+      savedTextRange = null;
+      savedTextEditable = null;
     }
 
     function setSelectedTextColor(index) {
-      const presets = textColorMode === "gradient" ? textGradientPresets : textColorPresets;
+      const presets = textStyleTarget === "highlight"
+        ? (textColorMode === "gradient" ? highlightGradientPresets : highlightColorPresets)
+        : (textColorMode === "gradient" ? textGradientPresets : textColorPresets);
       const preset = presets[Number(index)];
-      const ids = new Set(selectedBlockIds());
-      if (!preset || (!ids.size && !focusedChild?.id)) return;
+      if (!preset) return;
       remember();
-      const applyPreset = block => {
-        if (!block || block.type === "image") return;
-        if (preset.gradient) {
-          block.textGradient = preset.gradient;
-          delete block.textColor;
-        } else {
-          block.textColor = preset.color;
-          delete block.textGradient;
-        }
-      };
-      if (ids.size) activeBlocks().forEach(block => {
-        if (ids.has(block.id)) applyPreset(block);
-      });
-      else applyPreset(activeChildBlock(focusedChild.parentId, focusedChild.id));
+      if (selection.kind === "block" && selection.ids.size && textStyleTarget === "color") {
+        const ids = new Set(selection.ids);
+        activeBlocks().forEach(block => {
+          if (!ids.has(block.id) || block.type === "image") return;
+          if (preset.gradient) {
+            block.textGradient = preset.gradient;
+            delete block.textColor;
+          } else {
+            block.textColor = preset.color;
+            delete block.textGradient;
+          }
+        });
+        saveState();
+        closeTextColorMenu();
+        renderEditor();
+        updateSelectionUi();
+        refreshSelectionClasses();
+        return;
+      }
+      if (preset.clear) {
+        const editable = clearSavedHighlight();
+        if (!editable) showToast("Select text first");
+        saveState();
+        closeTextColorMenu();
+        return;
+      }
+      const wrapper = document.createElement("span");
+      if (textStyleTarget === "highlight" && preset.gradient) {
+        wrapper.className = "text-highlight-gradient";
+        wrapper.style.setProperty("--highlight-gradient", preset.gradient);
+      } else if (textStyleTarget === "highlight") {
+        wrapper.className = "text-highlight";
+        wrapper.style.setProperty("--highlight-color", preset.color);
+      } else if (preset.gradient) {
+        wrapper.className = "text-gradient";
+        wrapper.style.setProperty("--text-gradient", preset.gradient);
+      } else {
+        wrapper.style.color = preset.color;
+      }
+      const editable = wrapSavedSelection(wrapper);
+      if (!editable) {
+        showToast("Select text first");
+        closeTextColorMenu();
+        return;
+      }
       saveState();
       closeTextColorMenu();
-      renderEditor();
-      refreshSelectionClasses();
     }
 
     function openViewText() {
@@ -4200,13 +5199,15 @@ if (event.target.closest(".image-open") && !selection.kind) {
         return;
       }
       remember();
+      const targetBlocks = activeBlocks().filter(block => ids.includes(block.id) && block.type !== "image");
+      const nextType = targetBlocks.length && targetBlocks.every(block => block.type === type) ? "paragraph" : type;
       activeBlocks().forEach(block => {
         if (!ids.includes(block.id) || block.type === "image") return;
-        block.type = type;
-        if (type === "task") block.checked = Boolean(block.checked);
+        block.type = nextType;
+        if (nextType === "task") block.checked = Boolean(block.checked);
         else delete block.checked;
-        if (type === "heading") block.children = block.children || [];
-        else if (type === "dropdown") {
+        if (nextType === "heading") block.children = block.children || [];
+        else if (nextType === "dropdown") {
           block.collapsed = block.collapsed !== false;
           block.children = Array.isArray(block.children) && block.children.length
             ? block.children
@@ -4218,12 +5219,18 @@ if (event.target.closest(".image-open") && !selection.kind) {
               children: []
             }];
         }
-        else delete block.children;
+        else {
+          delete block.children;
+          delete block.collapsed;
+        }
       });
-      closeSelection();
       saveState();
       renderEditor();
-      setTimeout(() => focusBlock(ids[ids.length - 1]), 20);
+      updateSelectionUi();
+      refreshSelectionClasses();
+      if (selection.kind !== "block" || !selection.ids.size) {
+        setTimeout(() => focusBlock(ids[ids.length - 1]), 20);
+      }
     }
 
     function openInsert() {
@@ -4251,6 +5258,23 @@ function openCardOptions() {
 function closeCardOptions() {
   cardModal.classList.remove("open");
   cardModal.setAttribute("aria-hidden", "true");
+}
+
+function openCardCoverOptions(id = "") {
+  pendingCardCoverId = id || selectedBlockIds()[0] || pendingCardCoverId;
+  if (!pendingCardCoverId) return;
+  cardModal.classList.remove("open");
+  cardModal.setAttribute("aria-hidden", "true");
+  blockEditModal.classList.remove("open");
+  blockEditModal.setAttribute("aria-hidden", "true");
+  cardCoverModal.classList.add("open");
+  cardCoverModal.setAttribute("aria-hidden", "false");
+}
+
+function closeCardCoverOptions() {
+  cardCoverModal.classList.remove("open");
+  cardCoverModal.setAttribute("aria-hidden", "true");
+  pendingCardCoverId = null;
 }
 
 function openLineOptions() {
@@ -4295,9 +5319,48 @@ function enterFocusedChildNote() {
   openInteriorNote(targetId);
 }
 
+function addImageToCard(id) {
+  const block = findBlockEverywhere(id);
+  if (!block || !block.type?.startsWith("card-")) return;
+  remember();
+  if (!Array.isArray(block.children)) block.children = [];
+  const imageBlock = {
+    id: uid(),
+    type: "image",
+    text: "",
+    src: "",
+    children: []
+  };
+  block.children.push(imageBlock);
+  pendingImageBlockId = imageBlock.id;
+  focusedBlockId = block.id;
+  saveState();
+  renderEditor();
+  photoInput.value = "";
+  photoInput.click();
+}
+
+function chooseCardCoverImage(id) {
+  const block = findBlockEverywhere(id);
+  if (!block || !block.type?.startsWith("card-")) return;
+  remember();
+  if (!Array.isArray(block.children)) block.children = [];
+  let imageBlock = block.children.find(child => child.type === "image");
+  if (!imageBlock) {
+    imageBlock = { id: uid(), type: "image", text: "", src: "", children: [] };
+    block.children.unshift(imageBlock);
+  }
+  block.cardCover = "title-image";
+  pendingImageBlockId = imageBlock.id;
+  focusedBlockId = block.id;
+  saveState();
+  renderEditor();
+  photoInput.value = "";
+  photoInput.click();
+}
+
 function cycleAlignment() {
-  const editable = document.activeElement?.closest?.("[contenteditable='true']")
-    || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+  const editable = activeContentEditable();
   const block = editable?.dataset?.parentId
     ? activeChildBlock(editable.dataset.parentId, editable.dataset.id)
     : findBlockEverywhere(editable?.dataset?.id || focusedBlockId);
@@ -4319,16 +5382,18 @@ function convertFocusedChild(type) {
   const child = activeChildBlock(focusedChild.parentId, focusedChild.id);
   if (!child) return false;
   remember();
-  child.type = type;
-  if (type === "task") child.checked = Boolean(child.checked);
+  const nextType = child.type === type ? "paragraph" : type;
+  child.type = nextType;
+  if (nextType === "task") child.checked = Boolean(child.checked);
   else delete child.checked;
-  if (type === "dropdown") {
+  if (nextType === "dropdown") {
     child.collapsed = child.collapsed !== false;
     child.children = Array.isArray(child.children) && child.children.length
       ? child.children
       : [{ id: uid(), type: "paragraph", text: "", size: "subtext", children: [] }];
-  } else if (type !== "heading") {
+  } else if (nextType !== "heading") {
     child.children = Array.isArray(child.children) ? child.children : [];
+    delete child.collapsed;
   }
   child.size = child.size || "subtext";
   saveState();
@@ -4338,13 +5403,13 @@ function convertFocusedChild(type) {
 }
 
     function applyInlineFormat(format) {
-      const editable = document.activeElement?.closest?.("[contenteditable='true']")
-        || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
+      const editable = activeContentEditable();
       const selected = window.getSelection();
       if (!editable || !selected?.rangeCount || selected.isCollapsed || !editable.contains(selected.getRangeAt(0).commonAncestorContainer)) return;
       if (editable) editable.focus();
       if (format === "highlight") {
-        document.execCommand("insertHTML", false, `<mark>${sanitizeHtml(selected.toString())}</mark>`);
+        openTextColorMenu("highlight");
+        return;
       } else if (format === "indent") {
         document.execCommand("indent", false, null);
       } else {
@@ -4368,9 +5433,15 @@ function insertBlock(type) {
         id,
         title: note?.title || "",
         accent: note?.accent || colors[0],
-        icon: normalizeIconValue(note?.icon || icons[0])
+        icon: normalizeIconValue(note?.icon || icons[0]),
+        pageMode: note?.pageMode === "light" ? "light" : "dark"
       };
       noteModalTitle.textContent = id ? "Edit note" : "New note";
+      if (noteModalSaveButton) noteModalSaveButton.textContent = id ? "Save" : "Add";
+      if (noteModalSecondaryButton) {
+        noteModalSecondaryButton.textContent = id ? "Delete" : "Cancel";
+        noteModalSecondaryButton.classList.toggle("danger", Boolean(id));
+      }
       noteTitleField.value = noteDraft.title;
       renderNoteModalChoices();
       noteModal.classList.add("open");
@@ -4382,6 +5453,9 @@ function insertBlock(type) {
       colorChoices.innerHTML = colors.map(color => `
         <button class="swatch ${noteDraft.accent === color ? "active" : ""}" type="button" data-command="draft-color" data-color="${color}" style="--accent:${color}" aria-label="Set note color"></button>
       `).join("");
+      document.querySelectorAll("#pageModeChoices .mode-choice").forEach(button => {
+        button.classList.toggle("active", button.dataset.mode === (noteDraft.pageMode || "dark"));
+      });
       renderNoteIconPicker(activeIconCategory);
     }
 
@@ -4450,6 +5524,7 @@ function insertBlock(type) {
         note.title = noteDraft.title;
         note.accent = noteDraft.accent;
         note.icon = normalizeIconValue(noteDraft.icon);
+        note.pageMode = noteDraft.pageMode === "light" ? "light" : "dark";
         saveState();
         closeNoteModal();
         renderAll();
@@ -4457,6 +5532,21 @@ function insertBlock(type) {
       }
       newNote();
       closeNoteModal();
+    }
+
+    function noteModalSecondaryAction() {
+      if (!noteDraft?.id) {
+        closeNoteModal();
+        return;
+      }
+
+      const id = noteDraft.id;
+      closeNoteModal();
+      enterSelection("note", id);
+      deleteSelected();
+      if (state.activeNoteId === id) {
+        setView("notes");
+      }
     }
 
     function autoSizeTitle() {
@@ -4717,11 +5807,10 @@ function renderBlockEditChoices(block) {
     return;
   }
 
-  const textTools = `
+    const textTools = `
     <button class="insert-option" type="button" data-command="open-size-menu"><i class="fa-solid fa-text-height" aria-hidden="true"></i><span>Text Size</span></button>
     <button class="insert-option" type="button" data-command="open-text-color-menu"><i class="fa-solid fa-palette" aria-hidden="true"></i><span>Text Color</span></button>
-    <button class="insert-option" type="button" data-command="open-block-icon-menu" data-id="${block.id}"><i class="fa-solid fa-icons" aria-hidden="true"></i><span>Icon</span></button>
-    <button class="insert-option" type="button" data-command="open-block-color-menu" data-id="${block.id}"><i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>Icon Color</span></button>
+    ${block.type === "focus" ? `<button class="insert-option" type="button" data-command="open-focus-color-menu" data-id="${block.id}"><i class="fa-solid fa-grip-lines-vertical" aria-hidden="true"></i><span>Focus Color</span></button>` : ""}
     <button class="insert-option" type="button" data-command="set-block-type" data-type="bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i><span>Bullet</span></button>
     <button class="insert-option" type="button" data-command="set-block-type" data-type="number"><i class="fa-solid fa-list-ol" aria-hidden="true"></i><span>Number</span></button>
     <button class="insert-option" type="button" data-command="set-block-type" data-type="task"><i class="fa-solid fa-square-check" aria-hidden="true"></i><span>Checkbox</span></button>
@@ -4731,11 +5820,8 @@ function renderBlockEditChoices(block) {
 
   if (block.type?.startsWith("card-")) {
     blockEditChoices.innerHTML = `
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-square"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span></button>
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-short"><i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Short Card</span></button>
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-tall"><i class="fa-solid fa-table-list" aria-hidden="true"></i><span>Tall Card</span></button>
-      <button class="insert-option" type="button" data-command="set-block-type" data-type="card-immersive"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i><span>Immersive Card</span></button>
-      ${textTools}
+      <button class="insert-option" type="button" data-command="set-card-type" data-type="card-square"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><span>Square Card</span></button>
+      <button class="insert-option" type="button" data-command="set-card-type" data-type="card-horizontal"><i class="fa-solid fa-rectangle-list" aria-hidden="true"></i><span>Horizontal Card</span></button>
     `;
     return;
   }
@@ -4765,8 +5851,10 @@ function openBlockEditMenu(id) {
   const block = findBlockEverywhere(id);
   if (!block) return;
   focusedBlockId = id;
-  selection.kind = "block";
-  selection.ids = new Set([id]);
+  if (!(selection.kind === "block" && selection.ids.has(id))) {
+    selection.kind = "block";
+    selection.ids = new Set([id]);
+  }
   renderBlockEditChoices(block);
   updateSelectionUi();
   refreshSelectionClasses();
@@ -4784,23 +5872,73 @@ function setBlockType(type) {
   if (!ids.length) return;
   remember();
   const idSet = new Set(ids);
+  const blocksToChange = activeBlocks().filter(block => idSet.has(block.id));
+  const nextType = blocksToChange.length && blocksToChange.every(block => block.type === type) ? "paragraph" : type;
   activeBlocks().forEach(block => {
     if (!idSet.has(block.id)) return;
     const keepText = block.text || "";
     const keepChildren = Array.isArray(block.children) ? block.children : [];
-    block.type = type;
+    block.type = nextType;
     block.text = keepText;
-    if (type === "task") block.checked = Boolean(block.checked);
+    if (nextType === "task") block.checked = Boolean(block.checked);
     else delete block.checked;
-    if (type === "dropdown") {
+    if (nextType === "dropdown") {
       block.collapsed = block.collapsed !== false;
       block.children = keepChildren.length ? keepChildren : [{ id: uid(), type: "paragraph", text: "", size: "subtext", children: [] }];
-    } else if (type === "heading") {
+    } else if (nextType === "heading") {
       block.children = keepChildren;
-    } else if (!type.startsWith("card-")) {
+    } else if (nextType === "card-square") {
       block.children = keepChildren;
+      block.cardCover ||= "title-text";
+      delete block.collapsed;
+    } else if (nextType === "card-horizontal") {
+      block.children = keepChildren;
+      block.cardCover ||= "title-text";
+      delete block.collapsed;
+    } else if (!nextType.startsWith("card-")) {
+      block.children = keepChildren;
+      delete block.collapsed;
     }
   });
+  closeBlockEditMenu();
+  saveState();
+  renderEditor();
+  updateSelectionUi();
+  refreshSelectionClasses();
+}
+
+function setCardType(type) {
+  if (!["card-square", "card-horizontal"].includes(type)) return;
+  const ids = selectedBlockIds();
+  if (!ids.length) return;
+  remember();
+  const idSet = new Set(ids);
+  activeBlocks().forEach(block => {
+    if (!idSet.has(block.id) || !block.type?.startsWith("card-")) return;
+    block.type = type;
+    if (!["title-text", "title-image", "title-icon"].includes(block.cardCover)) block.cardCover = "title-text";
+    pendingCardCoverId = block.id;
+  });
+  saveState();
+  renderEditor();
+  updateSelectionUi();
+  refreshSelectionClasses();
+  openCardCoverOptions(pendingCardCoverId);
+}
+
+function setCardCover(cover) {
+  const allowed = new Set(["title-image", "title-text", "title-icon"]);
+  if (!allowed.has(cover)) return;
+  const ids = pendingCardCoverId ? [pendingCardCoverId] : selectedBlockIds();
+  if (!ids.length) return;
+  remember();
+  const idSet = new Set(ids);
+  activeBlocks().forEach(block => {
+    if (idSet.has(block.id) && block.type?.startsWith("card-")) {
+      block.cardCover = cover;
+    }
+  });
+  closeCardCoverOptions();
   closeBlockEditMenu();
   saveState();
   renderEditor();
@@ -4826,6 +5964,36 @@ if (name === "close-block-edit-menu") {
 
 if (name === "set-block-type") {
   setBlockType(element.dataset.type);
+  return;
+}
+
+if (name === "set-card-type") {
+  setCardType(element.dataset.type);
+  return;
+}
+
+if (name === "set-card-cover") {
+  setCardCover(element.dataset.cover);
+  return;
+}
+
+if (name === "close-card-cover-options") {
+  closeCardCoverOptions();
+  return;
+}
+
+if (name === "choose-card-cover-image") {
+  chooseCardCoverImage(element.dataset.id);
+  return;
+}
+
+if (name === "open-focus-color-menu") {
+  openFocusColorMenu(element.dataset.id);
+  return;
+}
+
+if (name === "set-focus-color") {
+  setFocusColor(element.dataset.color || "");
   return;
 }
 
@@ -4888,19 +6056,20 @@ if (name === "open-insert-after") {
   return;
 }
 if (name === "toggle-note-tools") {
-  if (selection.kind === "note" && selection.ids.size) {
+  if (selection.kind === "note") {
     closeSelection();
     return;
   }
 
-  const firstNote = sortedNotes()[0];
-
-  if (!firstNote) {
+  if (!sortedNotes().length) {
     showToast("No notes to select", "fa-pen");
     return;
   }
 
-  enterSelection("note", firstNote.id);
+  selection.kind = "note";
+  selection.ids = new Set();
+  updateSelectionUi();
+  refreshSelectionClasses();
   phone.classList.add("notes-tools-open");
 
   if (document.activeElement) document.activeElement.blur();
@@ -4909,20 +6078,22 @@ if (name === "toggle-note-tools") {
 }
 
 if (name === "toggle-block-selection-mode") {
-  if (selection.kind === "block" && selection.ids.size) {
+  if (selection.kind === "block") {
     closeSelection();
     return;
   }
 
   const blocks = activeBlocks();
-  const targetId = focusedBlockId || blocks[0]?.id;
 
-  if (!targetId) {
+  if (!blocks.length) {
     showToast("No blocks to select", "fa-pen");
     return;
   }
 
-  enterSelection("block", targetId);
+  selection.kind = "block";
+  selection.ids = new Set();
+  updateSelectionUi();
+  refreshSelectionClasses();
 
   if (document.activeElement) document.activeElement.blur();
 
@@ -4985,7 +6156,7 @@ if (name === "done-selection") {
   if (name === "new-note") openNoteModal();
       if (name === "smart-add") currentView === "editor" ? openInsert() : openNoteModal();
 if (name === "open-note") {
-  if (selection.kind === "note" && selection.ids.size) {
+  if (selection.kind === "note") {
     toggleSelection("note", element.dataset.id);
     return;
   }
@@ -5041,9 +6212,6 @@ if (name === "notes") {
   setView("notes");
   return;
 }
-      if (name === "home") showToast("Home is index.html", "fa-house");
-      if (name === "habits") showToast("Habit is habits.html", "fa-bullseye");
-      if (name === "profile") showToast("Profile coming soon", "fa-user");
       if (name === "pin-note") togglePin(element.dataset.id);
       if (name === "edit-note") openNoteModal(element.dataset.id);
 if (name === "move-note-up") {
@@ -5063,11 +6231,7 @@ if (name === "move-note-down") {
       if (name === "add-bullet") convertBlocks("bullet");
       if (name === "add-number") convertBlocks("number");
       if (name === "add-task") convertBlocks("task");
-      if (name === "add-heading") {
-        const block = focusedBlockId ? findBlockEverywhere(focusedBlockId) : null;
-        if (!(selection.kind === "block" && selection.ids.size) && block?.type === "dropdown") toggleDropdown(block.id);
-        else convertBlocks("dropdown");
-      }
+      if (name === "add-heading") convertBlocks("dropdown");
       if (name === "photo") photoInput.click();
       if (name === "toggle-task") toggleTask(element.dataset.id);
       if (name === "toggle-dropdown") toggleDropdown(element.dataset.id);
@@ -5143,11 +6307,24 @@ if (name === "open-image") {
       if (name === "redo-action") redoAction();
       if (name === "done-selection") closeSelection();
       if (name === "close-note-modal") closeNoteModal();
+      if (name === "note-modal-secondary") noteModalSecondaryAction();
       if (name === "save-note-modal") saveNoteModal();
       if (name === "close-insert") closeInsert();
       if (name === "insert-block") insertBlock(element.dataset.type);
       if (name === "draft-color" && noteDraft) {
         noteDraft.accent = element.dataset.color;
+        renderNoteModalChoices();
+      }
+      if (name === "draft-page-mode" && noteDraft) {
+        noteDraft.pageMode = element.dataset.mode === "light" ? "light" : "dark";
+        if (noteDraft.id) {
+          const note = noteById(noteDraft.id);
+          if (note) {
+            note.pageMode = noteDraft.pageMode;
+            saveState();
+            if (state.activeNoteId === note.id) renderEditor();
+          }
+        }
         renderNoteModalChoices();
       }
       if (name === "draft-icon" && noteDraft) {
@@ -5270,10 +6447,28 @@ document.addEventListener("input", event => {
 
     document.addEventListener("beforeinput", handleBeforeInput);
 
-    document.addEventListener("focusin", event => {
-      const block = event.target.closest(".block");
-      if (block) focusedBlockId = block.dataset.id;
+    if (keyboardViewport) {
+      keyboardViewport.addEventListener("resize", updateKeyboardToolbarPosition);
+    }
+
+    window.addEventListener("resize", updateKeyboardToolbarPosition);
+    window.addEventListener("orientationchange", () => {
+      closedViewportHeight = keyboardViewport?.height || window.innerHeight;
+      updateKeyboardToolbarPosition();
     });
+
+    document.addEventListener("focusin", event => {
+  const editor = event.target.closest("[contenteditable='true'], textarea, input");
+  if (!editor) return;
+
+  activeEditorElement = editor;
+
+  const block = event.target.closest(".block");
+  if (block) focusedBlockId = block.dataset.id;
+
+  requestAnimationFrame(updateKeyboardToolbarPosition);
+  setTimeout(updateKeyboardToolbarPosition, 250);
+});
     document.addEventListener("focusout", event => {
   const editable = event.target.closest("[contenteditable='true']");
   if (!editable?.dataset?.id) return;
@@ -5306,6 +6501,12 @@ if (insertModal) {
 if (cardModal) {
   cardModal.addEventListener("click", event => {
     if (event.target === cardModal) closeCardOptions();
+  });
+}
+
+if (cardCoverModal) {
+  cardCoverModal.addEventListener("click", event => {
+    if (event.target === cardCoverModal) closeCardCoverOptions();
   });
 }
 
@@ -5357,25 +6558,17 @@ if (imageViewer) {
     revealImageControls();
   });
 }
+    toolbar.addEventListener("pointerdown", event => {
+  event.preventDefault();
+});
+
     toolbar.addEventListener("mousedown", event => {
-  if (event.target.closest("[data-command]")) return;
   event.preventDefault();
 });
 
 selectionBar.addEventListener("mousedown", event => {
-  if (event.target.closest("[data-command]")) return;
   event.preventDefault();
 });
-
-    function updateKeyboardOffset() {
-      if (!window.visualViewport) return;
-      const offset = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
-      document.documentElement.style.setProperty("--keyboard-offset", `${offset}px`);
-    }
-
-    window.visualViewport?.addEventListener("resize", updateKeyboardOffset);
-    window.visualViewport?.addEventListener("scroll", updateKeyboardOffset);
-    updateKeyboardOffset();
 
     searchInput.addEventListener("input", renderNotes);
     noteTitleField.addEventListener("keydown", event => {
@@ -5392,6 +6585,16 @@ function startApp() {
   notesView.classList.add("active");
   editorView.classList.remove("active");
   phone.classList.remove("editor-active");
+  phone.classList.remove("keyboard-open");
+  clearTimeout(keyboardOpenTimer);
+  clearTimeout(keyboardReleaseTimer);
+  keyboardOpenTimer = null;
+  keyboardReleaseTimer = null;
+  keyboardLocked = false;
+  pendingKeyboardOffset = 0;
+  activeEditorElement = null;
+  setKeyboardOffset(0);
+  lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
 
   if (searchInput) searchInput.value = "";
 
@@ -5402,9 +6605,31 @@ function startApp() {
 
 startApp();
 
+window.addEventListener("openNotesComposer", () => {
+  openNoteModal();
+});
+
+if (new URLSearchParams(window.location.search).get("add") === "note") {
+  openNoteModal();
+  history.replaceState(null, "", "notes.html");
+}
+
 window.addEventListener("load", () => {
   startApp();
 });
 </script>
+<script>
+const APP_VERSION = "2";
+
+const oldVersion = localStorage.getItem("appVersion");
+
+if (oldVersion && oldVersion !== APP_VERSION) {
+  localStorage.setItem("appVersion", APP_VERSION);
+  location.reload();
+} else {
+  localStorage.setItem("appVersion", APP_VERSION);
+}
+</script>
+<script src="bottom-bar.js"></script>
 </body>
 </html>
