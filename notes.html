@@ -2939,7 +2939,6 @@ let blockPath = [];
 	const selectionTitle = document.getElementById("selectionTitle");
 	const editorModeText = document.getElementById("editorModeText");
 	const toolbar = document.getElementById("toolbar");
-    const keyboardViewport = window.visualViewport || null;
     let noteDraft = null;
     let imageControlsTimer = null;
     let blockClipboard = [];
@@ -2957,13 +2956,6 @@ let blockPath = [];
     let savedTextEditable = null;
     let activeEditorElement = null;
     let focusColorTargetId = null;
-    let keyboardLocked = false;
-    let keyboardOffset = 0;
-    let keyboardOpenTimer = null;
-    let keyboardReleaseTimer = null;
-    let pendingKeyboardOffset = 0;
-    let closedViewportHeight = keyboardViewport?.height || window.innerHeight;
-    let lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
       { label: "White", color: "#ffffff" },
@@ -3715,16 +3707,6 @@ if (block.type === "url") {
       editorView.classList.toggle("active", view === "editor");
       phone.classList.toggle("editor-active", view === "editor");
       if (view !== "editor") {
-        clearTimeout(keyboardOpenTimer);
-        clearTimeout(keyboardReleaseTimer);
-        keyboardOpenTimer = null;
-        keyboardReleaseTimer = null;
-        keyboardLocked = false;
-        pendingKeyboardOffset = 0;
-        activeEditorElement = null;
-        phone.classList.remove("keyboard-open");
-        setKeyboardOffset(0);
-        lastAccessoryViewportHeight = keyboardViewport?.height || window.innerHeight;
       }
       closeSelection();
       if (view === "notes") renderNotes();
@@ -6466,7 +6448,6 @@ function startApp() {
   notesView.classList.add("active");
   editorView.classList.remove("active");
   phone.classList.remove("editor-active");
-  phone.classList.remove("keyboard-open");
 
   if (searchInput) searchInput.value = "";
 
