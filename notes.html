@@ -1517,28 +1517,33 @@ mask:
   backdrop-filter: blur(16px);
 }
 
-.toolbar::before,
-.toolbar::after {
+.toolbar-fade {
   content: "";
-  position: sticky;
+  position: absolute;
   top: 0;
-  z-index: 2;
-  width: 28px;
-  min-width: 28px;
-  height: 38px;
+  bottom: 0;
+  z-index: 4;
+  width: 34px;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
 }
 
-.toolbar::before {
-  left: -9px;
-  margin-left: -9px;
+.toolbar-fade.left {
+  left: 0;
+  border-radius: 22px 0 0 22px;
   background: linear-gradient(90deg, rgba(17, 23, 35, 0.98), rgba(17, 23, 35, 0));
 }
 
-.toolbar::after {
-  right: -9px;
-  margin-right: -9px;
+.toolbar-fade.right {
+  right: 0;
+  border-radius: 0 22px 22px 0;
   background: linear-gradient(270deg, rgba(17, 23, 35, 0.98), rgba(17, 23, 35, 0));
+}
+
+.toolbar.can-scroll-left .toolbar-fade.left,
+.toolbar.can-scroll-right .toolbar-fade.right {
+  opacity: 1 !important;
 }
 
 .editor-active .toolbar {
@@ -2405,9 +2410,6 @@ mask:
   }
 }
 
-.nav {
-  bottom: 14px !important;
-}
 .editor-active .toolbar,
 .editor-active.keyboard-open .toolbar {
   position: fixed !important;
@@ -2499,7 +2501,6 @@ mask:
       <button type="button" data-command="format-underline" aria-label="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
       <button type="button" data-command="format-highlight" aria-label="Highlight"><i class="fa-solid fa-highlighter" aria-hidden="true"></i></button>
       <button class="enter-child-tool" type="button" data-command="enter-child-note" aria-label="Enter child note"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i></button>
-      <button type="button" data-command="open-size-menu" aria-label="Text size"><strong aria-hidden="true">aA</strong></button>
       <button type="button" data-command="open-text-color-menu" aria-label="Text color"><i class="fa-solid fa-palette" aria-hidden="true"></i></button>
       <button type="button" data-command="add-bullet" aria-label="Add bullet"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
       <button type="button" data-command="add-number" aria-label="Add numbered item"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
@@ -2507,7 +2508,10 @@ mask:
       <button type="button" data-command="add-heading" aria-label="Toggle dropdown"><i class="fa-solid fa-caret-down" aria-hidden="true"></i></button>
       <button type="button" data-command="photo" aria-label="Add photo"><i class="fa-solid fa-image" aria-hidden="true"></i></button>
       <button class="alignment-tool" type="button" data-command="cycle-alignment" aria-label="Text alignment"><i class="fa-solid fa-align-left" aria-hidden="true"></i></button>
+      <button type="button" data-command="open-size-menu" aria-label="Text size"><strong aria-hidden="true">aA</strong></button>
       <button class="primary" type="button" data-command="add-text" aria-label="Add text"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+      <span class="toolbar-fade left" aria-hidden="true"></span>
+      <span class="toolbar-fade right" aria-hidden="true"></span>
     </nav>
 
     <div class="selection-bar" id="selectionBar">
@@ -2574,7 +2578,7 @@ mask:
           <circle cx="12" cy="12" r="8" stroke="currentColor" />
           <circle cx="12" cy="12" r="3" stroke="currentColor" />
         </svg>
-        Habit
+        Habits
       </button>
       <button class="add" type="button" aria-label="Add task">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -3016,6 +3020,7 @@ let blockPath = [];
     let savedTextEditable = null;
     let activeEditorElement = null;
     let focusColorTargetId = null;
+    let wholeBlockTextStyleTarget = null;
     const blockIconColors = ["#5a8cff", "#46d29c", "#ff9a52", "#ffd33d", "#ff74ba", "#46d7c5", "#9d70ff", "#ffffff"];
     const textColorPresets = [
       { label: "White", color: "#ffffff" },
@@ -3812,9 +3817,11 @@ if (block.type === "url") {
     }
 
     function toolbarAnchorElement() {
-      if (!activeEditorElement?.isConnected || !editorView.contains(activeEditorElement)) return null;
-      if (!activeEditorElement.matches?.("[contenteditable='true'], textarea")) return null;
-      return activeEditorElement;
+      const anchor = activeEditorElement?.isConnected ? activeEditorElement : document.activeElement;
+      if (!anchor?.isConnected || !editorView.contains(anchor)) return null;
+      if (!anchor.matches?.("[contenteditable='true'], textarea")) return null;
+      activeEditorElement = anchor;
+      return anchor;
     }
 
     function updateToolbarPosition() {
@@ -3840,6 +3847,20 @@ if (block.type === "url") {
       toolbar.style.setProperty("--toolbar-top", `${Math.max(phoneRect.top + 10, top)}px`);
       toolbar.style.setProperty("--toolbar-left", `${left}px`);
       toolbar.style.setProperty("--toolbar-width", `${toolbarWidth}px`);
+      requestAnimationFrame(updateToolbarScrollFades);
+      setTimeout(updateToolbarScrollFades, 0);
+    }
+
+    function updateToolbarScrollFades() {
+      const maxScroll = Math.max(0, toolbar.scrollWidth - toolbar.clientWidth);
+      const canScrollLeft = toolbar.scrollLeft > 1;
+      const canScrollRight = toolbar.scrollLeft < maxScroll - 1;
+      toolbar.classList.toggle("can-scroll-left", canScrollLeft);
+      toolbar.classList.toggle("can-scroll-right", canScrollRight);
+      const leftFade = toolbar.querySelector(".toolbar-fade.left");
+      const rightFade = toolbar.querySelector(".toolbar-fade.right");
+      if (leftFade) leftFade.style.opacity = canScrollLeft ? "1" : "0";
+      if (rightFade) rightFade.style.opacity = canScrollRight ? "1" : "0";
     }
 
     function keepToolbarReachable() {
@@ -4841,12 +4862,10 @@ if (event.target.closest(".image-open") && !selection.kind) {
     }
 
     function setSelectedSize(size) {
-      const ids = selectedBlockIds();
-      if (!ids.length) return;
+      const blocksToFormat = focusedFormatBlocks();
+      if (!blocksToFormat.length) return;
       remember();
-      const idSet = new Set(ids);
-      activeBlocks().forEach(block => {
-        if (!idSet.has(block.id) || block.type === "image") return;
+      blocksToFormat.forEach(block => {
         block.size = size;
         if (size === "heading" || size === "title") {
           block.type = "heading";
@@ -5064,6 +5083,57 @@ if (event.target.closest(".image-open") && !selection.kind) {
         || (focusedBlockId ? blocksEl.querySelector(`[data-id="${CSS.escape(focusedBlockId)}"][contenteditable="true"]`) : null);
     }
 
+    function blockForEditable(editable = activeContentEditable()) {
+      if (!editable?.dataset?.id) return null;
+      return editable.dataset.parentId
+        ? activeChildBlock(editable.dataset.parentId, editable.dataset.id)
+        : findBlockEverywhere(editable.dataset.id);
+    }
+
+    function focusedFormatBlocks() {
+      if (selection.kind === "block" && selection.ids.size) {
+        const ids = new Set(selection.ids);
+        return activeBlocks().filter(block => ids.has(block.id) && block.type !== "image");
+      }
+
+      const block = blockForEditable();
+      return block && block.type !== "image" ? [block] : [];
+    }
+
+    function toggleWholeBlockWrapper(block, tagName) {
+      const tag = tagName.toUpperCase();
+      const template = document.createElement("template");
+      template.innerHTML = sanitizeHtml(block.text || "");
+      const children = [...template.content.childNodes].filter(node => {
+        return node.nodeType !== Node.TEXT_NODE || node.textContent.trim();
+      });
+
+      if (children.length === 1 && children[0].nodeType === Node.ELEMENT_NODE && children[0].tagName === tag) {
+        block.text = children[0].innerHTML;
+        return;
+      }
+
+      block.text = `<${tagName.toLowerCase()}>${sanitizeHtml(block.text || "")}</${tagName.toLowerCase()}>`;
+    }
+
+    function applyWholeBlockHighlight(block, preset) {
+      if (preset.clear) {
+        const template = document.createElement("template");
+        template.innerHTML = sanitizeHtml(block.text || "");
+        template.content.querySelectorAll("mark, .text-highlight, .text-highlight-gradient").forEach(node => {
+          node.replaceWith(...node.childNodes);
+        });
+        block.text = template.innerHTML;
+        return;
+      }
+
+      const className = preset.gradient ? "text-highlight-gradient" : "text-highlight";
+      const style = preset.gradient
+        ? `--highlight-gradient: ${preset.gradient}`
+        : `--highlight-color: ${preset.color}`;
+      block.text = `<span class="${className}" style="${style}">${sanitizeHtml(block.text || "")}</span>`;
+    }
+
     function rememberTextSelection() {
       const active = activeEditableSelection();
       if (!active) return false;
@@ -5173,7 +5243,16 @@ if (event.target.closest(".image-open") && !selection.kind) {
 
     function openTextColorMenu(target = "color") {
       const hasSelectedBlocks = selection.kind === "block" && selection.ids.size > 0;
+      wholeBlockTextStyleTarget = null;
+
       if (!hasSelectedBlocks && !rememberTextSelection()) {
+        const block = blockForEditable();
+        if (block && block.type !== "image") {
+          wholeBlockTextStyleTarget = block.id;
+        }
+      }
+
+      if (!hasSelectedBlocks && !savedTextRange && !wholeBlockTextStyleTarget) {
         showToast("Select text first");
         return;
       }
@@ -5194,6 +5273,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
       textColorModal.classList.remove("mode-picker");
       savedTextRange = null;
       savedTextEditable = null;
+      wholeBlockTextStyleTarget = null;
     }
 
     function setSelectedTextColor(index) {
@@ -5203,6 +5283,25 @@ if (event.target.closest(".image-open") && !selection.kind) {
       const preset = presets[Number(index)];
       if (!preset) return;
       remember();
+      const wholeBlock = wholeBlockTextStyleTarget ? findBlockEverywhere(wholeBlockTextStyleTarget) : null;
+
+      if (wholeBlock && wholeBlock.type !== "image") {
+        if (textStyleTarget === "highlight") {
+          applyWholeBlockHighlight(wholeBlock, preset);
+        } else if (preset.gradient) {
+          wholeBlock.textGradient = preset.gradient;
+          delete wholeBlock.textColor;
+        } else {
+          wholeBlock.textColor = preset.color;
+          delete wholeBlock.textGradient;
+        }
+
+        saveState();
+        closeTextColorMenu();
+        renderEditor();
+        return;
+      }
+
       if (selection.kind === "block" && selection.ids.size && textStyleTarget === "color") {
         const ids = new Set(selection.ids);
         activeBlocks().forEach(block => {
@@ -5588,8 +5687,35 @@ function convertFocusedChild(type) {
     function applyInlineFormat(format) {
       const editable = activeContentEditable();
       const selected = window.getSelection();
-      if (!editable || !selected?.rangeCount || selected.isCollapsed || !editable.contains(selected.getRangeAt(0).commonAncestorContainer)) return;
-      if (editable) editable.focus();
+      const hasTextSelection = Boolean(
+        editable &&
+        selected?.rangeCount &&
+        !selected.isCollapsed &&
+        editable.contains(selected.getRangeAt(0).commonAncestorContainer)
+      );
+
+      if (!editable) return;
+      editable.focus();
+
+      if (!hasTextSelection) {
+        if (format === "highlight") {
+          openTextColorMenu("highlight");
+          return;
+        }
+
+        const block = blockForEditable(editable);
+        if (!block || block.type === "image") return;
+
+        remember();
+        if (format === "bold") toggleWholeBlockWrapper(block, "strong");
+        if (format === "italic") toggleWholeBlockWrapper(block, "em");
+        if (format === "underline") toggleWholeBlockWrapper(block, "u");
+        if (format === "indent") block.align = block.align === "center" ? "right" : block.align === "right" ? "left" : "center";
+        saveState();
+        renderEditor();
+        return;
+      }
+
       if (format === "highlight") {
         openTextColorMenu("highlight");
         return;
@@ -6650,6 +6776,7 @@ document.addEventListener("input", event => {
   const block = event.target.closest(".block");
   if (block) focusedBlockId = block.dataset.id;
 
+  toolbar.scrollLeft = 0;
   keepToolbarReachable();
 });
     document.addEventListener("focusout", event => {
@@ -6677,6 +6804,22 @@ document.addEventListener("pointerdown", event => {
   activeEditorElement = null;
   phone.classList.remove("text-focus-active");
 }, true);
+
+editorView.addEventListener("pointerup", event => {
+  const editor = event.target.closest("[contenteditable='true'], textarea");
+  if (!editor || !editorView.contains(editor)) return;
+  activeEditorElement = editor;
+  const block = editor.closest(".block");
+  if (block) focusedBlockId = editor.dataset.parentId || block.dataset.id;
+  keepToolbarReachable();
+});
+
+document.addEventListener("selectionchange", () => {
+  const editor = document.activeElement?.closest?.("[contenteditable='true'], textarea");
+  if (!editor || !editorView.contains(editor)) return;
+  activeEditorElement = editor;
+  updateToolbarPosition();
+});
 document.addEventListener("click", event => {
   if (event.target.matches(".url-field")) return;
   if (event.target.closest("[data-command]")) return;
@@ -6767,6 +6910,7 @@ if (imageViewer) {
 });
 
 editorView.addEventListener("scroll", updateToolbarPosition, { passive: true });
+toolbar.addEventListener("scroll", updateToolbarScrollFades, { passive: true });
 window.addEventListener("resize", updateToolbarPosition);
 
 selectionBar.addEventListener("mousedown", event => {
@@ -6823,6 +6967,6 @@ if (oldVersion && oldVersion !== APP_VERSION) {
   localStorage.setItem("appVersion", APP_VERSION);
 }
 </script>
-<script src="bottom-bar.js"></script>
+<script src="bottom-bar.js?v=shared-nav-2"></script>
 </body>
 </html>
