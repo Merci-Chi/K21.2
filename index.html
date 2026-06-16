@@ -374,27 +374,31 @@
         line-height: 1.35;
       }
 
-      .habit-empty-action {
-        display: grid;
-        justify-items: center;
-        gap: 10px;
-        margin-top: 2px;
-        color: #fff;
-      }
+    .habit-empty-action {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      margin-top: 2px;
+      color: #fff;
+    }
 
-      .habit-empty-action .bubble {
-        width: 74px;
+    .habit-empty-action .bubble {
+      width: 74px;
         border: 1px dashed rgba(255, 255, 255, 0.32);
         background: rgba(255, 255, 255, 0.014);
         box-shadow: none;
         color: #fff;
         font-size: 34px;
-        font-weight: 700;
-      }
+      font-weight: 700;
+    }
 
-      .task-empty-action {
-        min-height: 44px;
-        display: inline-flex;
+    .habit-grid > .habit-empty-action {
+      margin: 0 auto 42px;
+    }
+
+    .task-empty-action {
+      min-height: 44px;
+      display: inline-flex;
         align-items: center;
         gap: 10px;
         margin-top: 2px;
@@ -404,8 +408,12 @@
         background: rgba(255, 255, 255, 0.06);
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
         font-size: 14px;
-        font-weight: 850;
-      }
+      font-weight: 850;
+    }
+
+    .task-list > .task-empty-action {
+      justify-self: start;
+    }
 
       .task-empty-action .empty-plus {
         width: 24px;
@@ -1811,7 +1819,7 @@
                   <input name="scheduleAhead" type="hidden" value="no" />
                 </div>
                 <label class="field conditional-field" data-condition="weekly">
-                  Day of week
+                  Day of Week
                   <select name="weeklyDay">
                     <option value="Sunday">Sunday</option>
                     <option value="Monday">Monday</option>
@@ -1825,7 +1833,7 @@
               </div>
               <div class="form-row">
                 <label class="field conditional-field" data-condition="monthly">
-                  Monthly day
+                  Day of Month
                   <select name="monthlyDay">
                     <option value="1">1st</option>
                     <option value="2">2nd</option>
@@ -1866,6 +1874,12 @@
                 >
                   Start date
                   <input name="scheduleDate" type="date" />
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="field conditional-field" data-condition="yearly">
+                  Day of Year
+                  <input name="yearlyDate" type="date" />
                 </label>
               </div>
               <div class="form-row conditional-field" data-condition="custom">
@@ -2622,21 +2636,14 @@
         const grid = document.querySelector(".habit-grid");
         const habits = sortedHabits(store);
 
-        if (!habits.length) {
-          grid.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-inner">
-              <span class="empty-icon" aria-hidden="true">+</span>
-              <strong>No habits yet</strong>
-              <span>Start one small rhythm.</span>
-              <button class="habit-empty-action" type="button" aria-label="Add habit">
-                <span class="bubble">+</span>
-              </button>
-            </div>
-          </div>
+      if (!habits.length) {
+        grid.innerHTML = `
+          <button class="habit-empty-action" type="button" aria-label="Add habit">
+            <span class="bubble">+</span>
+          </button>
         `;
-          grid
-            .querySelector(".habit-empty-action")
+        grid
+          .querySelector(".habit-empty-action")
             .addEventListener("click", () => {
               window.location.href = "habits.html?add=habit";
             });
@@ -2746,6 +2753,14 @@
         });
       }
 
+      function yearlyDateValue(data) {
+        return data.yearlyDate || data.scheduleDate || data.createdDate || todayValue();
+      }
+
+      function fallbackDayForMonth(day, date) {
+        return Math.min(Number(day) || date.getDate(), lastDayOfMonth(date));
+      }
+
       function recurrenceText(data) {
         const repeat = data.repeat || "one-time";
         const pieces = [];
@@ -2766,7 +2781,7 @@
           pieces.push(`Monthly on the ${ordinal(Math.min(day, 31))}`);
         } else if (repeat === "yearly") {
           pieces.push(
-            `Yearly${data.scheduleDate ? ` on ${monthDayText(data.scheduleDate)}` : ""}`,
+            `Yearly on ${monthDayText(yearlyDateValue(data))}`,
           );
         } else if (repeat === "custom") {
           const every = Math.max(1, Number(data.customEvery) || 1);
@@ -2825,6 +2840,7 @@
           repeat: task.dataset.repeat || "one-time",
           weeklyDay: task.dataset.weeklyDay || "Monday",
           monthlyDay: task.dataset.monthlyDay || String(new Date().getDate()),
+          yearlyDate: task.dataset.yearlyDate || "",
           customEvery: task.dataset.customEvery || "1",
           customUnit: task.dataset.customUnit || "days",
           scheduleAhead: task.dataset.scheduleAhead || "no",
@@ -2846,6 +2862,7 @@
         task.dataset.weeklyDay = data.weeklyDay || "Monday";
         task.dataset.monthlyDay =
           data.monthlyDay || String(new Date().getDate());
+        task.dataset.yearlyDate = data.yearlyDate || "";
         task.dataset.customEvery = data.customEvery || "1";
         task.dataset.customUnit = data.customUnit || "days";
         task.dataset.scheduleAhead = data.scheduleAhead || "no";
@@ -2932,19 +2949,12 @@
         );
       }
 
-      function renderTaskSkeleton() {
-        taskList.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state-inner">
-            <i class="fa-solid fa-list-check" aria-hidden="true"></i>
-            <strong>No tasks yet</strong>
-            <span>Add today’s first task.</span>
-            <button class="task-empty-action" type="button" aria-label="Add task">
-              <span class="empty-plus">+</span>
-              Add task
-            </button>
-          </div>
-        </div>
+    function renderTaskSkeleton() {
+      taskList.innerHTML = `
+        <button class="task-empty-action" type="button" aria-label="Add task">
+          <span class="empty-plus">+</span>
+          Add task
+        </button>
       `;
         taskList
           .querySelector(".task-empty-action")
@@ -3117,17 +3127,16 @@
           );
         }
         if (repeat === "monthly") {
-          const monthlyDay = Math.min(
+          const monthlyDay = fallbackDayForMonth(
             Number(data.monthlyDay) || start.getDate(),
-            lastDayOfMonth(today),
+            today,
           );
           return today.getDate() === monthlyDay;
         }
         if (repeat === "yearly") {
-          return (
-            today.getMonth() === start.getMonth() &&
-            today.getDate() === start.getDate()
-          );
+          const yearlyDate = parseDate(yearlyDateValue(data)) || start;
+          if (today.getMonth() !== yearlyDate.getMonth()) return false;
+          return today.getDate() === fallbackDayForMonth(yearlyDate.getDate(), today);
         }
         if (repeat === "custom") {
           const every = Math.max(1, Number(data.customEvery) || 1);
@@ -3207,6 +3216,7 @@
           repeat: field("repeat").value,
           weeklyDay: field("weeklyDay").value,
           monthlyDay: field("monthlyDay").value,
+          yearlyDate: field("yearlyDate").value || todayValue(),
           customEvery: field("customEvery").value,
           customUnit: field("customUnit").value,
           scheduleAhead: field("scheduleAhead").value,
@@ -3324,6 +3334,7 @@
               repeat: "one-time",
               weeklyDay: "Monday",
               monthlyDay: String(new Date().getDate()),
+              yearlyDate: todayValue(),
               customEvery: "1",
               customUnit: "days",
               scheduleAhead: "no",
@@ -3340,6 +3351,7 @@
         field("weeklyDay").value = data.weeklyDay || "Monday";
         field("monthlyDay").value =
           data.monthlyDay || String(new Date().getDate());
+        field("yearlyDate").value = data.yearlyDate || data.scheduleDate || todayValue();
         field("customEvery").value = data.customEvery || "1";
         field("customUnit").value = data.customUnit || "days";
         selectSchedule(data.scheduleAhead || "no");
