@@ -309,6 +309,26 @@
       margin-bottom: 170px;
     }
 
+    .note-section-break {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 11px;
+      margin: 3px 0;
+      color: rgba(255, 255, 255, 0.42);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .note-section-break::before,
+    .note-section-break::after {
+      content: "";
+      height: 1px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+    }
+
     .note-card {
       --accent: var(--blue);
       position: relative;
@@ -475,12 +495,49 @@
   display: grid;
 }
     .empty-state {
-      min-height: 230px;
+      min-height: 310px;
       display: grid;
       place-items: center;
-      color: rgba(255, 255, 255, 0.64);
+      padding: 24px;
+      text-align: center;
+      border-radius: 22px;
+      color: rgba(255, 255, 255, 0.72);
+      background:
+        radial-gradient(circle at 50% 10%, rgba(90, 140, 255, 0.2), transparent 34%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+      border: 1px dashed rgba(255, 255, 255, 0.13);
+    }
+
+    .empty-state-inner {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      max-width: 250px;
+    }
+
+    .empty-state i {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--pink));
+      box-shadow: 0 18px 36px rgba(90, 140, 255, 0.24);
       font-size: 22px;
-      font-weight: 900;
+    }
+
+    .empty-state strong {
+      font-size: 22px;
+      font-weight: 920;
+      line-height: 1.12;
+    }
+
+    .empty-state span {
+      color: rgba(255, 255, 255, 0.52);
+      font-size: 13px;
+      font-weight: 720;
+      line-height: 1.35;
     }
 
     .action-btn {
@@ -1458,6 +1515,30 @@ mask:
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(16px);
+}
+
+.toolbar::before,
+.toolbar::after {
+  content: "";
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  width: 28px;
+  min-width: 28px;
+  height: 38px;
+  pointer-events: none;
+}
+
+.toolbar::before {
+  left: -9px;
+  margin-left: -9px;
+  background: linear-gradient(90deg, rgba(17, 23, 35, 0.98), rgba(17, 23, 35, 0));
+}
+
+.toolbar::after {
+  right: -9px;
+  margin-right: -9px;
+  background: linear-gradient(270deg, rgba(17, 23, 35, 0.98), rgba(17, 23, 35, 0));
 }
 
 .editor-active .toolbar {
@@ -2861,51 +2942,11 @@ mask:
       ]
     };
     const swipeMin = 18;
+    const sampleNoteIds = new Set(["daily-reset", "health-dashboard", "project-launch"]);
 
     const initialState = {
-      activeNoteId: "daily-reset",
-      notes: [
-        {
-          id: "daily-reset",
-          title: "Daily reset",
-          pinned: true,
-          accent: "#46d29c",
-          icon: "fa-book-open",
-          order: 0,
-          blocks: [
-            { id: uid(), type: "heading", text: "Morning Routine", children: [{ id: uid(), type: "task", text: "Drink water", checked: false }] },
-            { id: uid(), type: "task", text: "Drink water and take vitamins", checked: true },
-            { id: uid(), type: "task", text: "Review today's top three", checked: false },
-            { id: uid(), type: "paragraph", text: "Keep capture easy. Organization can happen later." }
-          ]
-        },
-        {
-          id: "health-dashboard",
-          title: "Health dashboard",
-          pinned: false,
-          accent: "#ff74ba",
-          icon: "fa-heart-pulse",
-          order: 1,
-          blocks: [
-            { id: uid(), type: "heading", text: "Health dashboard", children: [] },
-            { id: uid(), type: "bullet", text: "Sleep, mood, cycle notes, symptoms, meals, and supplements." },
-            { id: uid(), type: "paragraph", text: "Tap into any line to edit it normally." }
-          ]
-        },
-        {
-          id: "project-launch",
-          title: "Project launch",
-          pinned: false,
-          accent: "#9d70ff",
-          icon: "fa-lightbulb",
-          order: 2,
-          blocks: [
-            { id: uid(), type: "heading", text: "Launch plan", children: [] },
-            { id: uid(), type: "number", text: "Confirm scope" },
-            { id: uid(), type: "number", text: "Send final draft" }
-          ]
-        }
-      ]
+      activeNoteId: null,
+      notes: []
     };
 
     let state = loadState();
@@ -3051,7 +3092,15 @@ function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
 
-    if (saved && Array.isArray(saved.notes) && saved.notes.length) {
+    if (saved && Array.isArray(saved.notes)) {
+      saved.notes = saved.notes.filter(note => !sampleNoteIds.has(note.id));
+
+      if (!saved.notes.length) {
+        saved.activeNoteId = null;
+        localStorage.setItem(storageKey, JSON.stringify(saved));
+        return saved;
+      }
+
       saved.notes.forEach((note, noteIndex) => {
         note.id ||= uid();
         note.title ||= "Untitled note";
@@ -3398,10 +3447,36 @@ function goBackOneLevel() {
       const query = searchInput.value.trim().toLowerCase();
       const notes = sortedNotes().filter(note => `${note.title} ${preview(note)}`.toLowerCase().includes(query));
       if (!state.notes.length) {
-        noteList.innerHTML = `<div class="empty-state">Empty</div>`;
+        noteList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-inner">
+              <i class="fa-solid fa-note-sticky" aria-hidden="true"></i>
+              <strong>No notes yet</strong>
+              <span>Tap plus to start a page or card.</span>
+            </div>
+          </div>
+        `;
         return;
       }
-      noteList.innerHTML = notes.map(note => `
+
+      if (!notes.length) {
+        noteList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-inner">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+              <strong>No matches</strong>
+              <span>Try a different search.</span>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const hasPinned = notes.some(note => note.pinned);
+      const hasUnpinned = notes.some(note => !note.pinned);
+
+      noteList.innerHTML = notes.map((note, index) => `
+        ${hasPinned && hasUnpinned && !note.pinned && notes[index - 1]?.pinned ? '<div class="note-section-break">Unpinned</div>' : ""}
         <article class="note-card ${selection.ids.has(note.id) ? "selected" : ""}" draggable="true" data-kind="note" data-id="${note.id}" style="--accent:${note.accent}">
           <button class="note-main" type="button" data-command="open-note" data-id="${note.id}" aria-label="Open ${escapeHtml(note.title)}">
             <span class="note-icon">${iconSvg(note.icon)}</span>
@@ -3419,7 +3494,7 @@ function goBackOneLevel() {
             <button class="action-btn delete" type="button" data-command="delete-note" data-id="${note.id}" aria-label="Delete note"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
           </div>
         </article>
-      `).join("") || `<div class="note-card"><p class="note-title">No notes found</p></div>`;
+      `).join("");
       wireSwipeTargets(noteList.querySelectorAll(".note-card"));
       wireDragging(noteList.querySelectorAll(".note-card"), "note");
     }
@@ -4565,6 +4640,12 @@ if (event.target.closest(".image-open") && !selection.kind) {
       document.querySelectorAll(".drop-into").forEach(item => item.classList.remove("drop-into"));
     }
 
+    function pinnedMoveMessage(sourcePinned, targetPinned) {
+      if (sourcePinned && !targetPinned) return "Pinned notes stay in the pinned section.";
+      if (!sourcePinned && targetPinned) return "Pin it first to move it into pinned notes.";
+      return "Cannot cross the pinned section.";
+    }
+
     function moveTo(sourceId, targetId, kind, ids = [sourceId], after = false) {
       const list = kind === "block" ? activeBlocks() : state.notes;
       remember();
@@ -4584,7 +4665,10 @@ if (event.target.closest(".image-open") && !selection.kind) {
       const sourceIndex = list.findIndex(item => item.id === sourceId);
       const targetIndex = list.findIndex(item => item.id === targetId);
       if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
-      if (kind === "note" && list[sourceIndex].pinned !== list[targetIndex].pinned) return;
+      if (kind === "note" && list[sourceIndex].pinned !== list[targetIndex].pinned) {
+        showToast(pinnedMoveMessage(list[sourceIndex].pinned, list[targetIndex].pinned), "fa-thumbtack");
+        return;
+      }
       const [item] = list.splice(sourceIndex, 1);
       list.splice(targetIndex + (after && sourceIndex > targetIndex ? 1 : 0), 0, item);
       reindex();
@@ -4599,7 +4683,10 @@ if (event.target.closest(".image-open") && !selection.kind) {
       const index = list.findIndex(item => item.id === id);
       const target = index + direction;
       if (index < 0 || target < 0 || target >= list.length) return;
-      if (selection.kind === "note" && list[index].pinned !== list[target].pinned) return;
+      if (selection.kind === "note" && list[index].pinned !== list[target].pinned) {
+        showToast(pinnedMoveMessage(list[index].pinned, list[target].pinned), "fa-thumbtack");
+        return;
+      }
       remember();
       [list[index], list[target]] = [list[target], list[index]];
       reindex();
@@ -5847,7 +5934,16 @@ function moveNoteCard(id, direction) {
   const current = state.notes.find(note => note.id === id);
   if (!current) return;
 
-  const notes = sortedNotes().filter(note => note.pinned === current.pinned);
+  const allNotes = sortedNotes();
+  const allIndex = allNotes.findIndex(note => note.id === id);
+  const boundaryTarget = allNotes[allIndex + direction];
+
+  if (boundaryTarget && boundaryTarget.pinned !== current.pinned) {
+    showToast(pinnedMoveMessage(current.pinned, boundaryTarget.pinned), "fa-thumbtack");
+    return;
+  }
+
+  const notes = allNotes.filter(note => note.pinned === current.pinned);
   const index = notes.findIndex(note => note.id === id);
   const targetIndex = index + direction;
 
