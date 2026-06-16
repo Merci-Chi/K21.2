@@ -219,6 +219,23 @@
         font-weight: 850;
       }
 
+      .empty-arrow {
+        width: 118px;
+        height: 88px;
+        margin-top: 4px;
+        color: rgba(255, 255, 255, 0.7);
+        transform: rotate(12deg);
+      }
+
+      .empty-arrow path {
+        stroke: currentColor;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        stroke-dasharray: 7 8;
+      }
+
       .habit-row {
         --accent: var(--blue);
         position: relative;
@@ -1578,16 +1595,14 @@
               <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
               <strong>No habits yet</strong>
               <span>Add a habit to track your weekly rhythm.</span>
-              <button type="button" data-empty-add-habit>
-                <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                Add habit
-              </button>
+              <svg class="empty-arrow" viewBox="0 0 120 90" aria-hidden="true">
+                <path d="M18 10 C70 18 82 54 61 72" />
+                <path d="M61 72 L50 55" />
+                <path d="M61 72 L80 65" />
+              </svg>
             </div>
           </div>
         `;
-          habitList
-            .querySelector("[data-empty-add-habit]")
-            .addEventListener("click", () => openHabitModal());
           return;
         }
 
