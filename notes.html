@@ -879,6 +879,13 @@ mask:
       margin: 7px 0 0 32px;
       padding-left: 12px;
       border-left: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      min-height: 30px;
+    }
+
+    .dropdown-children.drop-into {
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      box-shadow: inset 3px 0 0 var(--accent);
     }
 
     .dropdown.collapsed .dropdown-children {
@@ -891,6 +898,14 @@ mask:
       align-items: start;
       gap: 7px;
       min-width: 0;
+    }
+
+    .dropdown-child-row.child-image {
+      grid-template-columns: 1fr;
+    }
+
+    .dropdown-child-row.child-image .image-block img {
+      height: 132px;
     }
 
     .dropdown-child-row > .dropdown-children {
@@ -2315,14 +2330,18 @@ mask:
 .editor-active .toolbar,
 .editor-active.keyboard-open .toolbar {
   position: fixed !important;
-  top: 50% !important;
-  left: 18px !important;
-  right: 18px !important;
+  top: var(--toolbar-top, auto) !important;
+  left: var(--toolbar-left, 18px) !important;
+  right: auto !important;
   bottom: auto !important;
-  width: auto !important;
-  display: flex !important;
-  transform: translateY(-50%) !important;
+  width: var(--toolbar-width, calc(100vw - 36px)) !important;
+  display: none !important;
+  transform: none !important;
   z-index: 99999 !important;
+}
+
+.editor-active.text-focus-active .toolbar {
+  display: flex !important;
 }
   </style>
 </head>
@@ -3427,7 +3446,9 @@ titleInput.style.color = pageMode === "light" ? "#111827" : "#fff";
 blocksEl.innerHTML = renderBlocksHtml(activeBlocks(), note.accent, pageMode);
       wireSwipeTargets(blocksEl.querySelectorAll(".block"));
       wireDragging(blocksEl.querySelectorAll(".block"), "block");
+      wireDropdownDropTargets();
       autoSizeTitle();
+      updateToolbarPosition();
     }
     function renderInsertRow(afterId = "") {
   return `
@@ -3493,6 +3514,20 @@ function dropdownChildMarker(child, index, parentId) {
 function dropdownChildHtml(child, index, parentId) {
   const marker = dropdownChildMarker(child, index, parentId);
 
+  if (child.type === "image") {
+    const imageCommand = child.src ? "open-image" : "choose-image-for-block";
+
+    return `
+    <div class="dropdown-child-row child-image" data-child-id="${child.id}">
+      <div class="image-block">
+        <button class="image-open" type="button" data-command="${imageCommand}" data-id="${child.id}" aria-label="Add or open image">
+          ${child.src ? `<img src="${child.src}" alt="Note photo" />` : `<div class="empty-image"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Tap to add photo</span></div>`}
+        </button>
+      </div>
+    </div>
+  `;
+  }
+
   return `
     <div class="dropdown-child-row child-${child.type || "paragraph"} ${child.collapsed ? "collapsed" : ""}" data-child-id="${child.id}">
       <span class="dropdown-child-marker">${marker}</span>
@@ -3506,7 +3541,7 @@ function dropdownChildrenHtml(block) {
   const children = Array.isArray(block.children) ? block.children : [];
 
   return `
-    <div class="dropdown-children">
+    <div class="dropdown-children" data-dropdown-parent-id="${block.id}">
       ${children.map((child, index) => dropdownChildHtml(child, index, block.id)).join("")}
     </div>
   `;
@@ -3699,6 +3734,57 @@ if (block.type === "url") {
         return !active.matches("[readonly], [disabled]");
       }
       return false;
+    }
+
+    function toolbarAnchorElement() {
+      if (!activeEditorElement?.isConnected || !editorView.contains(activeEditorElement)) return null;
+      if (!activeEditorElement.matches?.("[contenteditable='true'], textarea")) return null;
+      return activeEditorElement;
+    }
+
+    function updateToolbarPosition() {
+      const anchor = toolbarAnchorElement();
+      const shouldShow = currentView === "editor" && !selection.kind && Boolean(anchor);
+
+      phone.classList.toggle("text-focus-active", shouldShow);
+
+      if (!shouldShow) return;
+
+      const phoneRect = phone.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+      const toolbarWidth = Math.min(phoneRect.width - 20, Math.max(280, anchorRect.width));
+      const toolbarHeight = toolbar.offsetHeight || 58;
+      const safeBottom = phoneRect.bottom - 18;
+      const rawTop = anchorRect.bottom + 8;
+      const top = Math.min(rawTop, safeBottom - toolbarHeight);
+      const left = Math.min(
+        Math.max(anchorRect.left, phoneRect.left + 10),
+        phoneRect.right - toolbarWidth - 10
+      );
+
+      toolbar.style.setProperty("--toolbar-top", `${Math.max(phoneRect.top + 10, top)}px`);
+      toolbar.style.setProperty("--toolbar-left", `${left}px`);
+      toolbar.style.setProperty("--toolbar-width", `${toolbarWidth}px`);
+    }
+
+    function keepToolbarReachable() {
+      const anchor = toolbarAnchorElement();
+      if (!anchor) return;
+
+      requestAnimationFrame(() => {
+        updateToolbarPosition();
+
+        const phoneRect = phone.getBoundingClientRect();
+        const anchorRect = anchor.getBoundingClientRect();
+        const toolbarHeight = toolbar.offsetHeight || 58;
+        const neededBottom = anchorRect.bottom + toolbarHeight + 18;
+        const safeBottom = phoneRect.bottom - 24;
+
+        if (neededBottom > safeBottom) {
+          editorView.scrollTop += neededBottom - safeBottom;
+          requestAnimationFrame(updateToolbarPosition);
+        }
+      });
     }
 
     function setView(view) {
@@ -4334,6 +4420,140 @@ if (event.target.closest(".image-open") && !selection.kind) {
       });
     }
 
+    function blockListContaining(blockId, blocks = activeNote()?.blocks || []) {
+      if (!Array.isArray(blocks)) return null;
+
+      if (blocks.some(block => block.id === blockId)) {
+        return blocks;
+      }
+
+      for (const block of blocks) {
+        if (!Array.isArray(block.children)) continue;
+        const found = blockListContaining(blockId, block.children);
+        if (found) return found;
+      }
+
+      return null;
+    }
+
+    function normalizeDropdownContextBlock(block) {
+      delete block.groupId;
+      block.size ||= "subtext";
+      block.children = Array.isArray(block.children) ? block.children : [];
+
+      if (block.type === "heading") {
+        block.size = "heading";
+      }
+
+      return block;
+    }
+
+    function moveBlocksIntoDropdown(ids, parentId) {
+      const parent = findBlockEverywhere(parentId);
+      if (!parent || parent.type !== "dropdown" || parent.collapsed) return false;
+
+      const movingIds = [...new Set(ids)].filter(Boolean);
+      if (!movingIds.length) return false;
+      if (movingIds.some(id => id === parentId || findBlockPath(parentId)?.includes(id))) return false;
+
+      remember();
+
+      const moving = [];
+
+      movingIds.forEach(id => {
+        const sourceList = blockListContaining(id);
+        if (!sourceList) return;
+        const sourceIndex = sourceList.findIndex(block => block.id === id);
+        if (sourceIndex < 0) return;
+        const [block] = sourceList.splice(sourceIndex, 1);
+        moving.push(normalizeDropdownContextBlock(block));
+      });
+
+      if (!moving.length) return false;
+
+      if (!Array.isArray(parent.children)) parent.children = [];
+      parent.children = parent.children.filter(child => stripHtml(child.text || "").trim() || child.type === "image" || child.children?.length);
+      parent.children.push(...moving);
+
+      focusedBlockId = parent.id;
+      focusedChild = moving.at(-1) ? { parentId: parent.id, id: moving.at(-1).id } : null;
+      selection.kind = null;
+      selection.ids = new Set();
+
+      saveState();
+      renderEditor();
+      return true;
+    }
+
+    function addDraggedTextToDropdown(text, parentId) {
+      const parent = findBlockEverywhere(parentId);
+      const cleanText = String(text || "").trim();
+      if (!parent || parent.type !== "dropdown" || parent.collapsed || !cleanText) return false;
+
+      remember();
+      if (!Array.isArray(parent.children)) parent.children = [];
+
+      const child = {
+        id: uid(),
+        type: "paragraph",
+        text: escapeHtml(cleanText).replace(/\n/g, "<br>"),
+        size: "subtext",
+        children: []
+      };
+
+      parent.children.push(child);
+      focusedBlockId = parent.id;
+      focusedChild = { parentId: parent.id, id: child.id };
+      saveState();
+      renderEditor();
+      setTimeout(() => focusDropdownChild(parent.id, child.id), 30);
+      return true;
+    }
+
+    function payloadFromDrop(event) {
+      try {
+        const raw = event.dataTransfer.getData("text/plain") || "";
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function wireDropdownDropTargets() {
+      blocksEl.querySelectorAll(".dropdown-children[data-dropdown-parent-id]").forEach(target => {
+        target.addEventListener("dragover", event => {
+          const parent = findBlockEverywhere(target.dataset.dropdownParentId);
+          if (!parent || parent.type !== "dropdown" || parent.collapsed) return;
+          event.preventDefault();
+          event.stopPropagation();
+          clearDropIndicators();
+          target.classList.add("drop-into");
+        });
+
+        target.addEventListener("dragleave", event => {
+          if (target.contains(event.relatedTarget)) return;
+          target.classList.remove("drop-into");
+        });
+
+        target.addEventListener("drop", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          target.classList.remove("drop-into");
+          clearDropIndicators();
+
+          const parentId = target.dataset.dropdownParentId;
+          const payload = payloadFromDrop(event);
+
+          if (payload?.kind === "block") {
+            moveBlocksIntoDropdown(payload.ids?.length ? payload.ids : [payload.id], parentId);
+            return;
+          }
+
+          addDraggedTextToDropdown(event.dataTransfer.getData("text/plain"), parentId);
+        });
+      });
+    }
+
     function showDropIndicator(element, event) {
       clearDropIndicators();
       const after = event.offsetY > element.getBoundingClientRect().height / 2;
@@ -4342,6 +4562,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
 
     function clearDropIndicators() {
       document.querySelectorAll(".drop-before, .drop-after").forEach(item => item.classList.remove("drop-before", "drop-after"));
+      document.querySelectorAll(".drop-into").forEach(item => item.classList.remove("drop-into"));
     }
 
     function moveTo(sourceId, targetId, kind, ids = [sourceId], after = false) {
@@ -6287,6 +6508,7 @@ document.addEventListener("input", event => {
 
   autoSizeTitle();
   saveState();
+  updateToolbarPosition();
   return;
 }
   const editable = event.target.closest("[contenteditable='true']");
@@ -6294,6 +6516,7 @@ document.addEventListener("input", event => {
   if (editable?.dataset?.id) {
     focusedBlockId = editable.dataset.id;
     updateBlockField(editable);
+    updateToolbarPosition();
   }
 });
 
@@ -6323,23 +6546,41 @@ document.addEventListener("input", event => {
     document.addEventListener("beforeinput", handleBeforeInput);
 
     document.addEventListener("focusin", event => {
-  const editor = event.target.closest("[contenteditable='true'], textarea, input");
-  if (!editor) return;
+  const editor = event.target.closest("[contenteditable='true'], textarea");
+  if (!editor || !editorView.contains(editor)) return;
 
   activeEditorElement = editor;
 
   const block = event.target.closest(".block");
   if (block) focusedBlockId = block.dataset.id;
 
+  keepToolbarReachable();
 });
     document.addEventListener("focusout", event => {
   const editable = event.target.closest("[contenteditable='true']");
-  if (!editable?.dataset?.id) return;
 
   setTimeout(() => {
-    deleteEmptyBlock(editable.dataset.id);
+    if (!toolbarAnchorElement()) {
+      phone.classList.remove("text-focus-active");
+      activeEditorElement = null;
+    } else {
+      updateToolbarPosition();
+    }
+
+    if (editable?.dataset?.id) deleteEmptyBlock(editable.dataset.id);
   }, 80);
 });
+document.addEventListener("pointerdown", event => {
+  if (currentView !== "editor") return;
+  if (event.target.closest(".toolbar, .modal, [contenteditable='true'], textarea")) return;
+
+  const active = toolbarAnchorElement();
+  if (!active) return;
+
+  active.blur();
+  activeEditorElement = null;
+  phone.classList.remove("text-focus-active");
+}, true);
 document.addEventListener("click", event => {
   if (event.target.matches(".url-field")) return;
   if (event.target.closest("[data-command]")) return;
@@ -6428,6 +6669,9 @@ if (imageViewer) {
     toolbar.addEventListener("mousedown", event => {
   event.preventDefault();
 });
+
+editorView.addEventListener("scroll", updateToolbarPosition, { passive: true });
+window.addEventListener("resize", updateToolbarPosition);
 
 selectionBar.addEventListener("mousedown", event => {
   event.preventDefault();
