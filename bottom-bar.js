@@ -1,10 +1,10 @@
 const bottomBarStyles = `
   .nav {
-    position: fixed;
-    z-index: 30;
-    left: 50%;
-    right: auto;
-    bottom: max(12px, env(safe-area-inset-bottom));
+    position: fixed !important;
+    z-index: 30 !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: max(12px, env(safe-area-inset-bottom)) !important;
     width: min(calc(100vw - 36px), 394px);
     min-height: 76px;
     display: grid;
@@ -19,7 +19,7 @@ const bottomBarStyles = `
     border: 1px solid rgba(255, 255, 255, 0.09);
     box-shadow: 0 24px 58px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(26px);
-    transform: translateX(-50%);
+    transform: translateX(-50%) !important;
     pointer-events: auto;
   }
 
@@ -54,7 +54,7 @@ const bottomBarStyles = `
     margin: -22px auto 0;
     display: grid;
     place-items: center;
-    border-radius: 50%;
+    border-radius: 50% !important;
     background:
       radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.52), transparent 27%),
       linear-gradient(140deg, #48a7ff 0%, #7d7aff 48%, #aa62ff 100%);
@@ -112,10 +112,13 @@ const bottomBarStyles = `
   }
 
   .quick-add-option {
+    width: 100%;
+    min-width: 0;
     min-height: 58px;
     display: grid;
     grid-template-columns: 30px 1fr;
     align-items: center;
+    justify-items: start;
     gap: 8px;
     padding: 8px 10px;
     border-radius: 16px;
@@ -137,6 +140,12 @@ const bottomBarStyles = `
     width: 25px;
     height: 25px;
     stroke-width: 2.35;
+    justify-self: center;
+  }
+
+  .quick-add-option span {
+    min-width: 0;
+    white-space: nowrap;
   }
 
   .quick-add-option.task {
