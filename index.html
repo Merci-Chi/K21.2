@@ -141,14 +141,16 @@
     }
 
     .habit-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 30px 18px;
       margin-bottom: 42px;
     }
 
     .habit {
       min-width: 0;
+      width: calc((100% - 36px) / 3);
       display: grid;
       justify-items: center;
       gap: 12px;
@@ -165,8 +167,8 @@
       place-items: center;
       color: var(--glow);
       background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 54%),
-        rgba(17, 23, 35, 0.86);
+        linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01) 54%),
+        rgba(3, 4, 8, 0.96);
       border: 1px solid rgba(255, 255, 255, 0.12);
       overflow: hidden;
       box-shadow:
@@ -184,42 +186,42 @@
       background:
         radial-gradient(circle at 35% 24%, color-mix(in srgb, var(--glow) 42%, white), transparent 25%),
         linear-gradient(180deg, color-mix(in srgb, var(--glow) 88%, white), var(--glow));
-      opacity: 0.2;
-      transform: scale(0);
-      transform-origin: center;
+      opacity: 0.28;
+      transform: scaleY(0);
+      transform-origin: bottom;
       transition: transform 140ms ease-out;
     }
 
     .habit.is-holding .bubble::before {
-      transform: scale(0.5);
+      transform: scaleY(0.5);
       transition: transform 520ms cubic-bezier(0.18, 0.8, 0.2, 1);
     }
 
     .habit.is-half .bubble::before {
-      transform: scale(0.56);
+      transform: scaleY(0.5);
       transition: transform 260ms ease-out;
     }
 
     .habit.is-half.is-holding .bubble::before {
-      transform: scale(1);
+      transform: scaleY(1);
       transition: transform 520ms cubic-bezier(0.18, 0.8, 0.2, 1);
     }
 
     .habit.is-filled .bubble::before {
-      transform: scale(1);
+      transform: scaleY(1);
       transition: transform 220ms ease-out;
     }
 
     .habit.is-filled.is-holding .bubble::before {
-      transform: scale(0);
+      transform: scaleY(0);
       transition: transform 520ms cubic-bezier(0.18, 0.8, 0.2, 1);
     }
 
     .icon-bubble {
       border-color: rgba(255, 255, 255, 0.08);
       background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 54%),
-        rgba(17, 23, 35, 0.88);
+        linear-gradient(145deg, rgba(255, 255, 255, 0.042), rgba(255, 255, 255, 0.01) 54%),
+        rgba(3, 4, 8, 0.97);
       box-shadow:
         inset 0 18px 30px rgba(255, 255, 255, 0.045),
         inset 0 -20px 34px rgba(0, 0, 0, 0.31),
@@ -265,10 +267,104 @@
     }
 
     .habit-title {
+      color: #fff !important;
       font-size: 18px;
       font-weight: 800;
       letter-spacing: 0;
       line-height: 1.1;
+    }
+
+    .empty-state {
+      min-height: 230px;
+      width: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      border-radius: 22px;
+      color: rgba(255, 255, 255, 0.72);
+      background:
+        radial-gradient(circle at 50% 10%, rgba(90, 140, 255, 0.2), transparent 34%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+      border: 1px dashed rgba(255, 255, 255, 0.13);
+    }
+
+    .empty-state-inner {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      max-width: 250px;
+    }
+
+    .empty-state i,
+    .empty-state .empty-icon {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--pink));
+      box-shadow: 0 18px 36px rgba(90, 140, 255, 0.24);
+      font-size: 22px;
+      font-style: normal;
+      font-weight: 850;
+    }
+
+    .empty-state strong {
+      font-size: 22px;
+      font-weight: 920;
+      line-height: 1.12;
+    }
+
+    .empty-state span {
+      color: rgba(255, 255, 255, 0.52);
+      font-size: 13px;
+      font-weight: 720;
+      line-height: 1.35;
+    }
+
+    .habit-empty-action {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      margin-top: 2px;
+      color: #fff;
+    }
+
+    .habit-empty-action .bubble {
+      width: 74px;
+      border: 1px dashed rgba(255, 255, 255, 0.32);
+      background: rgba(255, 255, 255, 0.014);
+      box-shadow: none;
+      color: #fff;
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    .task-empty-action {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 2px;
+      padding: 0 14px;
+      border-radius: 14px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .task-empty-action .empty-plus {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.36);
+      line-height: 1;
     }
 
     .yellow { color: var(--yellow); }
@@ -327,8 +423,8 @@
       border-radius: 17px;
       background:
         linear-gradient(95deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 46%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
-        rgba(12, 17, 28, 0.94);
+        linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.008)),
+        rgba(3, 4, 8, 0.965);
       border: 1px solid var(--line);
       border-left: 3px solid var(--accent);
       box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -444,6 +540,7 @@
     }
 
     .task-title {
+      color: #fff;
       margin: 0 0 8px;
       font-size: 18px;
       font-weight: 800;
@@ -1094,6 +1191,10 @@
       .habit-grid {
         gap: 29px 12px;
       }
+
+      .habit {
+        width: calc((100% - 24px) / 3);
+      }
     }
 
     @media (max-width: 350px) {
@@ -1144,61 +1245,7 @@
           </button>
         </div>
 
-        <div class="task-list">
-          <article class="task-card" style="--accent: var(--blue)" data-icon="calendar" data-color="#5a8cff" data-notes="Review calendar, choose top three priorities, and block one focused work session.">
-            <button class="check" aria-label="Complete Plan my day" type="button"></button>
-            <div>
-              <p class="task-title">Plan my day</p>
-              <span class="tag">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M8 2v4M16 2v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                Personal
-              </span>
-            </div>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <p class="task-notes">Review calendar, choose top three priorities, and block one focused work session.</p>
-            <div class="task-actions" aria-label="Task controls"></div>
-          </article>
-
-          <article class="task-card" style="--accent: var(--green)" data-icon="briefcase" data-color="#46d29c" data-notes="Add budget section, tighten the timeline, and send the final draft before 4 PM.">
-            <button class="check" aria-label="Complete Finish project proposal" type="button"></button>
-            <div>
-              <p class="task-title">Finish project proposal</p>
-              <span class="tag">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="M9 13h6" stroke="currentColor" stroke-linecap="round" />
-                </svg>
-                Business
-              </span>
-            </div>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <p class="task-notes">Add budget section, tighten the timeline, and send the final draft before 4 PM.</p>
-            <div class="task-actions" aria-label="Task controls"></div>
-          </article>
-
-          <article class="task-card no-notes" style="--accent: var(--teal)" data-icon="health" data-color="#46d7c5">
-            <button class="check" aria-label="Complete Go for a walk" type="button"></button>
-            <div>
-              <p class="task-title">Go for a walk</p>
-              <span class="tag">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M5 19h14M5 19l3-4 3 2 2-5 4 3 2 4M9 8l2-3 3 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                Personal
-              </span>
-            </div>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <div class="task-actions" aria-label="Task controls"></div>
-          </article>
-        </div>
+        <div class="task-list"></div>
       </section>
     </div>
 
@@ -1561,14 +1608,9 @@
     let activeIconCategory = "recents";
     let activeIconPage = 0;
 
-    const defaultHabits = {
-      breakfast: { label: "Breakfast", color: "#ffd33d", icon: "calendar", mode: "single", order: 0, completions: {} },
-      lunch: { label: "Lunch", color: "#46d29c", icon: "briefcase", mode: "single", order: 1, completions: {} },
-      dinner: { label: "Dinner", color: "#9d70ff", icon: "home", mode: "single", order: 2, completions: {} },
-      cleaning: { label: "Cleaning", color: "#5a8cff", icon: "star", mode: "single", order: 3, completions: {} },
-      weight: { label: "Weight", color: "#ff74ba", icon: "solid:dumbbell", mode: "single", order: 4, completions: {} },
-      running: { label: "Running", color: "#46d7c5", icon: "solid:person-running", mode: "single", order: 5, completions: {} }
-    };
+    const defaultHabits = {};
+    const sampleHabitIds = new Set(["breakfast", "lunch", "dinner", "cleaning", "weight", "running"]);
+    const sampleTaskTitles = new Set(["Plan my day", "Finish project proposal", "Go for a walk"]);
 
     function bindHold(element, { activeClass, completeClass, onComplete, ignoreSelector, instant = false }) {
       if (element.dataset.holdBound === "true") return;
@@ -1815,7 +1857,8 @@
       try {
         const parsed = JSON.parse(localStorage.getItem(HABIT_STORAGE_KEY) || "{}");
         const deleted = loadDeletedHabits();
-        const merged = { ...defaultHabits, ...(parsed && typeof parsed === "object" ? parsed : {}) };
+        const merged = parsed && typeof parsed === "object" ? { ...parsed } : {};
+        sampleHabitIds.forEach((id) => delete merged[id]);
         deleted.forEach((id) => delete merged[id]);
         Object.entries(merged).forEach(([id, habit], index) => {
         const savedIcon = id === "running" && habit.icon === "flag" ? "solid:person-running" : normalizeIconValue(habit.icon);
@@ -1832,7 +1875,7 @@
         });
         return merged;
       } catch {
-        return { ...defaultHabits };
+        return {};
       }
     }
 
@@ -1862,12 +1905,35 @@
 
     function renderIndexHabits() {
       const store = loadHabitStore();
-      document.querySelector(".habit-grid").innerHTML = sortedHabits(store).map(([id, habit]) => `
+      const grid = document.querySelector(".habit-grid");
+      const habits = sortedHabits(store);
+
+      if (!habits.length) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-inner">
+              <span class="empty-icon" aria-hidden="true">+</span>
+              <strong>No habits yet</strong>
+              <span>Start one small rhythm.</span>
+              <button class="habit-empty-action" type="button" aria-label="Add habit">
+                <span class="bubble">+</span>
+              </button>
+            </div>
+          </div>
+        `;
+        grid.querySelector(".habit-empty-action").addEventListener("click", () => {
+          window.location.href = "habits.html?add=habit";
+        });
+        saveHabitStore(store);
+        return;
+      }
+
+      grid.innerHTML = habits.map(([id, habit]) => `
         <button class="habit" data-habit-id="${id}" style="--glow: ${habit.color}; color: ${habit.color}">
           <span class="bubble icon-bubble">
             ${iconSvg(habit.icon)}
           </span>
-          <span class="habit-title" style="color: ${habit.color}">${habit.label}</span>
+          <span class="habit-title">${habit.label}</span>
         </button>
       `).join("");
       saveHabitStore(store);
@@ -2078,19 +2144,42 @@
 
     function renderSavedTasks(tasks) {
       taskList.innerHTML = "";
-      tasks.map(normalizeTaskState).sort(taskSort).forEach((data) => taskList.appendChild(createTask(data)));
+      const normalizedTasks = tasks
+        .filter((task) => !sampleTaskTitles.has(task.title))
+        .map(normalizeTaskState)
+        .sort(taskSort);
+
+      if (!normalizedTasks.length) {
+        renderTaskSkeleton();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+        return;
+      }
+
+      normalizedTasks.forEach((data) => taskList.appendChild(createTask(data)));
+    }
+
+    function renderTaskSkeleton() {
+      taskList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-inner">
+            <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+            <strong>No tasks yet</strong>
+            <span>Add today’s first task.</span>
+            <button class="task-empty-action" type="button" aria-label="Add task">
+              <span class="empty-plus">+</span>
+              Add task
+            </button>
+          </div>
+        </div>
+      `;
+      taskList.querySelector(".task-empty-action").addEventListener("click", () => openTaskModal("add"));
     }
 
     function loadTasks() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) {
-        const starterTasks = Array.from(document.querySelectorAll(".task-card")).map((task) => {
-          const data = taskData(task);
-          data.createdDate = todayValue();
-          return data;
-        });
-        renderSavedTasks(starterTasks);
-        saveTasks();
+        renderTaskSkeleton();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
         return;
       }
 
@@ -2156,6 +2245,7 @@
         event.stopPropagation();
         task.remove();
         saveTasks();
+        if (!taskList.querySelector(".task-card")) renderTaskSkeleton();
       });
     }
 
@@ -2459,6 +2549,7 @@
         data.completedAt = editingTask.dataset.completedAt || "";
         setTaskData(editingTask, data);
       } else {
+        taskList.querySelector(".empty-state")?.remove();
         taskList.appendChild(createTask(data));
       }
       saveTasks();
@@ -2472,6 +2563,6 @@
       history.replaceState(null, "", "index.html");
     }
   </script>
-  <script src="bottom-bar.js"></script>
+  <script src="bottom-bar.js?v=shared-nav-2"></script>
 </body>
 </html>
