@@ -1366,6 +1366,7 @@
           padding: 15px 56px 15px 14px;
         }
       }
+
     </style>
   </head>
   <body>
@@ -2012,6 +2013,7 @@
       ];
       const HABIT_STORAGE_KEY = "routineDashboard.habits.v1";
       const DELETED_HABITS_KEY = "routineDashboard.deletedHabits.v1";
+      const DELETED_TASKS_KEY = "routineDashboard.deletedTasks.v1";
       const ICON_RECENTS_KEY = "routineDashboard.iconRecents.v1";
       const ICON_PAGE_SIZE = 18;
       const MAX_ICON_PAGES = 5;
@@ -2195,7 +2197,56 @@
       let activeIconCategory = "recents";
       let activeIconPage = 0;
 
-      const defaultHabits = {};
+      const defaultHabits = {
+        breakfast: {
+          label: "Breakfast",
+          color: "#ffd33d",
+          icon: "solid:utensils",
+          mode: "single",
+          order: 0,
+          completions: {},
+        },
+        lunch: {
+          label: "Lunch",
+          color: "#46d29c",
+          icon: "solid:apple-whole",
+          mode: "single",
+          order: 1,
+          completions: {},
+        },
+        dinner: {
+          label: "Dinner",
+          color: "#ff9a52",
+          icon: "solid:bowl-food",
+          mode: "single",
+          order: 2,
+          completions: {},
+        },
+        cleaning: {
+          label: "Cleaning",
+          color: "#46d7c5",
+          icon: "solid:broom",
+          mode: "single",
+          order: 3,
+          completions: {},
+        },
+        weight: {
+          label: "Weight",
+          color: "#9d70ff",
+          icon: "solid:scale-balanced",
+          mode: "single",
+          order: 4,
+          completions: {},
+        },
+        running: {
+          label: "Running",
+          color: "#5a8cff",
+          icon: "solid:person-running",
+          mode: "split",
+          order: 5,
+          completions: {},
+        },
+      };
       const sampleHabitIds = new Set([
         "breakfast",
         "lunch",
@@ -2204,11 +2255,39 @@
         "weight",
         "running",
       ]);
-      const sampleTaskTitles = new Set([
-        "Plan my day",
-        "Finish project proposal",
-        "Go for a walk",
-      ]);
+      const defaultTasks = [
+        {
+          id: "sample-plan-day",
+          title: "Plan my day",
+          category: "Personal",
+          icon: "solid:calendar-check",
+          color: "#5a8cff",
+          description: "Pick the top three things that would make today feel done.",
+          repeat: "daily",
+          createdDate: todayValue(),
+        },
+        {
+          id: "sample-project-proposal",
+          title: "Finish project proposal",
+          category: "Work",
+          icon: "solid:briefcase",
+          color: "#9d70ff",
+          description: "Write the final notes, skim once, then send it.",
+          repeat: "one-time",
+          createdDate: todayValue(),
+        },
+        {
+          id: "sample-evening-walk",
+          title: "Go for a walk",
+          category: "Health",
+          icon: "solid:person-walking",
+          color: "#46d29c",
+          description: "Ten minutes counts. Shoes on is the real start.",
+          repeat: "daily",
+          createdDate: todayValue(),
+        },
+      ];
+      const sampleTaskIds = new Set(defaultTasks.map((task) => task.id));
 
       function bindHold(
         element,
@@ -2552,9 +2631,10 @@
             localStorage.getItem(HABIT_STORAGE_KEY) || "{}",
           );
           const deleted = loadDeletedHabits();
-          const merged =
-            parsed && typeof parsed === "object" ? { ...parsed } : {};
-          sampleHabitIds.forEach((id) => delete merged[id]);
+          const merged = {
+            ...defaultHabits,
+            ...(parsed && typeof parsed === "object" ? parsed : {}),
+          };
           deleted.forEach((id) => delete merged[id]);
           Object.entries(merged).forEach(([id, habit], index) => {
             const savedIcon =
@@ -2914,10 +2994,43 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
       }
 
+      function loadDeletedTasks() {
+        try {
+          const parsed = JSON.parse(
+            localStorage.getItem(DELETED_TASKS_KEY) || "[]",
+          );
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function saveDeletedTasks(ids) {
+        localStorage.setItem(
+          DELETED_TASKS_KEY,
+          JSON.stringify([...new Set(ids)]),
+        );
+      }
+
+      function rememberDeletedTask(id) {
+        if (!sampleTaskIds.has(id)) return;
+        saveDeletedTasks([...loadDeletedTasks(), id]);
+      }
+
+      function withDefaultTasks(tasks) {
+        const deleted = new Set(loadDeletedTasks());
+        const existing = new Set(tasks.map((task) => task.id));
+        return [
+          ...tasks,
+          ...defaultTasks
+            .filter((task) => !deleted.has(task.id) && !existing.has(task.id))
+            .map((task) => ({ ...task })),
+        ];
+      }
+
       function renderSavedTasks(tasks) {
         taskList.innerHTML = "";
-        const normalizedTasks = tasks
-          .filter((task) => !sampleTaskTitles.has(task.title))
+        const normalizedTasks = withDefaultTasks(tasks)
           .map(normalizeTaskState)
           .sort(taskSort);
 
@@ -2954,8 +3067,7 @@
       function loadTasks() {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (!saved) {
-          renderTaskSkeleton();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+          renderSavedTasks([]);
           return;
         }
 
@@ -3025,6 +3137,7 @@
 
         task.querySelector(".delete").addEventListener("click", (event) => {
           event.stopPropagation();
+          rememberDeletedTask(task.dataset.id);
           task.remove();
           saveTasks();
           if (!taskList.querySelector(".task-card")) renderTaskSkeleton();
@@ -3462,6 +3575,6 @@
         history.replaceState(null, "", "index.html");
       }
     </script>
-    <script src="bottom-bar.js?v=shared-nav-2"></script>
+    <script src="bottom-bar.js?v=shared-nav-4"></script>
   </body>
 </html>
