@@ -341,11 +341,7 @@
         bottom: 0;
         width: var(--fill);
         height: 100%;
-        background: linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0.92),
-          color-mix(in srgb, var(--accent) 72%, #fff)
-        );
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.92), color-mix(in srgb, var(--accent) 72%, #fff));
         transition: width 0.24s ease;
       }
 
@@ -840,6 +836,7 @@
           padding: 54px 21px 112px;
         }
       }
+
     </style>
   </head>
   <body>
@@ -1217,7 +1214,56 @@
       let activeIconCategory = "recents";
       let activeIconPage = 0;
 
-      const defaultHabits = {};
+      const defaultHabits = {
+        breakfast: {
+          label: "Breakfast",
+          color: "#ffd33d",
+          icon: "solid:utensils",
+          mode: "single",
+          order: 0,
+          completions: {},
+        },
+        lunch: {
+          label: "Lunch",
+          color: "#46d29c",
+          icon: "solid:apple-whole",
+          mode: "single",
+          order: 1,
+          completions: {},
+        },
+        dinner: {
+          label: "Dinner",
+          color: "#ff9a52",
+          icon: "solid:bowl-food",
+          mode: "single",
+          order: 2,
+          completions: {},
+        },
+        cleaning: {
+          label: "Cleaning",
+          color: "#46d7c5",
+          icon: "solid:broom",
+          mode: "single",
+          order: 3,
+          completions: {},
+        },
+        weight: {
+          label: "Weight",
+          color: "#9d70ff",
+          icon: "solid:scale-balanced",
+          mode: "single",
+          order: 4,
+          completions: {},
+        },
+        running: {
+          label: "Running",
+          color: "#5a8cff",
+          icon: "solid:person-running",
+          mode: "split",
+          order: 5,
+          completions: {},
+        },
+      };
       const sampleHabitIds = new Set([
         "breakfast",
         "lunch",
@@ -1487,8 +1533,10 @@
             localStorage.getItem(HABIT_STORAGE_KEY) || "{}",
           );
           const deleted = loadDeletedHabits();
-          const merged = saved && typeof saved === "object" ? { ...saved } : {};
-          sampleHabitIds.forEach((id) => delete merged[id]);
+          const merged = {
+            ...defaultHabits,
+            ...(saved && typeof saved === "object" ? saved : {}),
+          };
           deleted.forEach((id) => delete merged[id]);
           Object.entries(merged).forEach(([id, habit], index) => {
             const savedIcon =
@@ -1601,7 +1649,9 @@
             ? 3
             : Number(completions?.[dateKey(date)]) || 0;
         const safeLevel = Math.max(0, Math.min(3, level));
-        const levelText = safeLevel ? `level ${safeLevel}` : "not tracked";
+        const levelText = safeLevel
+          ? `level ${safeLevel}`
+          : "not tracked";
         return `
         <span class="${withNumber ? "month-dot" : ""}">
           <span class="habit-meter" style="--level: ${safeLevel}" aria-label="${dateKey(date)} ${levelText}">
@@ -1915,6 +1965,6 @@
         history.replaceState(null, "", "habits.html");
       }
     </script>
-    <script src="bottom-bar.js?v=shared-nav-2"></script>
+    <script src="bottom-bar.js?v=shared-nav-4"></script>
   </body>
 </html>
