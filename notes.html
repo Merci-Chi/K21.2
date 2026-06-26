@@ -2426,6 +2426,7 @@ mask:
 .editor-active.text-focus-active .toolbar {
   display: flex !important;
 }
+
   </style>
 </head>
 <body>
@@ -2946,7 +2947,63 @@ mask:
       ]
     };
     const swipeMin = 18;
-    const sampleNoteIds = new Set(["daily-reset", "health-dashboard", "project-launch"]);
+    const DELETED_NOTES_KEY = "routineDashboard.deletedNotes.v1";
+    const defaultNotes = [
+      {
+        id: "sample-daily-reset",
+        title: "Daily reset",
+        pinned: true,
+        accent: "#5a8cff",
+        icon: "solid:note-sticky",
+        pageMode: "dark",
+        order: 0,
+        blocks: [
+          {
+            id: "sample-daily-reset-title",
+            type: "heading",
+            text: "Today",
+            children: [],
+          },
+          {
+            id: "sample-daily-reset-list",
+            type: "bullet",
+            text: "Pick one priority, one chore, and one thing that helps future you.",
+            children: [],
+          },
+        ],
+      },
+      {
+        id: "sample-ideas",
+        title: "Ideas",
+        pinned: false,
+        accent: "#ff74ba",
+        icon: "solid:lightbulb",
+        pageMode: "dark",
+        order: 1,
+        blocks: [
+          {
+            id: "sample-ideas-title",
+            type: "heading",
+            text: "Loose thoughts",
+            children: [],
+          },
+          {
+            id: "sample-ideas-card",
+            type: "card-square",
+            text: "Make this space useful, not precious.",
+            cardCover: "title-icon",
+            icon: "solid:sparkles",
+            children: [],
+          },
+        ],
+      },
+    ];
+    const sampleNoteIds = new Set(defaultNotes.map((note) => note.id));
+    const legacySampleNoteIds = new Set([
+      "daily-reset",
+      "health-dashboard",
+      "project-launch",
+    ]);
 
     const initialState = {
       activeNoteId: null,
@@ -3093,12 +3150,54 @@ let blockPath = [];
       return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
     }
 
+function loadDeletedNotes() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(DELETED_NOTES_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveDeletedNotes(ids) {
+  localStorage.setItem(DELETED_NOTES_KEY, JSON.stringify([...new Set(ids)]));
+}
+
+function rememberDeletedNote(id) {
+  if (!sampleNoteIds.has(id)) return;
+  saveDeletedNotes([...loadDeletedNotes(), id]);
+}
+
+function cloneDefaultNote(note) {
+  return JSON.parse(JSON.stringify(note));
+}
+
+function withDefaultNotes(notes) {
+  const deleted = new Set(loadDeletedNotes());
+  const seen = new Set();
+  const cleanedNotes = notes
+    .filter(note => !legacySampleNoteIds.has(note.id))
+    .filter(note => {
+      if (!note.id || !sampleNoteIds.has(note.id)) return true;
+      if (seen.has(note.id)) return false;
+      seen.add(note.id);
+      return true;
+    });
+  const existing = new Set(cleanedNotes.map(note => note.id));
+  return [
+    ...cleanedNotes,
+    ...defaultNotes
+      .filter(note => !deleted.has(note.id) && !existing.has(note.id))
+      .map(cloneDefaultNote)
+  ];
+}
+
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
 
     if (saved && Array.isArray(saved.notes)) {
-      saved.notes = saved.notes.filter(note => !sampleNoteIds.has(note.id));
+      saved.notes = withDefaultNotes(saved.notes);
 
       if (!saved.notes.length) {
         saved.activeNoteId = null;
@@ -3136,7 +3235,11 @@ function loadState() {
     console.warn(error);
   }
 
-  const fresh = JSON.parse(JSON.stringify(initialState));
+  const fresh = {
+    ...JSON.parse(JSON.stringify(initialState)),
+    notes: withDefaultNotes([]),
+  };
+  fresh.activeNoteId = fresh.notes[0]?.id || null;
   localStorage.setItem(storageKey, JSON.stringify(fresh));
   return fresh;
 }
@@ -4469,6 +4572,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
       remember();
       if (kind === "note") {
         undo = { kind: "note", notes: JSON.parse(JSON.stringify(state.notes)), activeNoteId: state.activeNoteId };
+        rememberDeletedNote(id);
         state.notes = state.notes.filter(note => note.id !== id);
         state.activeNoteId = state.notes[0]?.id || null;
       }
@@ -4741,6 +4845,7 @@ if (event.target.closest(".image-open") && !selection.kind) {
       activeNoteId: state.activeNoteId
     };
 
+    selectedIds.forEach(rememberDeletedNote);
     state.notes = state.notes.filter(note => !selectedIds.has(note.id));
 
     if (selectedIds.has(state.activeNoteId)) {
@@ -6967,6 +7072,6 @@ if (oldVersion && oldVersion !== APP_VERSION) {
   localStorage.setItem("appVersion", APP_VERSION);
 }
 </script>
-<script src="bottom-bar.js?v=shared-nav-2"></script>
+<script src="bottom-bar.js?v=shared-nav-4"></script>
 </body>
 </html>
