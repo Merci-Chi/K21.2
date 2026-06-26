@@ -249,7 +249,7 @@ if (nav && addButton) {
   });
 
   quickAddMenu.addEventListener("click", (event) => {
-  event.stopPropagation();
+    event.stopPropagation();
     const option = event.target.closest("[data-add-kind]");
     if (!option) return;
     closeQuickAdd();
